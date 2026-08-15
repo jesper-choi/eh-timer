@@ -27,6 +27,20 @@ let ev = EVENTS.find(e => e.id === localStorage.getItem(KEY + '_ev')) || EVENTS[
 const solves = () => (db[ev.id] = db[ev.id] || []);
 const count = (o) => Object.values(o).reduce((n, a) => n + a.length, 0);
 
+// 밖에서 들어온 JSON(가져오기, gist)은 믿지 않는다. 아는 종목·성한 값만 통과시킨다.
+const KNOWN = new Set(EVENTS.map((e) => e.id));
+function clean(data) {
+	const out = {};
+	if (!data || typeof data !== 'object' || Array.isArray(data)) return out;
+	for (const k of Object.keys(data)) {
+		if (!KNOWN.has(k) || !Array.isArray(data[k])) continue;
+		out[k] = data[k]
+			.filter((s) => s && typeof s === 'object' && typeof s.ms === 'number' && isFinite(s.ms) && s.ms >= 0 && typeof s.ts === 'number' && isFinite(s.ts))
+			.map((s) => ({ ms: s.ms, p: s.p === 2 || s.p === -1 ? s.p : 0, scr: typeof s.scr === 'string' ? s.scr.slice(0, 1000) : '', ts: s.ts }));
+	}
+	return out;
+}
+
 async function load() {
 	let file;
 	try { file = await (await fetch('data')).json(); } catch (e) { return; }   // 서버 없음 → localStorage 모드
@@ -39,12 +53,64 @@ let queue = Promise.resolve();
 function save() {
 	localStorage.setItem(KEY, JSON.stringify(db));   // 서버를 쓰더라도 백업으로 남겨둔다
 	localStorage.setItem(KEY + '_ev', ev.id);
-	if (!onServer) return;
+	if (!onServer) { schedulePush(); return; }       // 서버가 없으면 브라우저가 직접 gist로
 	const body = JSON.stringify(db);
 	// 순서 보장: 예전 내용이 나중에 도착해서 최신 기록을 덮는 일이 없게 직렬로 보낸다
 	queue = queue.then(() => fetch('data', { method: 'PUT', body: body }))
 		.then((r) => { if (!r.ok) throw 0; el.status.textContent = ''; })
 		.catch(() => { el.status.textContent = '저장 실패 — 기록은 브라우저에만 있음'; });
+}
+
+// ── gist 동기화 (서버 없이 태블릿에서 쓸 때) ────────────────────────────────
+// 서버가 있으면 server.js가 하므로 브라우저는 관여하지 않는다.
+const GKEY = KEY + '_gist';
+const GIST_API = 'https://api.github.com/gists/';
+let gist = null;
+try { gist = JSON.parse(localStorage.getItem(GKEY)) || null; } catch (e) { gist = null; }
+
+function ghHeaders() {
+	return { Authorization: 'Bearer ' + gist.token, Accept: 'application/vnd.github+json' };
+}
+async function gistRead() {
+	const r = await fetch(GIST_API + gist.id, { headers: ghHeaders(), signal: AbortSignal.timeout(15000) });
+	if (!r.ok) throw new Error(r.status === 404 ? 'gist를 찾을 수 없음 (ID 확인)' : r.status === 401 ? '토큰이 거부됨' : 'HTTP ' + r.status);
+	const f = (await r.json()).files['solves.json'];
+	if (!f) return {};
+	const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;   // 1MB 넘으면 잘려서 옴
+	return clean(JSON.parse(text || '{}'));
+}
+async function gistWrite(data) {
+	const r = await fetch(GIST_API + gist.id, {
+		method: 'PATCH', headers: ghHeaders(), signal: AbortSignal.timeout(15000),
+		body: JSON.stringify({ files: { 'solves.json': { content: JSON.stringify(data) } } })
+	});
+	if (!r.ok) throw new Error('쓰기 실패 HTTP ' + r.status);
+}
+// 항상 원격과 합쳐서 올린다. 다른 기기가 먼저 올린 기록을 덮지 않기 위함.
+// 겹쳐 실행되면 읽기/쓰기가 엇갈릴 수 있으므로 한 번에 하나씩 직렬로 돈다.
+let syncing = Promise.resolve();
+function gistSync() {
+	if (!gist || onServer) return Promise.resolve();
+	syncing = syncing.catch(() => {}).then(async () => {
+		el.status.textContent = '동기화 중…';
+		try {
+			db = merge(db, await gistRead());
+			localStorage.setItem(KEY, JSON.stringify(db));
+			await gistWrite(db);
+			el.status.textContent = '';
+			render();
+		} catch (e) {
+			el.status.textContent = '동기화 실패 — 기록은 이 기기에 저장됨';
+			throw e;
+		}
+	});
+	return syncing;
+}
+let pushTimer = 0;
+function schedulePush() {
+	if (!gist || onServer) return;
+	clearTimeout(pushTimer);      // 솔브마다 때리지 않고 3초 모아서 한 번
+	pushTimer = setTimeout(() => gistSync().catch(() => {}), 3000);
 }
 
 // ── scramble worker ──────────────────────────────────────────────────────────
@@ -178,12 +244,14 @@ function cancel() {
 }
 
 document.addEventListener('keydown', (e) => {
-	if (e.target.matches && e.target.matches('select, input') ) return;
+	if (e.target.matches && e.target.matches('select, input')) return;
+	if ($('syncdlg').open) return;                    // 설정 창이 열려 있으면 타이머는 반응하지 않는다
 	if (e.key === 'Escape') { cancel(); return; }
 	if (state === 'running') { e.preventDefault(); stop(e.timeStamp); return; }
 	if (e.key === ' ') { e.preventDefault(); if (!e.repeat) down(); }
 });
 document.addEventListener('keyup', (e) => {
+	if ($('syncdlg').open) return;
 	if (e.key === ' ') { e.preventDefault(); up(e.timeStamp); }
 });
 
@@ -217,6 +285,42 @@ el.event.onchange = () => {
 el.scramble.onclick = nextScramble;
 $('newscr').onclick = nextScramble;
 
+// ── 동기화 설정 창 ───────────────────────────────────────────────────────────
+const dlg = $('syncdlg'), gmsg = $('gmsg');
+const syncBtn = $('sync');
+const showSync = () => syncBtn.classList.toggle('on', !!gist && !onServer);
+
+function msg(text, cls) { gmsg.textContent = text; gmsg.className = cls || ''; }
+
+syncBtn.onclick = () => {
+	$('gid').value = (gist && gist.id) || '';
+	$('gtok').value = (gist && gist.token) || '';
+	msg(onServer ? 'PC 서버가 이미 동기화 중입니다. 이 설정은 서버 없이 열었을 때만 쓰입니다.' : '');
+	dlg.showModal();
+};
+$('gclose').onclick = () => dlg.close();
+$('gsave').onclick = async () => {
+	const id = $('gid').value.trim(), token = $('gtok').value.trim();
+	if (!id || !token) { msg('gist ID와 토큰을 모두 입력하세요.', 'err'); return; }
+	gist = { id: id, token: token };
+	msg('확인 중…');
+	try {
+		await gistSync();
+		localStorage.setItem(GKEY, JSON.stringify(gist));   // 성공한 설정만 저장
+		msg('동기화 완료 — 기록 ' + Object.values(db).reduce((n, a) => n + a.length, 0) + '개', 'ok');
+		showSync();
+	} catch (e) {
+		gist = null;
+		msg(e.message || '연결 실패', 'err');
+	}
+};
+$('gdel').onclick = () => {
+	gist = null;
+	localStorage.removeItem(GKEY);
+	msg('토큰을 지웠습니다. 기록은 이 기기에 그대로 있습니다.', 'ok');
+	showSync();
+};
+
 const inspBtn = $('insp');
 inspBtn.classList.toggle('on', inspOn);
 inspBtn.onclick = () => {
@@ -240,9 +344,20 @@ $('export').onclick = () => {
 };
 $('import').onclick = () => el.file.click();
 el.file.onchange = async () => {
-	db = merge(db, JSON.parse(await el.file.files[0].text()));   // 덮어쓰지 않고 ts 기준 병합
+	try {
+		db = merge(db, clean(JSON.parse(await el.file.files[0].text())));   // 덮어쓰지 않고 ts 기준 병합
+	} catch (e) {
+		el.status.textContent = '가져오기 실패 — JSON 파일이 아닙니다';
+		el.file.value = '';
+		return;
+	}
 	el.file.value = '';
 	save(); render();
 };
 
-load().then(() => { render(); nextScramble(); });
+load().then(() => {
+	render();
+	nextScramble();
+	showSync();
+	gistSync().catch(() => {});    // 서버 없이 열었고 토큰이 있으면 시작할 때 한 번 합친다
+});

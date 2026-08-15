@@ -80,7 +80,13 @@ function schedulePush() {
 
 // ── 서버 ─────────────────────────────────────────────────────────────────────
 http.createServer((req, res) => {
-	const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+	let rel;
+	try {
+		rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+	} catch (e) {
+		return json(res, 400, '{"error":"bad url"}');      // "/%" 같은 잘못된 인코딩에 죽지 않게
+	}
+	if (rel.indexOf('\0') !== -1) { res.writeHead(400).end(); return; }
 
 	if (rel === '/data') {
 		if (req.method === 'GET') {
@@ -91,7 +97,10 @@ http.createServer((req, res) => {
 			let body = '';
 			req.on('data', (c) => { body += c; if (body.length > 20e6) req.destroy(); });
 			req.on('end', () => {
-				try { JSON.parse(body); } catch (e) { return json(res, 400, '{"error":"bad json"}'); }
+				try {
+					const parsed = JSON.parse(body);
+					if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw 0;
+				} catch (e) { return json(res, 400, '{"error":"bad json"}'); }
 				try { writeLocal(body); } catch (e) { return json(res, 500, '{"error":"write failed"}'); }
 				schedulePush();
 				json(res, 200, '{"ok":true}');
@@ -101,7 +110,7 @@ http.createServer((req, res) => {
 	}
 
 	const file = path.join(root, rel === '/' ? 'index.html' : rel);
-	if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
+	if (!file.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }   // 형제 폴더(eh_timier-xxx)까지 막는다
 	fs.readFile(file, (err, data) => {
 		if (err) { res.writeHead(404).end('not found'); return; }
 		res.writeHead(200, { 'Content-Type': (types[path.extname(file)] || 'application/octet-stream') + '; charset=utf-8' });

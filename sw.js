@@ -21,12 +21,16 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
 	if (e.request.method !== 'GET') return;
-	if (new URL(e.request.url).pathname.endsWith('/data')) return;   // 기록 API는 캐시하지 않는다
+	const url = new URL(e.request.url);
+	if (url.origin !== self.location.origin) return;   // gist API 등 외부 요청은 손대지 않는다
+	if (url.pathname.endsWith('/data')) return;        // 기록 API는 캐시하지 않는다
 	e.respondWith(
 		fetch(e.request).then((res) => {
 			const copy = res.clone();
 			caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
 			return res;
-		}).catch(() => caches.match(e.request).then((r) => r || caches.match('index.html')))
+		}).catch(() => caches.match(e.request).then(
+			// 오프라인: 캐시본, 없으면 페이지 이동일 때만 index.html (스크립트 자리에 HTML을 주지 않게)
+			(r) => r || (e.request.mode === 'navigate' ? caches.match('index.html') : Response.error())))
 	);
 });

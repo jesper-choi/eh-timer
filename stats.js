@@ -37,7 +37,7 @@ function inspPenaltyOf(ms) { return ms > INSPECT_MS + 2000 ? -1 : ms > INSPECT_M
 
 // 기록 묶음 둘을 ts 기준으로 병합. 덮어쓰지 않으니 어느 쪽 기록도 사라지지 않는다.
 function merge(a, b) {
-	const out = {};
+	const out = Object.create(null);   // "__proto__" 같은 키가 들어와도 프로토타입이 오염되지 않게
 	for (const k of new Set(Object.keys(a).concat(Object.keys(b)))) {
 		const seen = new Set();
 		out[k] = (a[k] || []).concat(b[k] || [])

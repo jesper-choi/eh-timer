@@ -163,6 +163,31 @@ body.ready #time { color: var(--ready); }
 body.running #scramble, body.running header, body.running aside { opacity: .12; transition: opacity .2s; }
 footer { padding: 12px 24px 18px; text-align: center; color: var(--muted); font-size: 12px; }
 
+/* ── 동기화 설정 ── */
+dialog {
+	background: var(--surface); color: var(--text);
+	border: 1px solid var(--border); border-radius: var(--radius);
+	padding: 22px; max-width: 420px; width: calc(100% - 32px);
+}
+dialog::backdrop { background: #000a; }
+dialog h3 { font-size: 16px; margin-bottom: 8px; }
+dialog p { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+dialog label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+dialog input {
+	display: block; width: 100%; margin-top: 5px; padding: 9px 11px;
+	background: var(--bg); color: var(--text);
+	border: 1px solid var(--border); border-radius: 9px; font-size: 14px;
+}
+dialog .row { display: flex; gap: 8px; margin-top: 16px; }
+dialog .row button {
+	flex: 1; padding: 9px; border-radius: 9px; cursor: pointer;
+	background: var(--surface-2); border: 1px solid var(--border); font-size: 13px;
+}
+dialog .row button:first-child { background: var(--accent); border-color: var(--accent); color: #0b0d11; }
+#gmsg { font-size: 12px; color: var(--muted); min-height: 1.4em; }
+#gmsg.err { color: var(--hold); }
+#gmsg.ok { color: var(--ready); }
+
 @media (max-width: 820px) {
 	#app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
 	aside { order: 2; border-right: 0; border-top: 1px solid var(--border); max-height: 42vh; }
@@ -189,6 +214,7 @@ footer { padding: 12px 24px 18px; text-align: center; color: var(--muted); font-
 			<select id="event"></select>
 			<button id="insp" class="toggle">인스펙션 15초</button>
 			<button id="newscr" class="toggle">새 스크램블</button>
+			<button id="sync" class="toggle">동기화</button>
 			<span class="spacer"></span>
 			<span class="hint" id="status"></span>
 		</header>
@@ -198,6 +224,19 @@ footer { padding: 12px 24px 18px; text-align: center; color: var(--muted); font-
 	</main>
 </div>
 <input type="file" id="file" accept="application/json" hidden>
+
+<dialog id="syncdlg">
+	<h3>gist 동기화</h3>
+	<p>기록을 비공개 gist와 자동으로 합칩니다. 토큰은 <b>이 기기 브라우저에만</b> 저장되고 서버로 전송되지 않습니다.</p>
+	<label>gist ID <input id="gid" inputmode="latin" autocomplete="off" spellcheck="false" placeholder="a1b2c3d4..."></label>
+	<label>토큰 (gist 스코프) <input id="gtok" type="password" autocomplete="off" placeholder="ghp_..."></label>
+	<div id="gmsg"></div>
+	<div class="row">
+		<button id="gsave">저장하고 동기화</button>
+		<button id="gdel">토큰 삭제</button>
+		<button id="gclose">닫기</button>
+	</div>
+</dialog>
 <script src="stats.js"></script>
 <script src="app.js"></script>
 </body>
