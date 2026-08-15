@@ -744,6 +744,101 @@ header .hint {
 	96%, 100% { background: #f87171; }
 }
 
+/* ── 2x2 vs 3x3 큐브 종목 전환 스위칭 ── */
+body[data-cube="222"] .stage-cube-wrap .cube-333 { display: none !important; }
+body[data-cube="222"] .stage-cube-wrap .cube-222 { display: block !important; }
+body:not([data-cube="222"]) .stage-cube-wrap .cube-222 { display: none !important; }
+body:not([data-cube="222"]) .stage-cube-wrap .cube-333 { display: block !important; }
+
+/* 2x2 큐브 구조 */
+.stage-cube-wrap .cube-222 .cube-face {
+	position: absolute;
+	width: 80px;
+	height: 80px;
+	background: #000;
+	border: 2px solid #000;
+	border-radius: 6px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 4px;
+	padding: 4px;
+	box-sizing: border-box;
+	backface-visibility: visible;
+	-webkit-backface-visibility: visible;
+}
+.stage-cube-wrap .cube-222 .cube-front  { transform: rotateY(0deg) translateZ(40px); filter: brightness(1.0); }
+.stage-cube-wrap .cube-222 .cube-back   { transform: rotateY(180deg) translateZ(40px); filter: brightness(0.78); }
+.stage-cube-wrap .cube-222 .cube-right  { transform: rotateY(90deg) translateZ(40px); filter: brightness(0.88); }
+.stage-cube-wrap .cube-222 .cube-left   { transform: rotateY(-90deg) translateZ(40px); filter: brightness(0.82); }
+.stage-cube-wrap .cube-222 .cube-top    { transform: rotateX(90deg) translateZ(40px); filter: brightness(1.15); }
+.stage-cube-wrap .cube-222 .cube-bottom { transform: rotateX(-90deg) translateZ(40px); filter: brightness(0.70); }
+
+.stage-cube-wrap .cube-222 .c-sticker {
+	border-radius: 4px;
+	box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* ── 2x2 Progressive Solve Keyframes ── */
+/* Front (Solves to Blue) */
+.cs-solve-2b1 { animation: to-blue-2x2-p1 6.0s infinite; }
+.cs-solve-2b2 { animation: to-blue-2x2-p2 6.0s infinite; }
+.cs-solve-2b3 { animation: to-blue-2x2-p3 6.0s infinite; }
+.cs-solve-2b4 { animation: to-blue-2x2-p4 6.0s infinite; }
+@keyframes to-blue-2x2-p1 { 0%, 15% { background: #f87171; } 30%, 90% { background: #38bdf8; } 96%, 100% { background: #f87171; } }
+@keyframes to-blue-2x2-p2 { 0%, 25% { background: #facc15; } 42%, 90% { background: #38bdf8; } 96%, 100% { background: #facc15; } }
+@keyframes to-blue-2x2-p3 { 0%, 35% { background: #4ade80; } 48%, 90% { background: #38bdf8; } 96%, 100% { background: #4ade80; } }
+@keyframes to-blue-2x2-p4 { 0%, 42% { background: #fb923c; } 52%, 90% { background: #38bdf8; } 96%, 100% { background: #fb923c; } }
+
+/* Right (Solves to Red) */
+.cs-solve-2r1 { animation: to-red-2x2-p1 6.0s infinite; }
+.cs-solve-2r2 { animation: to-red-2x2-p2 6.0s infinite; }
+.cs-solve-2r3 { animation: to-red-2x2-p3 6.0s infinite; }
+.cs-solve-2r4 { animation: to-red-2x2-p4 6.0s infinite; }
+@keyframes to-red-2x2-p1 { 0%, 15% { background: #38bdf8; } 30%, 90% { background: #f87171; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-red-2x2-p2 { 0%, 25% { background: #fb923c; } 42%, 90% { background: #f87171; } 96%, 100% { background: #fb923c; } }
+@keyframes to-red-2x2-p3 { 0%, 35% { background: #f8fafc; } 48%, 90% { background: #f87171; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-red-2x2-p4 { 0%, 42% { background: #facc15; } 52%, 90% { background: #f87171; } 96%, 100% { background: #facc15; } }
+
+/* Top (Solves to White) */
+.cs-solve-2w1 { animation: to-white-2x2-p1 6.0s infinite; }
+.cs-solve-2w2 { animation: to-white-2x2-p2 6.0s infinite; }
+.cs-solve-2w3 { animation: to-white-2x2-p3 6.0s infinite; }
+.cs-solve-2w4 { animation: to-white-2x2-p4 6.0s infinite; }
+@keyframes to-white-2x2-p1 { 0%, 15% { background: #facc15; } 30%, 90% { background: #f8fafc; } 96%, 100% { background: #facc15; } }
+@keyframes to-white-2x2-p2 { 0%, 25% { background: #38bdf8; } 42%, 90% { background: #f8fafc; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-white-2x2-p3 { 0%, 35% { background: #fb923c; } 48%, 90% { background: #f8fafc; } 96%, 100% { background: #fb923c; } }
+@keyframes to-white-2x2-p4 { 0%, 42% { background: #4ade80; } 52%, 90% { background: #f8fafc; } 96%, 100% { background: #4ade80; } }
+
+/* Left (Solves to Orange) */
+.cs-solve-2o1 { animation: to-orange-2x2-p1 6.0s infinite; }
+.cs-solve-2o2 { animation: to-orange-2x2-p2 6.0s infinite; }
+.cs-solve-2o3 { animation: to-orange-2x2-p3 6.0s infinite; }
+.cs-solve-2o4 { animation: to-orange-2x2-p4 6.0s infinite; }
+@keyframes to-orange-2x2-p1 { 0%, 15% { background: #4ade80; } 30%, 90% { background: #fb923c; } 96%, 100% { background: #4ade80; } }
+@keyframes to-orange-2x2-p2 { 0%, 25% { background: #f87171; } 42%, 90% { background: #fb923c; } 96%, 100% { background: #f87171; } }
+@keyframes to-orange-2x2-p3 { 0%, 35% { background: #38bdf8; } 48%, 90% { background: #fb923c; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-orange-2x2-p4 { 0%, 42% { background: #facc15; } 52%, 90% { background: #fb923c; } 96%, 100% { background: #facc15; } }
+
+/* Back (Solves to Green) */
+.cs-solve-2g1 { animation: to-green-2x2-p1 6.0s infinite; }
+.cs-solve-2g2 { animation: to-green-2x2-p2 6.0s infinite; }
+.cs-solve-2g3 { animation: to-green-2x2-p3 6.0s infinite; }
+.cs-solve-2g4 { animation: to-green-2x2-p4 6.0s infinite; }
+@keyframes to-green-2x2-p1 { 0%, 15% { background: #fb923c; } 30%, 90% { background: #4ade80; } 96%, 100% { background: #fb923c; } }
+@keyframes to-green-2x2-p2 { 0%, 25% { background: #f87171; } 42%, 90% { background: #4ade80; } 96%, 100% { background: #f87171; } }
+@keyframes to-green-2x2-p3 { 0%, 35% { background: #facc15; } 48%, 90% { background: #4ade80; } 96%, 100% { background: #facc15; } }
+@keyframes to-green-2x2-p4 { 0%, 42% { background: #38bdf8; } 52%, 90% { background: #4ade80; } 96%, 100% { background: #38bdf8; } }
+
+/* Bottom (Solves to Yellow) */
+.cs-solve-2y1 { animation: to-yellow-2x2-p1 6.0s infinite; }
+.cs-solve-2y2 { animation: to-yellow-2x2-p2 6.0s infinite; }
+.cs-solve-2y3 { animation: to-yellow-2x2-p3 6.0s infinite; }
+.cs-solve-2y4 { animation: to-yellow-2x2-p4 6.0s infinite; }
+@keyframes to-yellow-2x2-p1 { 0%, 15% { background: #f8fafc; } 30%, 90% { background: #facc15; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-2x2-p2 { 0%, 25% { background: #4ade80; } 42%, 90% { background: #facc15; } 96%, 100% { background: #4ade80; } }
+@keyframes to-yellow-2x2-p3 { 0%, 35% { background: #38bdf8; } 48%, 90% { background: #facc15; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-2x2-p4 { 0%, 42% { background: #f87171; } 52%, 90% { background: #facc15; } 96%, 100% { background: #f87171; } }
+
 /* ── 🔍 1. 인스펙션 상태: 큐브를 맞추지 않고 돌려가며 훑어보는 애니메이션 ── */
 body.inspect .stage-cube-wrap {
 	animation: none;
@@ -906,6 +1001,7 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 	.stage-cube-wrap .cube-anim-box { width: 100px; height: 100px; perspective: 450px; }
 	.stage-cube-wrap .cube-3d { width: 68px; height: 68px; }
 	.stage-cube-wrap .cube-face { width: 68px; height: 68px; border-radius: 5px; padding: 2.5px; gap: 2.5px; }
+	.stage-cube-wrap .cube-222 .cube-face { padding: 3.5px; gap: 3.5px; }
 	.stage-cube-wrap .cube-front  { transform: rotateY(0deg) translateZ(34px); filter: brightness(1.0); }
 	.stage-cube-wrap .cube-back   { transform: rotateY(180deg) translateZ(34px); filter: brightness(0.78); }
 	.stage-cube-wrap .cube-right  { transform: rotateY(90deg) translateZ(34px); filter: brightness(0.88); }
@@ -1039,7 +1135,8 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 		<div id="stage">
 			<div class="stage-cube-wrap">
 				<div class="cube-anim-box" title="Rubik's Cube">
-					<div class="cube-3d">
+					<!-- 3x3 큐브 -->
+					<div class="cube-3d cube-333">
 						<div class="cube-face cube-front">
 							<span class="c-sticker cs-solve-b1"></span><span class="c-sticker cs-solve-b2"></span><span class="c-sticker cs-solve-b3"></span>
 							<span class="c-sticker cs-solve-b4"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-solve-b5"></span>
@@ -1069,6 +1166,33 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 							<span class="c-sticker cs-solve-y1"></span><span class="c-sticker cs-solve-y2"></span><span class="c-sticker cs-solve-y3"></span>
 							<span class="c-sticker cs-solve-y4"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-solve-y5"></span>
 							<span class="c-sticker cs-solve-y6"></span><span class="c-sticker cs-solve-y7"></span><span class="c-sticker cs-solve-y8"></span>
+						</div>
+					</div>
+					<!-- 2x2 큐브 -->
+					<div class="cube-3d cube-222">
+						<div class="cube-face cube-front">
+							<span class="c-sticker cs-solve-2b1"></span><span class="c-sticker cs-solve-2b2"></span>
+							<span class="c-sticker cs-solve-2b3"></span><span class="c-sticker cs-solve-2b4"></span>
+						</div>
+						<div class="cube-face cube-back">
+							<span class="c-sticker cs-solve-2g1"></span><span class="c-sticker cs-solve-2g2"></span>
+							<span class="c-sticker cs-solve-2g3"></span><span class="c-sticker cs-solve-2g4"></span>
+						</div>
+						<div class="cube-face cube-right">
+							<span class="c-sticker cs-solve-2r1"></span><span class="c-sticker cs-solve-2r2"></span>
+							<span class="c-sticker cs-solve-2r3"></span><span class="c-sticker cs-solve-2r4"></span>
+						</div>
+						<div class="cube-face cube-left">
+							<span class="c-sticker cs-solve-2o1"></span><span class="c-sticker cs-solve-2o2"></span>
+							<span class="c-sticker cs-solve-2o3"></span><span class="c-sticker cs-solve-2o4"></span>
+						</div>
+						<div class="cube-face cube-top">
+							<span class="c-sticker cs-solve-2w1"></span><span class="c-sticker cs-solve-2w2"></span>
+							<span class="c-sticker cs-solve-2w3"></span><span class="c-sticker cs-solve-2w4"></span>
+						</div>
+						<div class="cube-face cube-bottom">
+							<span class="c-sticker cs-solve-2y1"></span><span class="c-sticker cs-solve-2y2"></span>
+							<span class="c-sticker cs-solve-2y3"></span><span class="c-sticker cs-solve-2y4"></span>
 						</div>
 					</div>
 				</div>
@@ -1125,7 +1249,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=26"></script>
-<script src="app.js?v=26"></script>
+<script src="stats.js?v=27"></script>
+<script src="app.js?v=27"></script>
 </body>
 </html>

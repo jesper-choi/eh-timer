@@ -310,7 +310,12 @@ function renderSessions() {
 	el.event.value = ev.id;
 }
 
+function updateCubeType() {
+	document.body.dataset.cube = (ev && ev.id === '222') ? '222' : '333';
+}
+
 function render() {
+	updateCubeType();
 	renderSessions();
 	renderStats();
 	renderTimes();
