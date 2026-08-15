@@ -9,7 +9,7 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const { merge } = require('./stats.js');
+const { merge, countSolves } = require('./stats.js');
 
 const root = __dirname;
 const args = process.argv.slice(2).filter((a) => a !== '--lan');
@@ -24,7 +24,7 @@ const types = {
 };
 
 const json = (res, code, body) => res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }).end(body);
-const count = (o) => Object.values(o).reduce((n, a) => n + a.length, 0);
+const count = countSolves;
 
 // ── 로컬 파일 ────────────────────────────────────────────────────────────────
 function readLocal() {

@@ -2,7 +2,7 @@
 const assert = require('node:assert');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const { final, fmt, average, inspText, inspPenaltyOf, merge } = require('./stats.js');
+const { final, fmt, average, inspText, inspPenaltyOf, merge, normalize, countSolves } = require('./stats.js');
 
 const s = (ms, p) => ({ ms, p: p || 0 });
 
@@ -38,14 +38,56 @@ assert.equal(inspPenaltyOf(15001), 2);
 assert.equal(inspPenaltyOf(17000), 2);
 assert.equal(inspPenaltyOf(17001), -1);
 
-// 병합: 중복 없이, 시간순으로, 어느 쪽도 사라지지 않게
+// 다중 세션 정규화 및 병합: 중복 없이, 시간순으로, 어느 쪽도 사라지지 않게
 {
-	const a = { '333': [{ ms: 1, p: 0, ts: 10 }, { ms: 2, p: 0, ts: 30 }] };
-	const b = { '333': [{ ms: 2, p: 0, ts: 30 }, { ms: 3, p: 0, ts: 20 }], '222': [{ ms: 4, p: 0, ts: 40 }] };
-	const m = merge(a, b);
-	assert.deepEqual(m['333'].map(x => x.ts), [10, 20, 30]);   // 중복 30 하나만, 정렬됨
-	assert.deepEqual(m['222'].map(x => x.ts), [40]);           // 한쪽에만 있는 종목도 유지
-	assert.deepEqual(merge({}, {}), {});
+	// 1. 레거시 v1 병합 테스트
+	const v1_a = { '333': [{ ms: 1, p: 0, ts: 10 }, { ms: 2, p: 0, ts: 30 }] };
+	const v1_b = { '333': [{ ms: 2, p: 0, ts: 30 }, { ms: 3, p: 0, ts: 20 }], '222': [{ ms: 4, p: 0, ts: 40 }] };
+	const m1 = merge(v1_a, v1_b);
+	assert.deepEqual(m1.events['333'].sessions['s_1'].solves.map(x => x.ts), [10, 20, 30]);   // 중복 30 하나만, 정렬됨
+	assert.deepEqual(m1.events['222'].sessions['s_1'].solves.map(x => x.ts), [40]);           // 한쪽에만 있는 종목도 유지
+	assert.equal(countSolves(m1), 4);
+
+	// 2. 다중 세션 v2 병합 테스트 (종목별 세션)
+	const v2_a = {
+		version: 2, currentEvent: '333',
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 0, ts: 100 }] },
+					s2: { id: 's2', name: '서브', solves: [{ ms: 2000, p: 0, ts: 200 }] }
+				}
+			}
+		}
+	};
+	const v2_b = {
+		version: 2, currentEvent: '333oh',
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 0, ts: 100 }, { ms: 1500, p: 0, ts: 150 }] }
+				}
+			},
+			'333oh': {
+				active: 's3',
+				sessions: {
+					s3: { id: 's3', name: 'OH 연습', solves: [{ ms: 3000, p: 0, ts: 300 }] }
+				}
+			}
+		}
+	};
+	const m2 = merge(v2_a, v2_b);
+	assert.deepEqual(m2.events['333'].sessions['s1'].solves.map(x => x.ts), [100, 150]);
+	assert.deepEqual(m2.events['333'].sessions['s2'].solves.map(x => x.ts), [200]);
+	assert.deepEqual(m2.events['333oh'].sessions['s3'].solves.map(x => x.ts), [300]);
+	assert.equal(countSolves(m2), 4);
+
+	// 3. 빈 객체 병합
+	const empty = merge({}, {});
+	assert.ok(empty.events['333'].sessions['s_1']);
+	assert.equal(countSolves(empty), 0);
 }
 
 // 스크램블 엔진(vendor/*)이 실제로 돌아가는지
@@ -66,7 +108,17 @@ for (const [type, len] of [['333', 0], ['222so', 0], ['444wca', 0], ['555wca', 6
 	const os = require('node:os');
 	const path = require('node:path');
 
-	let remote = { '333': [{ ms: 1000, p: 0, scr: 'remote', ts: 111 }] };   // 다른 기기가 올려둔 기록
+	let remote = {
+		version: 2, currentEvent: '333',
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '기본 세션', solves: [{ ms: 1000, p: 0, scr: 'remote', ts: 111 }] }
+				}
+			}
+		}
+	};
 	let patches = 0;
 	const stub = http.createServer((req, res) => {
 		if (req.method === 'GET') {
@@ -89,18 +141,37 @@ for (const [type, len] of [['333', 0], ['222so', 0], ['444wca', 0], ['555wca', 6
 
 	// 시작 동기화로 원격 기록이 로컬에 들어와야 한다
 	const afterStart = await (await fetch('http://127.0.0.1:8199/data')).json();
-	assert.deepEqual(afterStart['333'].map(x => x.ts), [111], '시작할 때 원격 기록을 가져와야 함');
+	assert.deepEqual(afterStart.events['333'].sessions['s1'].solves.map(x => x.ts), [111], '시작할 때 원격 기록을 가져와야 함');
 
-	// 이 기기에서 솔브 하나 추가 → 3초 디바운스 후 원격에 합쳐져 올라가야 한다
+	// 이 기기에서 333에 새 솔브, 222에 새 세션 추가 → 3초 디바운스 후 원격에 합쳐져 올라가야 한다
+	const updated = {
+		version: 2, currentEvent: '222',
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '기본 세션', solves: [...afterStart.events['333'].sessions['s1'].solves, { ms: 2000, p: 0, scr: 'local', ts: 222 }] }
+				}
+			},
+			'222': {
+				active: 's2',
+				sessions: {
+					s2: { id: 's2', name: '2x2 세션', solves: [{ ms: 800, p: 0, scr: 'local2', ts: 333 }] }
+				}
+			}
+		}
+	};
 	await fetch('http://127.0.0.1:8199/data', {
 		method: 'PUT',
-		body: JSON.stringify({ '333': [...afterStart['333'], { ms: 2000, p: 0, scr: 'local', ts: 222 }] })
+		body: JSON.stringify(updated)
 	});
 	await wait(4000);
-	assert.deepEqual(remote['333'].map(x => x.ts), [111, 222], '원격 기록을 덮어쓰지 않고 합쳐야 함');
+	assert.deepEqual(remote.events['333'].sessions['s1'].solves.map(x => x.ts), [111, 222], '원격 기록을 덮어쓰지 않고 합쳐야 함');
+	assert.deepEqual(remote.events['222'].sessions['s2'].solves.map(x => x.ts), [333], '222 새 세션도 병합되어 올라가야 함');
 	assert.ok(patches >= 1, 'gist에 PATCH 되어야 함');
 
 	srv.kill(); stub.close(); fs.unlinkSync(tmp);
-	console.log('gist sync ok (원격 1개 + 로컬 1개 → 2개 병합)');
+	console.log('gist multi-session sync ok (종목별 세션 병합 완료)');
 	console.log('\nok');
 })();
+

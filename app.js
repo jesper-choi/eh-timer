@@ -14,29 +14,61 @@ const HOLD_MS = 300;          // 이 시간 이상 누르고 있어야 준비 �
 const KEY = 'eh_timer_v1';
 
 const $ = (id) => document.getElementById(id);
-const el = { time: $('time'), scramble: $('scramble'), stats: $('stats'), times: $('times'), count: $('count'), status: $('status'), event: $('event'), file: $('file') };
+const el = {
+	time: $('time'), scramble: $('scramble'), stats: $('stats'), times: $('times'),
+	count: $('count'), status: $('status'), event: $('event'), session: $('session'), file: $('file'),
+	addSession: $('addSession'), delSession: $('delSession')
+};
 
 // ── storage ──────────────────────────────────────────────────────────────────
 // 서버가 있으면 solves.json 이 원본, localStorage 는 백업.
 // 서버 없이 열면(file://) localStorage 만 쓴다.
-let db = {};
+let db = normalize({});
 let onServer = false;
-try { db = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { db = {}; }
-let ev = EVENTS.find(e => e.id === localStorage.getItem(KEY + '_ev')) || EVENTS[0];
 
-const solves = () => (db[ev.id] = db[ev.id] || []);
-const count = (o) => Object.values(o).reduce((n, a) => n + a.length, 0);
+try {
+	const raw = JSON.parse(localStorage.getItem(KEY));
+	if (raw) db = normalize(raw);
+} catch (e) {
+	db = normalize({});
+}
+
+let ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
+
+const currentEventData = () => db.events[ev.id] || (db.events[ev.id] = { active: 's_1', sessions: { s_1: { id: 's_1', name: 'session 1', solves: [] } } });
+const currentSession = () => {
+	const ed = currentEventData();
+	return ed.sessions[ed.active] || (ed.sessions[ed.active] = { id: ed.active, name: 'session 1', solves: [] });
+};
+
+const solves = () => currentSession().solves;
 
 // 밖에서 들어온 JSON(가져오기, gist)은 믿지 않는다. 아는 종목·성한 값만 통과시킨다.
 const KNOWN = new Set(EVENTS.map((e) => e.id));
 function clean(data) {
-	const out = {};
-	if (!data || typeof data !== 'object' || Array.isArray(data)) return out;
-	for (const k of Object.keys(data)) {
-		if (!KNOWN.has(k) || !Array.isArray(data[k])) continue;
-		out[k] = data[k]
-			.filter((s) => s && typeof s === 'object' && typeof s.ms === 'number' && isFinite(s.ms) && s.ms >= 0 && typeof s.ts === 'number' && isFinite(s.ts))
-			.map((s) => ({ ms: s.ms, p: s.p === 2 || s.p === -1 ? s.p : 0, scr: typeof s.scr === 'string' ? s.scr.slice(0, 1000) : '', ts: s.ts }));
+	const norm = normalize(data);
+	const out = { version: 2, currentEvent: norm.currentEvent, events: {} };
+	for (const [evId, evData] of Object.entries(norm.events)) {
+		if (!KNOWN.has(evId) || !evData || typeof evData !== 'object') continue;
+		const sessions = {};
+		if (evData.sessions && typeof evData.sessions === 'object') {
+			for (const [sId, s] of Object.entries(evData.sessions)) {
+				if (!s || typeof s !== 'object') continue;
+				const cleanSolves = (Array.isArray(s.solves) ? s.solves : [])
+					.filter((x) => x && typeof x === 'object' && typeof x.ms === 'number' && isFinite(x.ms) && x.ms >= 0 && typeof x.ts === 'number' && isFinite(x.ts))
+					.map((x) => ({ ms: x.ms, p: x.p === 2 || x.p === -1 ? x.p : 0, scr: typeof x.scr === 'string' ? x.scr.slice(0, 1000) : '', ts: x.ts }));
+				sessions[sId] = {
+					id: String(s.id || sId),
+					name: String(s.name || 'session 1').slice(0, 50),
+					solves: cleanSolves
+				};
+			}
+		}
+		if (Object.keys(sessions).length === 0) {
+			sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [] };
+		}
+		const active = (evData.active && sessions[evData.active]) ? evData.active : Object.keys(sessions)[0];
+		out.events[evId] = { active, sessions };
 	}
 	return out;
 }
@@ -45,14 +77,16 @@ async function load() {
 	let file;
 	try { file = await (await fetch('data')).json(); } catch (e) { return; }   // 서버 없음 → localStorage 모드
 	onServer = true;
-	if (count(file) === 0 && count(db) > 0) { save(); return; }                // 첫 실행: localStorage 기록을 파일로 이관
-	db = file;
+	const norm = normalize(file);
+	if (countSolves(norm) === 0 && countSolves(db) > 0) { save(); return; }    // 첫 실행: localStorage 기록을 파일로 이관
+	db = norm;
+	ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
 }
 
 let queue = Promise.resolve();
 function save() {
+	db.currentEvent = ev.id;
 	localStorage.setItem(KEY, JSON.stringify(db));   // 서버를 쓰더라도 백업으로 남겨둔다
-	localStorage.setItem(KEY + '_ev', ev.id);
 	if (!onServer) { schedulePush(); return; }       // 서버가 없으면 브라우저가 직접 gist로
 	const body = JSON.stringify(db);
 	// 순서 보장: 예전 내용이 나중에 도착해서 최신 기록을 덮는 일이 없게 직렬로 보낸다
@@ -95,6 +129,7 @@ function gistSync() {
 		el.status.textContent = '동기화 중…';
 		try {
 			db = merge(db, await gistRead());
+			ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
 			localStorage.setItem(KEY, JSON.stringify(db));
 			await gistWrite(db);
 			el.status.textContent = '';
@@ -168,7 +203,21 @@ function renderTimes() {
 			</span>
 		</div>`).reverse().join('');
 }
-function render() { renderStats(); renderTimes(); }
+
+function renderSessions() {
+	const ed = currentEventData();
+	const sessionList = Object.values(ed.sessions);
+	el.session.innerHTML = sessionList.map(s =>
+		`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+	el.session.value = ed.active;
+	el.event.value = ev.id;
+}
+
+function render() {
+	renderSessions();
+	renderStats();
+	renderTimes();
+}
 
 el.times.onclick = (e) => {
 	const btn = e.target.closest('button'), row = e.target.closest('.solve');
@@ -255,16 +304,43 @@ document.addEventListener('keyup', (e) => {
 	if (e.key === ' ') { e.preventDefault(); up(e.timeStamp); }
 });
 
-// 안드로이드는 길게 누르면 컨텍스트 메뉴를 띄운다. 홀드로 시작하는 앱이라 막아야 한다.
-// 단, 입력창에서는 붙여넣기가 필요하니 그대로 둔다.
-document.addEventListener('contextmenu', (e) => {
-	if (!(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault();
+// ── 태블릿 / 모바일 롱프레스 팝업(뒤로/새로고침/공유/돋보기) 완전 차단 ─────────
+window.addEventListener('contextmenu', (e) => {
+	if (!e.target.closest('input, textarea, select')) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}
+}, { capture: true, passive: false });
+
+window.addEventListener('selectstart', (e) => {
+	if (!e.target.closest('input, textarea, select')) e.preventDefault();
 });
 
-// 터치/클릭도 동일하게 (스테이지 영역에서만 시작)
-$('stage').addEventListener('pointerdown', (e) => { e.preventDefault(); state === 'running' ? stop(e.timeStamp) : down(); });
-document.addEventListener('pointerdown', (e) => { if (state === 'running') stop(e.timeStamp); });
-document.addEventListener('pointerup', (e) => { if (state === 'hold' || state === 'ready') up(e.timeStamp); });
+// 터치 이벤트: touchstart에서 preventDefault를 해야 모바일 브라우저의 기본 롱프레스 팝업이 차단된다
+$('stage').addEventListener('touchstart', (e) => {
+	e.preventDefault();
+	state === 'running' ? stop(e.timeStamp) : down();
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => {
+	if (state === 'hold' || state === 'ready') up(e.timeStamp);
+}, { passive: false });
+
+// 마우스 / 스타일러스 클릭 지원 (터치는 touchstart/touchend 에서 전담)
+$('stage').addEventListener('pointerdown', (e) => {
+	if (e.pointerType === 'touch') return;
+	e.preventDefault();
+	state === 'running' ? stop(e.timeStamp) : down();
+});
+document.addEventListener('pointerdown', (e) => {
+	if (e.pointerType === 'touch') return;
+	if (state === 'running') stop(e.timeStamp);
+});
+document.addEventListener('pointerup', (e) => {
+	if (e.pointerType === 'touch') return;
+	if (state === 'hold' || state === 'ready') up(e.timeStamp);
+});
 
 // 오프라인 캐시 등록. https 또는 localhost 에서만 동작하고, 그 외에는 조용히 무시된다.
 navigator.serviceWorker && navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -280,14 +356,64 @@ keepAwake();
 // 버튼에 포커스가 남으면 스페이스가 그 버튼을 다시 누르게 되므로 해제
 document.addEventListener('click', (e) => { const b = e.target.closest('button'); b && b.blur(); });
 
+// 종목 드롭다운 초기화 및 변경
 el.event.innerHTML = EVENTS.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
 el.event.value = ev.id;
 el.event.onchange = () => {
-	ev = EVENTS.find(e => e.id === el.event.value);
+	ev = EVENTS.find(e => e.id === el.event.value) || EVENTS[0];
+	db.currentEvent = ev.id;
 	next = null;
 	save(); render(); nextScramble();
 	el.event.blur();
 };
+
+// 세션 변경
+el.session.onchange = () => {
+	currentEventData().active = el.session.value;
+	save(); renderStats(); renderTimes();
+	el.session.blur();
+};
+
+// 세션 추가 (+)
+el.addSession.onclick = () => {
+	const ed = currentEventData();
+	let n = 1;
+	const existingNames = new Set(Object.values(ed.sessions).map(s => s.name));
+	while (
+		existingNames.has('session ' + n) ||
+		existingNames.has('session' + n) ||
+		existingNames.has('Session ' + n) ||
+		existingNames.has('Session' + n) ||
+		existingNames.has('세션 ' + n) ||
+		existingNames.has('세션' + n)
+	) {
+		n++;
+	}
+	const name = 'session ' + n;
+	const id = 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+	ed.sessions[id] = { id, name, solves: [] };
+	ed.active = id;
+	save(); render();
+};
+
+// 세션 삭제 (×)
+el.delSession.onclick = () => {
+	const ed = currentEventData();
+	const keys = Object.keys(ed.sessions);
+	if (keys.length <= 1) {
+		if (confirm('마지막 세션입니다. 기록을 모두 초기화하시겠습니까?')) {
+			currentSession().solves = [];
+			save(); render();
+		}
+		return;
+	}
+	const curr = currentSession();
+	if (!confirm(`'${curr.name}' 세션을 삭제하시겠습니까?\n(기록 ${curr.solves.length}개가 함께 삭제됩니다)`)) return;
+	delete ed.sessions[ed.active];
+	ed.active = Object.keys(ed.sessions)[0];
+	save(); render();
+};
+
 el.scramble.onclick = nextScramble;
 $('newscr').onclick = nextScramble;
 
@@ -313,7 +439,7 @@ $('gsave').onclick = async () => {
 	try {
 		await gistSync();
 		localStorage.setItem(GKEY, JSON.stringify(gist));   // 성공한 설정만 저장
-		msg('동기화 완료 — 기록 ' + Object.values(db).reduce((n, a) => n + a.length, 0) + '개', 'ok');
+		msg('동기화 완료 — 총 기록 ' + countSolves(db) + '개', 'ok');
 		showSync();
 	} catch (e) {
 		gist = null;
@@ -337,8 +463,9 @@ inspBtn.onclick = () => {
 };
 
 $('clear').onclick = () => {
-	if (!confirm(ev.name + ' 세션의 기록 ' + solves().length + '개를 지웁니다.')) return;
-	db[ev.id] = [];
+	const curr = currentSession();
+	if (!confirm(`'${curr.name}' 세션의 기록 ${curr.solves.length}개를 모두 지웁니다.`)) return;
+	curr.solves = [];
 	save(); render();
 };
 $('export').onclick = () => {
@@ -352,13 +479,14 @@ $('import').onclick = () => el.file.click();
 el.file.onchange = async () => {
 	try {
 		db = merge(db, clean(JSON.parse(await el.file.files[0].text())));   // 덮어쓰지 않고 ts 기준 병합
+		ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
 	} catch (e) {
 		el.status.textContent = '가져오기 실패 — JSON 파일이 아닙니다';
 		el.file.value = '';
 		return;
 	}
 	el.file.value = '';
-	save(); render();
+	save(); render(); nextScramble();
 };
 
 load().then(() => {
@@ -367,3 +495,5 @@ load().then(() => {
 	showSync();
 	gistSync().catch(() => {});    // 서버 없이 열었고 토큰이 있으면 시작할 때 한 번 합친다
 });
+
+

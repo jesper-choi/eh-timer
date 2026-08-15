@@ -26,21 +26,29 @@
 	/* 숫자 폭이 고정돼야 카운트가 흔들리지 않는다 */
 	--mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	-webkit-touch-callout: none !important;
+	-webkit-user-select: none !important;
+	user-select: none !important;
+}
 html, body { height: 100%; }
+html, body, #app, #stage {
+	touch-action: none !important;
+}
 body {
 	background: var(--bg);
 	color: var(--text);
 	font: 15px/1.5 -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
 	overflow: hidden;
-	-webkit-user-select: none;
-	user-select: none;
-	-webkit-touch-callout: none;    /* iOS 롱프레스 팝업 (안드로이드는 app.js의 contextmenu 차단) */
 	-webkit-tap-highlight-color: transparent;
-	touch-action: manipulation;
 	overscroll-behavior: none;      /* 태블릿에서 당겨서 새로고침 방지 */
 }
 button, select { font: inherit; color: inherit; }
+#times, select, button, dialog { touch-action: pan-y !important; }
+input, textarea { -webkit-user-select: text !important; user-select: text !important; touch-action: auto !important; }
 
 #app {
 	display: grid;
@@ -57,13 +65,51 @@ aside {
 	min-height: 0;
 }
 .brand {
-	padding: 18px 20px 14px;
+	padding: 16px 20px 10px;
 	font-size: 13px;
 	letter-spacing: .18em;
 	text-transform: uppercase;
 	color: var(--muted);
 }
 .brand b { color: var(--text); font-weight: 600; }
+
+.session-ctrl {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 14px 12px;
+}
+.session-ctrl select {
+	flex: 1;
+	min-width: 0;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 9px;
+	padding: 6px 10px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text);
+	cursor: pointer;
+	text-overflow: ellipsis;
+}
+.session-ctrl button {
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 9px;
+	width: 32px;
+	height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	color: var(--muted);
+	cursor: pointer;
+	flex-shrink: 0;
+}
+.session-ctrl button:hover {
+	color: var(--text);
+	border-color: var(--muted);
+}
 
 .stats {
 	display: grid;
@@ -148,6 +194,7 @@ header .hint { color: var(--muted); font-size: 12px; }
 	place-items: center;
 	min-height: 0;
 	container-type: inline-size;
+	touch-action: none;        /* 롱프레스·스크롤·확대 제스처를 브라우저가 가로채지 않게 */
 }
 #time {
 	/* 글자 수(--ch)에 맞춰 가로폭을 꽉 채우는 크기. 고정폭 폰트 한 자 ≈ 0.62em */
@@ -218,13 +265,18 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 <div id="app">
 	<aside>
 		<div class="brand"><b>eh</b> timer</div>
+		<div class="session-ctrl">
+			<select id="session" title="세션 선택"></select>
+			<button id="addSession" title="새 세션 추가">+</button>
+			<button id="delSession" title="세션 삭제">×</button>
+		</div>
 		<div class="stats" id="stats"></div>
 		<div class="list-head"><span id="count">0 solves</span></div>
 		<div id="times"></div>
 		<div class="side-foot">
 			<button id="export">내보내기</button>
 			<button id="import">가져오기</button>
-			<button id="clear">세션 삭제</button>
+			<button id="clear">기록 비우기</button>
 		</div>
 	</aside>
 	<main>
