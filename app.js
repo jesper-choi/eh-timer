@@ -125,17 +125,19 @@ function checkRateLimitHeaders(r) {
 	const reset = r.headers.get('x-ratelimit-reset');
 	const retryAfter = r.headers.get('retry-after');
 
-	if (reset) {
-		rateLimitResetAt = Number(reset) * 1000;
-	}
-	if (retryAfter) {
-		rateLimitResetAt = Date.now() + Number(retryAfter) * 1000;
-	}
-
 	if (remaining === '0' || r.status === 429 || (r.status === 403 && remaining === '0')) {
+		if (reset) {
+			rateLimitResetAt = Number(reset) * 1000;
+		} else if (retryAfter) {
+			rateLimitResetAt = Date.now() + Number(retryAfter) * 1000;
+		} else {
+			rateLimitResetAt = Date.now() + 60000;
+		}
 		const mins = Math.max(1, Math.ceil((rateLimitResetAt - Date.now()) / 60000));
 		const timeStr = new Date(rateLimitResetAt).toLocaleTimeString();
 		throw new Error(`API 요청 한도 초과: 약 ${mins}분 뒤(${timeStr})에 자동 리셋됩니다.`);
+	} else if (r.ok || r.status === 304) {
+		rateLimitResetAt = 0; // 정상이면 한도 락 해제
 	}
 }
 
