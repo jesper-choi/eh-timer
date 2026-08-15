@@ -109,14 +109,11 @@ aside {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: cube-spin 8s linear infinite;
+	animation: cube-spin 7.2s linear infinite;
 }
 @keyframes cube-spin {
-	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg); }
-	25%  { transform: rotateX(-18deg) rotateY(135deg) rotateZ(5deg); }
-	50%  { transform: rotateX(22deg) rotateY(225deg) rotateZ(-4deg); }
-	75%  { transform: rotateX(-24deg) rotateY(315deg) rotateZ(4deg); }
-	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg); }
+	0%   { transform: rotateX(-20deg) rotateY(0deg); }
+	100% { transform: rotateX(-20deg) rotateY(360deg); }
 }
 .cube-face {
 	position: absolute;
@@ -494,7 +491,7 @@ header .hint {
 	margin-top: 0;
 	margin-bottom: 32px;
 	position: relative;
-	animation: stage-cube-glow-pulse-3 6.6s ease-in-out infinite;
+	animation: stage-cube-glow-pulse-3 6.0s ease-in-out infinite;
 }
 .stage-cube-wrap::after {
 	content: '';
@@ -504,7 +501,7 @@ header .hint {
 	border: 2px solid rgba(56, 189, 248, 0);
 	pointer-events: none;
 	opacity: 0;
-	animation: solve-halo-burst-3 6.6s ease-out infinite;
+	animation: solve-halo-burst-3 6.0s ease-out infinite;
 }
 .stage-cube-wrap .cube-anim-box {
 	width: 120px;
@@ -517,7 +514,7 @@ header .hint {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: stage-cube-solve-spin-3 6.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+	animation: stage-cube-solve-spin-3 6.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
 /* ── NxN 3D Cube Face Geometry ── */
@@ -559,34 +556,34 @@ header .hint {
 .grid-7 { grid-template-columns: repeat(7, 1fr); gap: 0.8px; padding: 1.5px; }
 .grid-7 .c-sticker { border-radius: 0.8px; box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.3); }
 
-/* ── 2x2 Fast Solving System (4.4s cycle: ~2.0s solve, 2.0s hold) ── */
-.cube-grid-2 { animation: stage-cube-glow-pulse-2 4.4s ease-in-out infinite; }
-.cube-grid-2::after { animation: solve-halo-burst-2 4.4s ease-out infinite; }
-.cube-grid-2 .cube-3d { animation: stage-cube-solve-spin-2 4.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-2 .cs-b-p1 { animation: to-blue-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-b-p2 { animation: to-blue-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-b-p3 { animation: to-blue-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-b-p4 { animation: to-blue-2-p4 4.4s infinite; }
-.cube-grid-2 .cs-r-p1 { animation: to-red-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-r-p2 { animation: to-red-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-r-p3 { animation: to-red-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-r-p4 { animation: to-red-2-p4 4.4s infinite; }
-.cube-grid-2 .cs-w-p1 { animation: to-white-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-w-p2 { animation: to-white-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-w-p3 { animation: to-white-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-w-p4 { animation: to-white-2-p4 4.4s infinite; }
-.cube-grid-2 .cs-o-p1 { animation: to-orange-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-o-p2 { animation: to-orange-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-o-p3 { animation: to-orange-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-o-p4 { animation: to-orange-2-p4 4.4s infinite; }
-.cube-grid-2 .cs-g-p1 { animation: to-green-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-g-p2 { animation: to-green-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-g-p3 { animation: to-green-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-g-p4 { animation: to-green-2-p4 4.4s infinite; }
-.cube-grid-2 .cs-y-p1 { animation: to-yellow-2-p1 4.4s infinite; }
-.cube-grid-2 .cs-y-p2 { animation: to-yellow-2-p2 4.4s infinite; }
-.cube-grid-2 .cs-y-p3 { animation: to-yellow-2-p3 4.4s infinite; }
-.cube-grid-2 .cs-y-p4 { animation: to-yellow-2-p4 4.4s infinite; }
+/* ── 2x2 Fast Solving System (4.0s cycle: ~1.8s solve, 1.8s hold) ── */
+.cube-grid-2 { animation: stage-cube-glow-pulse-2 4.0s ease-in-out infinite; }
+.cube-grid-2::after { animation: solve-halo-burst-2 4.0s ease-out infinite; }
+.cube-grid-2 .cube-3d { animation: stage-cube-solve-spin-2 4.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-2 .cs-b-p1 { animation: to-blue-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-b-p2 { animation: to-blue-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-b-p3 { animation: to-blue-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-b-p4 { animation: to-blue-2-p4 4.0s infinite; }
+.cube-grid-2 .cs-r-p1 { animation: to-red-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-r-p2 { animation: to-red-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-r-p3 { animation: to-red-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-r-p4 { animation: to-red-2-p4 4.0s infinite; }
+.cube-grid-2 .cs-w-p1 { animation: to-white-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-w-p2 { animation: to-white-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-w-p3 { animation: to-white-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-w-p4 { animation: to-white-2-p4 4.0s infinite; }
+.cube-grid-2 .cs-o-p1 { animation: to-orange-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-o-p2 { animation: to-orange-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-o-p3 { animation: to-orange-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-o-p4 { animation: to-orange-2-p4 4.0s infinite; }
+.cube-grid-2 .cs-g-p1 { animation: to-green-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-g-p2 { animation: to-green-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-g-p3 { animation: to-green-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-g-p4 { animation: to-green-2-p4 4.0s infinite; }
+.cube-grid-2 .cs-y-p1 { animation: to-yellow-2-p1 4.0s infinite; }
+.cube-grid-2 .cs-y-p2 { animation: to-yellow-2-p2 4.0s infinite; }
+.cube-grid-2 .cs-y-p3 { animation: to-yellow-2-p3 4.0s infinite; }
+.cube-grid-2 .cs-y-p4 { animation: to-yellow-2-p4 4.0s infinite; }
 
 @keyframes stage-cube-solve-spin-2 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -638,34 +635,34 @@ header .hint {
 @keyframes to-yellow-2-p3 { 0%, 35% { background: #38bdf8; } 42%, 90% { background: #facc15; } 96%, 100% { background: #38bdf8; } }
 @keyframes to-yellow-2-p4 { 0%, 40% { background: #f87171; } 45%, 90% { background: #facc15; } 96%, 100% { background: #f87171; } }
 
-/* ── 3x3 CFOP Solving System (6.6s cycle: ~4.0s solve, 2.1s hold) ── */
-.cube-grid-3 { animation: stage-cube-glow-pulse-3 6.6s ease-in-out infinite; }
-.cube-grid-3::after { animation: solve-halo-burst-3 6.6s ease-out infinite; }
-.cube-grid-3 .cube-3d { animation: stage-cube-solve-spin-3 6.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-3 .cs-b-p1 { animation: to-blue-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-b-p2 { animation: to-blue-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-b-p3 { animation: to-blue-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-b-p4 { animation: to-blue-3-p4 6.6s infinite; }
-.cube-grid-3 .cs-r-p1 { animation: to-red-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-r-p2 { animation: to-red-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-r-p3 { animation: to-red-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-r-p4 { animation: to-red-3-p4 6.6s infinite; }
-.cube-grid-3 .cs-w-p1 { animation: to-white-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-w-p2 { animation: to-white-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-w-p3 { animation: to-white-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-w-p4 { animation: to-white-3-p4 6.6s infinite; }
-.cube-grid-3 .cs-o-p1 { animation: to-orange-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-o-p2 { animation: to-orange-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-o-p3 { animation: to-orange-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-o-p4 { animation: to-orange-3-p4 6.6s infinite; }
-.cube-grid-3 .cs-g-p1 { animation: to-green-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-g-p2 { animation: to-green-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-g-p3 { animation: to-green-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-g-p4 { animation: to-green-3-p4 6.6s infinite; }
-.cube-grid-3 .cs-y-p1 { animation: to-yellow-3-p1 6.6s infinite; }
-.cube-grid-3 .cs-y-p2 { animation: to-yellow-3-p2 6.6s infinite; }
-.cube-grid-3 .cs-y-p3 { animation: to-yellow-3-p3 6.6s infinite; }
-.cube-grid-3 .cs-y-p4 { animation: to-yellow-3-p4 6.6s infinite; }
+/* ── 3x3 CFOP Solving System (6.0s cycle: ~3.6s solve, 1.9s hold) ── */
+.cube-grid-3 { animation: stage-cube-glow-pulse-3 6.0s ease-in-out infinite; }
+.cube-grid-3::after { animation: solve-halo-burst-3 6.0s ease-out infinite; }
+.cube-grid-3 .cube-3d { animation: stage-cube-solve-spin-3 6.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-3 .cs-b-p1 { animation: to-blue-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-b-p2 { animation: to-blue-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-b-p3 { animation: to-blue-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-b-p4 { animation: to-blue-3-p4 6.0s infinite; }
+.cube-grid-3 .cs-r-p1 { animation: to-red-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-r-p2 { animation: to-red-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-r-p3 { animation: to-red-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-r-p4 { animation: to-red-3-p4 6.0s infinite; }
+.cube-grid-3 .cs-w-p1 { animation: to-white-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-w-p2 { animation: to-white-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-w-p3 { animation: to-white-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-w-p4 { animation: to-white-3-p4 6.0s infinite; }
+.cube-grid-3 .cs-o-p1 { animation: to-orange-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-o-p2 { animation: to-orange-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-o-p3 { animation: to-orange-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-o-p4 { animation: to-orange-3-p4 6.0s infinite; }
+.cube-grid-3 .cs-g-p1 { animation: to-green-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-g-p2 { animation: to-green-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-g-p3 { animation: to-green-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-g-p4 { animation: to-green-3-p4 6.0s infinite; }
+.cube-grid-3 .cs-y-p1 { animation: to-yellow-3-p1 6.0s infinite; }
+.cube-grid-3 .cs-y-p2 { animation: to-yellow-3-p2 6.0s infinite; }
+.cube-grid-3 .cs-y-p3 { animation: to-yellow-3-p3 6.0s infinite; }
+.cube-grid-3 .cs-y-p4 { animation: to-yellow-3-p4 6.0s infinite; }
 
 @keyframes stage-cube-solve-spin-3 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -720,34 +717,34 @@ header .hint {
 @keyframes to-yellow-3-p3 { 0%, 38% { background: #38bdf8; } 50%, 92% { background: #facc15; } 96%, 100% { background: #38bdf8; } }
 @keyframes to-yellow-3-p4 { 0%, 50% { background: #f87171; } 60%, 92% { background: #facc15; } 96%, 100% { background: #f87171; } }
 
-/* ── 4x4 Big Cube Solving System (9.0s cycle: ~6.0s solve, 2.4s hold) ── */
-.cube-grid-4 { animation: stage-cube-glow-pulse-4 9.0s ease-in-out infinite; }
-.cube-grid-4::after { animation: solve-halo-burst-4 9.0s ease-out infinite; }
-.cube-grid-4 .cube-3d { animation: stage-cube-solve-spin-4 9.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-4 .cs-b-p1 { animation: to-blue-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-b-p2 { animation: to-blue-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-b-p3 { animation: to-blue-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-b-p4 { animation: to-blue-4-p4 9.0s infinite; }
-.cube-grid-4 .cs-r-p1 { animation: to-red-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-r-p2 { animation: to-red-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-r-p3 { animation: to-red-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-r-p4 { animation: to-red-4-p4 9.0s infinite; }
-.cube-grid-4 .cs-w-p1 { animation: to-white-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-w-p2 { animation: to-white-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-w-p3 { animation: to-white-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-w-p4 { animation: to-white-4-p4 9.0s infinite; }
-.cube-grid-4 .cs-o-p1 { animation: to-orange-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-o-p2 { animation: to-orange-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-o-p3 { animation: to-orange-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-o-p4 { animation: to-orange-4-p4 9.0s infinite; }
-.cube-grid-4 .cs-g-p1 { animation: to-green-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-g-p2 { animation: to-green-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-g-p3 { animation: to-green-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-g-p4 { animation: to-green-4-p4 9.0s infinite; }
-.cube-grid-4 .cs-y-p1 { animation: to-yellow-4-p1 9.0s infinite; }
-.cube-grid-4 .cs-y-p2 { animation: to-yellow-4-p2 9.0s infinite; }
-.cube-grid-4 .cs-y-p3 { animation: to-yellow-4-p3 9.0s infinite; }
-.cube-grid-4 .cs-y-p4 { animation: to-yellow-4-p4 9.0s infinite; }
+/* ── 4x4 Big Cube Solving System (8.1s cycle: ~5.4s solve, 2.2s hold) ── */
+.cube-grid-4 { animation: stage-cube-glow-pulse-4 8.1s ease-in-out infinite; }
+.cube-grid-4::after { animation: solve-halo-burst-4 8.1s ease-out infinite; }
+.cube-grid-4 .cube-3d { animation: stage-cube-solve-spin-4 8.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-4 .cs-b-p1 { animation: to-blue-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-b-p2 { animation: to-blue-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-b-p3 { animation: to-blue-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-b-p4 { animation: to-blue-4-p4 8.1s infinite; }
+.cube-grid-4 .cs-r-p1 { animation: to-red-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-r-p2 { animation: to-red-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-r-p3 { animation: to-red-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-r-p4 { animation: to-red-4-p4 8.1s infinite; }
+.cube-grid-4 .cs-w-p1 { animation: to-white-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-w-p2 { animation: to-white-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-w-p3 { animation: to-white-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-w-p4 { animation: to-white-4-p4 8.1s infinite; }
+.cube-grid-4 .cs-o-p1 { animation: to-orange-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-o-p2 { animation: to-orange-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-o-p3 { animation: to-orange-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-o-p4 { animation: to-orange-4-p4 8.1s infinite; }
+.cube-grid-4 .cs-g-p1 { animation: to-green-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-g-p2 { animation: to-green-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-g-p3 { animation: to-green-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-g-p4 { animation: to-green-4-p4 8.1s infinite; }
+.cube-grid-4 .cs-y-p1 { animation: to-yellow-4-p1 8.1s infinite; }
+.cube-grid-4 .cs-y-p2 { animation: to-yellow-4-p2 8.1s infinite; }
+.cube-grid-4 .cs-y-p3 { animation: to-yellow-4-p3 8.1s infinite; }
+.cube-grid-4 .cs-y-p4 { animation: to-yellow-4-p4 8.1s infinite; }
 
 @keyframes stage-cube-solve-spin-4 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -804,34 +801,34 @@ header .hint {
 @keyframes to-yellow-4-p3 { 0%, 45% { background: #38bdf8; } 58%, 93% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
 @keyframes to-yellow-4-p4 { 0%, 58% { background: #f87171; } 66%, 93% { background: #facc15; } 97%, 100% { background: #f87171; } }
 
-/* ── 5x5 Big Cube Solving System (11.5s cycle: ~8.0s solve, 2.8s hold) ── */
-.cube-grid-5 { animation: stage-cube-glow-pulse-5 11.5s ease-in-out infinite; }
-.cube-grid-5::after { animation: solve-halo-burst-5 11.5s ease-out infinite; }
-.cube-grid-5 .cube-3d { animation: stage-cube-solve-spin-5 11.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-5 .cs-b-p1 { animation: to-blue-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-b-p2 { animation: to-blue-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-b-p3 { animation: to-blue-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-b-p4 { animation: to-blue-5-p4 11.5s infinite; }
-.cube-grid-5 .cs-r-p1 { animation: to-red-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-r-p2 { animation: to-red-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-r-p3 { animation: to-red-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-r-p4 { animation: to-red-5-p4 11.5s infinite; }
-.cube-grid-5 .cs-w-p1 { animation: to-white-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-w-p2 { animation: to-white-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-w-p3 { animation: to-white-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-w-p4 { animation: to-white-5-p4 11.5s infinite; }
-.cube-grid-5 .cs-o-p1 { animation: to-orange-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-o-p2 { animation: to-orange-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-o-p3 { animation: to-orange-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-o-p4 { animation: to-orange-5-p4 11.5s infinite; }
-.cube-grid-5 .cs-g-p1 { animation: to-green-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-g-p2 { animation: to-green-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-g-p3 { animation: to-green-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-g-p4 { animation: to-green-5-p4 11.5s infinite; }
-.cube-grid-5 .cs-y-p1 { animation: to-yellow-5-p1 11.5s infinite; }
-.cube-grid-5 .cs-y-p2 { animation: to-yellow-5-p2 11.5s infinite; }
-.cube-grid-5 .cs-y-p3 { animation: to-yellow-5-p3 11.5s infinite; }
-.cube-grid-5 .cs-y-p4 { animation: to-yellow-5-p4 11.5s infinite; }
+/* ── 5x5 Big Cube Solving System (10.3s cycle: ~7.2s solve, 2.5s hold) ── */
+.cube-grid-5 { animation: stage-cube-glow-pulse-5 10.3s ease-in-out infinite; }
+.cube-grid-5::after { animation: solve-halo-burst-5 10.3s ease-out infinite; }
+.cube-grid-5 .cube-3d { animation: stage-cube-solve-spin-5 10.3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-5 .cs-b-p1 { animation: to-blue-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-b-p2 { animation: to-blue-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-b-p3 { animation: to-blue-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-b-p4 { animation: to-blue-5-p4 10.3s infinite; }
+.cube-grid-5 .cs-r-p1 { animation: to-red-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-r-p2 { animation: to-red-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-r-p3 { animation: to-red-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-r-p4 { animation: to-red-5-p4 10.3s infinite; }
+.cube-grid-5 .cs-w-p1 { animation: to-white-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-w-p2 { animation: to-white-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-w-p3 { animation: to-white-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-w-p4 { animation: to-white-5-p4 10.3s infinite; }
+.cube-grid-5 .cs-o-p1 { animation: to-orange-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-o-p2 { animation: to-orange-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-o-p3 { animation: to-orange-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-o-p4 { animation: to-orange-5-p4 10.3s infinite; }
+.cube-grid-5 .cs-g-p1 { animation: to-green-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-g-p2 { animation: to-green-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-g-p3 { animation: to-green-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-g-p4 { animation: to-green-5-p4 10.3s infinite; }
+.cube-grid-5 .cs-y-p1 { animation: to-yellow-5-p1 10.3s infinite; }
+.cube-grid-5 .cs-y-p2 { animation: to-yellow-5-p2 10.3s infinite; }
+.cube-grid-5 .cs-y-p3 { animation: to-yellow-5-p3 10.3s infinite; }
+.cube-grid-5 .cs-y-p4 { animation: to-yellow-5-p4 10.3s infinite; }
 
 @keyframes stage-cube-solve-spin-5 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -890,34 +887,34 @@ header .hint {
 @keyframes to-yellow-5-p3 { 0%, 50% { background: #38bdf8; } 62%, 94% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
 @keyframes to-yellow-5-p4 { 0%, 62% { background: #f87171; } 70%, 94% { background: #facc15; } 97%, 100% { background: #f87171; } }
 
-/* ── 6x6 & 7x7 Big Cube Solving System (14.0s / 16.5s cycles) ── */
-.cube-grid-6 { animation: stage-cube-glow-pulse-6 14.0s ease-in-out infinite; }
-.cube-grid-6::after { animation: solve-halo-burst-6 14.0s ease-out infinite; }
-.cube-grid-6 .cube-3d { animation: stage-cube-solve-spin-6 14.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-6 .cs-b-p1 { animation: to-blue-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-b-p2 { animation: to-blue-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-b-p3 { animation: to-blue-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-b-p4 { animation: to-blue-6-p4 14.0s infinite; }
-.cube-grid-6 .cs-r-p1 { animation: to-red-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-r-p2 { animation: to-red-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-r-p3 { animation: to-red-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-r-p4 { animation: to-red-6-p4 14.0s infinite; }
-.cube-grid-6 .cs-w-p1 { animation: to-white-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-w-p2 { animation: to-white-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-w-p3 { animation: to-white-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-w-p4 { animation: to-white-6-p4 14.0s infinite; }
-.cube-grid-6 .cs-o-p1 { animation: to-orange-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-o-p2 { animation: to-orange-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-o-p3 { animation: to-orange-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-o-p4 { animation: to-orange-6-p4 14.0s infinite; }
-.cube-grid-6 .cs-g-p1 { animation: to-green-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-g-p2 { animation: to-green-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-g-p3 { animation: to-green-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-g-p4 { animation: to-green-6-p4 14.0s infinite; }
-.cube-grid-6 .cs-y-p1 { animation: to-yellow-6-p1 14.0s infinite; }
-.cube-grid-6 .cs-y-p2 { animation: to-yellow-6-p2 14.0s infinite; }
-.cube-grid-6 .cs-y-p3 { animation: to-yellow-6-p3 14.0s infinite; }
-.cube-grid-6 .cs-y-p4 { animation: to-yellow-6-p4 14.0s infinite; }
+/* ── 6x6 & 7x7 Big Cube Solving System (12.6s / 14.8s cycles) ── */
+.cube-grid-6 { animation: stage-cube-glow-pulse-6 12.6s ease-in-out infinite; }
+.cube-grid-6::after { animation: solve-halo-burst-6 12.6s ease-out infinite; }
+.cube-grid-6 .cube-3d { animation: stage-cube-solve-spin-6 12.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-6 .cs-b-p1 { animation: to-blue-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-b-p2 { animation: to-blue-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-b-p3 { animation: to-blue-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-b-p4 { animation: to-blue-6-p4 12.6s infinite; }
+.cube-grid-6 .cs-r-p1 { animation: to-red-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-r-p2 { animation: to-red-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-r-p3 { animation: to-red-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-r-p4 { animation: to-red-6-p4 12.6s infinite; }
+.cube-grid-6 .cs-w-p1 { animation: to-white-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-w-p2 { animation: to-white-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-w-p3 { animation: to-white-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-w-p4 { animation: to-white-6-p4 12.6s infinite; }
+.cube-grid-6 .cs-o-p1 { animation: to-orange-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-o-p2 { animation: to-orange-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-o-p3 { animation: to-orange-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-o-p4 { animation: to-orange-6-p4 12.6s infinite; }
+.cube-grid-6 .cs-g-p1 { animation: to-green-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-g-p2 { animation: to-green-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-g-p3 { animation: to-green-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-g-p4 { animation: to-green-6-p4 12.6s infinite; }
+.cube-grid-6 .cs-y-p1 { animation: to-yellow-6-p1 12.6s infinite; }
+.cube-grid-6 .cs-y-p2 { animation: to-yellow-6-p2 12.6s infinite; }
+.cube-grid-6 .cs-y-p3 { animation: to-yellow-6-p3 12.6s infinite; }
+.cube-grid-6 .cs-y-p4 { animation: to-yellow-6-p4 12.6s infinite; }
 
 @keyframes stage-cube-solve-spin-6 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -978,33 +975,33 @@ header .hint {
 @keyframes to-yellow-6-p3 { 0%, 52% { background: #38bdf8; } 64%, 94% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
 @keyframes to-yellow-6-p4 { 0%, 64% { background: #f87171; } 71%, 94% { background: #facc15; } 97%, 100% { background: #f87171; } }
 
-.cube-grid-7 { animation: stage-cube-glow-pulse-7 16.5s ease-in-out infinite; }
-.cube-grid-7::after { animation: solve-halo-burst-7 16.5s ease-out infinite; }
-.cube-grid-7 .cube-3d { animation: stage-cube-solve-spin-7 16.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.cube-grid-7 .cs-b-p1 { animation: to-blue-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-b-p2 { animation: to-blue-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-b-p3 { animation: to-blue-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-b-p4 { animation: to-blue-7-p4 16.5s infinite; }
-.cube-grid-7 .cs-r-p1 { animation: to-red-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-r-p2 { animation: to-red-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-r-p3 { animation: to-red-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-r-p4 { animation: to-red-7-p4 16.5s infinite; }
-.cube-grid-7 .cs-w-p1 { animation: to-white-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-w-p2 { animation: to-white-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-w-p3 { animation: to-white-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-w-p4 { animation: to-white-7-p4 16.5s infinite; }
-.cube-grid-7 .cs-o-p1 { animation: to-orange-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-o-p2 { animation: to-orange-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-o-p3 { animation: to-orange-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-o-p4 { animation: to-orange-7-p4 16.5s infinite; }
-.cube-grid-7 .cs-g-p1 { animation: to-green-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-g-p2 { animation: to-green-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-g-p3 { animation: to-green-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-g-p4 { animation: to-green-7-p4 16.5s infinite; }
-.cube-grid-7 .cs-y-p1 { animation: to-yellow-7-p1 16.5s infinite; }
-.cube-grid-7 .cs-y-p2 { animation: to-yellow-7-p2 16.5s infinite; }
-.cube-grid-7 .cs-y-p3 { animation: to-yellow-7-p3 16.5s infinite; }
-.cube-grid-7 .cs-y-p4 { animation: to-yellow-7-p4 16.5s infinite; }
+.cube-grid-7 { animation: stage-cube-glow-pulse-7 14.8s ease-in-out infinite; }
+.cube-grid-7::after { animation: solve-halo-burst-7 14.8s ease-out infinite; }
+.cube-grid-7 .cube-3d { animation: stage-cube-solve-spin-7 14.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-7 .cs-b-p1 { animation: to-blue-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-b-p2 { animation: to-blue-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-b-p3 { animation: to-blue-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-b-p4 { animation: to-blue-7-p4 14.8s infinite; }
+.cube-grid-7 .cs-r-p1 { animation: to-red-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-r-p2 { animation: to-red-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-r-p3 { animation: to-red-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-r-p4 { animation: to-red-7-p4 14.8s infinite; }
+.cube-grid-7 .cs-w-p1 { animation: to-white-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-w-p2 { animation: to-white-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-w-p3 { animation: to-white-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-w-p4 { animation: to-white-7-p4 14.8s infinite; }
+.cube-grid-7 .cs-o-p1 { animation: to-orange-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-o-p2 { animation: to-orange-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-o-p3 { animation: to-orange-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-o-p4 { animation: to-orange-7-p4 14.8s infinite; }
+.cube-grid-7 .cs-g-p1 { animation: to-green-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-g-p2 { animation: to-green-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-g-p3 { animation: to-green-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-g-p4 { animation: to-green-7-p4 14.8s infinite; }
+.cube-grid-7 .cs-y-p1 { animation: to-yellow-7-p1 14.8s infinite; }
+.cube-grid-7 .cs-y-p2 { animation: to-yellow-7-p2 14.8s infinite; }
+.cube-grid-7 .cs-y-p3 { animation: to-yellow-7-p3 14.8s infinite; }
+.cube-grid-7 .cs-y-p4 { animation: to-yellow-7-p4 14.8s infinite; }
 
 @keyframes stage-cube-solve-spin-7 {
 	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
@@ -1076,7 +1073,7 @@ body.inspect .stage-cube-wrap::after {
 	display: none;
 }
 body.inspect .stage-cube-wrap .cube-3d {
-	animation: cube-inspect-turn 5.0s linear infinite;
+	animation: cube-inspect-turn 4.5s linear infinite;
 }
 @keyframes cube-inspect-turn {
 	0%   { transform: rotateX(-24deg) rotateY(0deg) rotateZ(0deg); }
@@ -1099,7 +1096,7 @@ body.running .stage-cube-wrap::after {
 	display: none;
 }
 body.running .stage-cube-wrap .cube-3d {
-	animation: cube-running-fast-solve 1.0s linear infinite;
+	animation: cube-running-fast-solve 0.9s linear infinite;
 }
 @keyframes cube-running-fast-solve {
 	0%   { transform: rotateX(-24deg) rotateY(45deg) rotateZ(0deg); }
@@ -1109,7 +1106,7 @@ body.running .stage-cube-wrap .cube-3d {
 	100% { transform: rotateX(-24deg) rotateY(405deg) rotateZ(0deg); }
 }
 body.running .stage-cube-wrap .c-sticker {
-	animation: running-scramble-twist 1.0s linear infinite !important;
+	animation: running-scramble-twist 0.9s linear infinite !important;
 }
 @keyframes running-scramble-twist {
 	0%   { filter: hue-rotate(0deg); }
@@ -1433,7 +1430,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=35"></script>
-<script src="app.js?v=35"></script>
+<script src="stats.js?v=36"></script>
+<script src="app.js?v=36"></script>
 </body>
 </html>
