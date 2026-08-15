@@ -147,8 +147,14 @@ async function gistWrite(data) {
 // 항상 원격과 합쳐서 올린다. 다른 기기가 먼저 올린 기록을 덮지 않기 위함.
 // 겹쳐 실행되면 읽기/쓰기가 엇갈릴 수 있으므로 한 번에 하나씩 직렬로 돈다.
 let syncing = Promise.resolve();
+let isSyncing = false;
 function gistSync() {
 	if (!gist || onServer) return Promise.resolve();
+	if (isSyncing) {
+		schedulePush(); // 이미 동기화 중이면 3초 뒤에 다시 묶어서 요청
+		return syncing;
+	}
+	isSyncing = true;
 	syncing = syncing.catch(() => {}).then(async () => {
 		el.status.textContent = '동기화 중…';
 		try {
@@ -164,6 +170,8 @@ function gistSync() {
 			console.error('gistSync 실패:', e);
 			el.status.textContent = '동기화 실패: ' + (e.message || e) + ' — 기록은 이 기기에 저장됨';
 			throw e;
+		} finally {
+			isSyncing = false;
 		}
 	});
 	return syncing;
@@ -171,7 +179,7 @@ function gistSync() {
 let pushTimer = 0;
 function schedulePush() {
 	if (!gist || onServer) return;
-	clearTimeout(pushTimer);      // 솔브마다 때리지 않고 3초 모아서 한 번
+	clearTimeout(pushTimer);      // 여러 번 변경되어도 3초 모아서 딱 한 번만 동기화
 	pushTimer = setTimeout(() => gistSync().catch(() => {}), 3000);
 }
 
