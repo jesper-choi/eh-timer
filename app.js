@@ -245,27 +245,120 @@ function schedulePush() {
 	pushTimer = setTimeout(() => gistSync().catch(() => {}), 5000);
 }
 
+// ── fallback scrambler (워커 오류/지연 시 비상용 메인스레드 생성기) ───────────
+function fallbackScramble(event) {
+	const evId = (event && event.id) || '333';
+	const moves333 = ["R", "R'", "R2", "L", "L'", "L2", "U", "U'", "U2", "D", "D'", "D2", "F", "F'", "F2", "B", "B'", "B2"];
+	const moves222 = ["R", "R'", "R2", "U", "U'", "U2", "F", "F'", "F2"];
+	const moves444 = ["R", "R'", "R2", "L", "L'", "L2", "U", "U'", "U2", "D", "D'", "D2", "F", "F'", "F2", "B", "B'", "B2", "Rw", "Rw'", "Rw2", "Fw", "Fw'", "Fw2", "Uw", "Uw'", "Uw2"];
+	const movesBig = ["R", "R'", "R2", "L", "L'", "L2", "U", "U'", "U2", "D", "D'", "D2", "F", "F'", "F2", "B", "B'", "B2", "Rw", "Rw'", "Rw2", "Lw", "Lw'", "Lw2", "Uw", "Uw'", "Uw2", "Dw", "Dw'", "Dw2", "Fw", "Fw'", "Fw2", "Bw", "Bw'", "Bw2"];
+
+	let list = moves333, len = 20;
+	if (evId === '222') { list = moves222; len = 9; }
+	else if (evId === '444') { list = moves444; len = 40; }
+	else if (evId === '555') { list = movesBig; len = 60; }
+	else if (evId === '666') { list = movesBig; len = 80; }
+	else if (evId === '777') { list = movesBig; len = 100; }
+
+	const res = [];
+	let lastAxis = -1;
+	const axisMap = { R: 0, L: 0, U: 1, D: 1, F: 2, B: 2 };
+
+	while (res.length < len) {
+		const m = list[Math.floor(Math.random() * list.length)];
+		const axis = axisMap[m[0]] !== undefined ? axisMap[m[0]] : Math.random();
+		if (axis !== lastAxis) {
+			res.push(m);
+			lastAxis = axis;
+		}
+	}
+	return res.join(' ');
+}
+
 // ── scramble worker ──────────────────────────────────────────────────────────
-const worker = new Worker('scramble-worker.js');
+let worker = null;
+try {
+	worker = new Worker('scramble-worker.js');
+} catch (e) {
+	console.warn('Web Worker 초기화 불가, 메인스레드 폴백 사용:', e);
+}
+
 const pending = {};
 let msgid = 0;
-worker.onmessage = (e) => { const cb = pending[e.data[0]]; delete pending[e.data[0]]; cb && cb(e.data[1]); };
-worker.onerror = (e) => { el.status.textContent = '스크램블 엔진 오류: ' + (e.message || e); };
+
+if (worker) {
+	worker.onmessage = (e) => {
+		const id = e.data && e.data[0];
+		const cb = pending[id];
+		if (cb) {
+			delete pending[id];
+			const res = e.data[1];
+			if (!res || typeof res !== 'string' || res.startsWith('unknown')) {
+				cb(fallbackScramble(ev));
+			} else {
+				cb(res);
+			}
+		}
+	};
+	worker.onerror = (e) => {
+		console.error('스크램블 워커 에러:', e);
+		for (const id of Object.keys(pending)) {
+			const cb = pending[id];
+			delete pending[id];
+			cb && cb(fallbackScramble(ev));
+		}
+	};
+}
+
 function generate(event) {
-	return new Promise((res) => { pending[++msgid] = res; worker.postMessage([msgid, event.scr, event.len]); });
+	const target = event || ev;
+	if (!worker) {
+		return Promise.resolve(fallbackScramble(target));
+	}
+	return new Promise((res) => {
+		const id = ++msgid;
+		pending[id] = res;
+		// 1.5초 내에 워커 응답이 없으면 멈춤 방지를 위해 즉시 폴백 반환
+		const timer = setTimeout(() => {
+			if (pending[id]) {
+				delete pending[id];
+				res(fallbackScramble(target));
+			}
+		}, 1500);
+
+		try {
+			const len = target.len || (target.id === '555' ? 60 : target.id === '666' ? 80 : target.id === '777' ? 100 : 0);
+			worker.postMessage([id, target.scr, len]);
+		} catch (e) {
+			clearTimeout(timer);
+			delete pending[id];
+			res(fallbackScramble(target));
+		}
+	});
 }
 
 let scramble = '', next = null;
 async function nextScramble() {
-	const want = ev, p = next || generate(want);
+	const want = ev;
+	const p = next || generate(want);
 	next = null;
 	el.status.textContent = '스크램블 생성 중…';
-	const s = await p;
-	if (ev !== want) return;               // 이벤트가 바뀌었으면 버림
-	scramble = s;
-	el.scramble.textContent = s;
-	el.status.textContent = '';
-	next = generate(want);                 // 미리 뽑아둬서 다음 솔브 때 안 기다리게
+	try {
+		const s = await p;
+		if (ev !== want) return;               // 종목이 바뀌었으면 버림
+		scramble = s || fallbackScramble(want);
+		el.scramble.textContent = scramble;
+		el.status.textContent = '';
+	} catch (e) {
+		scramble = fallbackScramble(want);
+		el.scramble.textContent = scramble;
+		el.status.textContent = '';
+	}
+	try {
+		next = generate(want);                 // 미리 뽑아둬서 다음 솔브 때 안 기다리게
+	} catch (e) {
+		next = null;
+	}
 }
 
 // ── stats (final/fmt/average 는 stats.js) ────────────────────────────────────
