@@ -491,15 +491,35 @@ header .hint {
 .stage-cube-wrap .cube-3d {
 	width: 54px;
 	height: 54px;
-	animation: stage-cube-fast-spin 3.2s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+	animation: stage-cube-solve-spin 2.4s cubic-bezier(0.35, 0, 0.25, 1) infinite;
 }
-@keyframes stage-cube-fast-spin {
-	0%   { transform: rotateX(-20deg) rotateY(32deg) rotateZ(0deg); }
-	20%  { transform: rotateX(-20deg) rotateY(122deg) rotateZ(8deg); }
-	40%  { transform: rotateX(68deg) rotateY(212deg) rotateZ(0deg); }
-	60%  { transform: rotateX(-112deg) rotateY(302deg) rotateZ(-8deg); }
-	80%  { transform: rotateX(-20deg) rotateY(392deg) rotateZ(0deg); }
-	100% { transform: rotateX(-20deg) rotateY(392deg) rotateZ(0deg); }
+@keyframes stage-cube-solve-spin {
+	0% {
+		transform: rotateX(-22deg) rotateY(30deg) rotateZ(0deg) scale(0.96);
+		filter: drop-shadow(0 6px 14px rgba(56, 189, 248, 0.15));
+	}
+	20% {
+		transform: rotateX(-25deg) rotateY(120deg) rotateZ(10deg) scale(1);
+	}
+	40% {
+		transform: rotateX(70deg) rotateY(210deg) rotateZ(-6deg);
+	}
+	60% {
+		transform: rotateX(-115deg) rotateY(300deg) rotateZ(8deg);
+	}
+	72% {
+		/* All 6 faces fully solved! Victory pulse & glow */
+		transform: rotateX(-22deg) rotateY(390deg) rotateZ(0deg) scale(1.08);
+		filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 10px rgba(74, 222, 128, 0.5));
+	}
+	90% {
+		transform: rotateX(-22deg) rotateY(390deg) rotateZ(0deg) scale(1.08);
+		filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.65));
+	}
+	100% {
+		transform: rotateX(-22deg) rotateY(390deg) rotateZ(0deg) scale(0.96);
+		filter: drop-shadow(0 6px 14px rgba(56, 189, 248, 0.15));
+	}
 }
 .stage-cube-wrap .cube-face {
 	width: 54px;
@@ -519,6 +539,133 @@ header .hint {
 .stage-cube-wrap .c-sticker {
 	border-radius: 2px;
 	box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* ── Progressive solve sticker animations ── */
+/* Front Face (Solves to Electric Blue #38bdf8) */
+.cs-solve-b1, .cs-solve-b2 { animation: to-blue-early 2.4s infinite; }
+.cs-solve-b3, .cs-solve-b4 { animation: to-blue-mid 2.4s infinite; }
+.cs-solve-b5, .cs-solve-b6, .cs-solve-b7, .cs-solve-b8 { animation: to-blue-late 2.4s infinite; }
+
+@keyframes to-blue-early {
+	0%, 15% { background: #f87171; }
+	35%, 92% { background: #38bdf8; }
+	100% { background: #f87171; }
+}
+@keyframes to-blue-mid {
+	0%, 35% { background: #facc15; }
+	55%, 92% { background: #38bdf8; }
+	100% { background: #facc15; }
+}
+@keyframes to-blue-late {
+	0%, 50% { background: #4ade80; }
+	70%, 92% { background: #38bdf8; }
+	100% { background: #4ade80; }
+}
+
+/* Right Face (Solves to Red #f87171) */
+.cs-solve-r1, .cs-solve-r2 { animation: to-red-early 2.4s infinite; }
+.cs-solve-r3, .cs-solve-r4 { animation: to-red-mid 2.4s infinite; }
+.cs-solve-r5, .cs-solve-r6, .cs-solve-r7, .cs-solve-r8 { animation: to-red-late 2.4s infinite; }
+
+@keyframes to-red-early {
+	0%, 15% { background: #38bdf8; }
+	35%, 92% { background: #f87171; }
+	100% { background: #38bdf8; }
+}
+@keyframes to-red-mid {
+	0%, 35% { background: #fb923c; }
+	55%, 92% { background: #f87171; }
+	100% { background: #fb923c; }
+}
+@keyframes to-red-late {
+	0%, 50% { background: #f8fafc; }
+	70%, 92% { background: #f87171; }
+	100% { background: #f8fafc; }
+}
+
+/* Top Face (Solves to White #f8fafc) */
+.cs-solve-w1, .cs-solve-w2 { animation: to-white-early 2.4s infinite; }
+.cs-solve-w3, .cs-solve-w4 { animation: to-white-mid 2.4s infinite; }
+.cs-solve-w5, .cs-solve-w6, .cs-solve-w7, .cs-solve-w8 { animation: to-white-late 2.4s infinite; }
+
+@keyframes to-white-early {
+	0%, 15% { background: #facc15; }
+	35%, 92% { background: #f8fafc; }
+	100% { background: #facc15; }
+}
+@keyframes to-white-mid {
+	0%, 35% { background: #38bdf8; }
+	55%, 92% { background: #f8fafc; }
+	100% { background: #38bdf8; }
+}
+@keyframes to-white-late {
+	0%, 50% { background: #fb923c; }
+	70%, 92% { background: #f8fafc; }
+	100% { background: #fb923c; }
+}
+
+/* Left Face (Solves to Orange #fb923c) */
+.cs-solve-o1, .cs-solve-o2 { animation: to-orange-early 2.4s infinite; }
+.cs-solve-o3, .cs-solve-o4 { animation: to-orange-mid 2.4s infinite; }
+.cs-solve-o5, .cs-solve-o6, .cs-solve-o7, .cs-solve-o8 { animation: to-orange-late 2.4s infinite; }
+
+@keyframes to-orange-early {
+	0%, 15% { background: #4ade80; }
+	35%, 92% { background: #fb923c; }
+	100% { background: #4ade80; }
+}
+@keyframes to-orange-mid {
+	0%, 35% { background: #f87171; }
+	55%, 92% { background: #fb923c; }
+	100% { background: #f87171; }
+}
+@keyframes to-orange-late {
+	0%, 50% { background: #38bdf8; }
+	70%, 92% { background: #fb923c; }
+	100% { background: #38bdf8; }
+}
+
+/* Back Face (Solves to Green #4ade80) */
+.cs-solve-g1, .cs-solve-g2 { animation: to-green-early 2.4s infinite; }
+.cs-solve-g3, .cs-solve-g4 { animation: to-green-mid 2.4s infinite; }
+.cs-solve-g5, .cs-solve-g6, .cs-solve-g7, .cs-solve-g8 { animation: to-green-late 2.4s infinite; }
+
+@keyframes to-green-early {
+	0%, 15% { background: #fb923c; }
+	35%, 92% { background: #4ade80; }
+	100% { background: #fb923c; }
+}
+@keyframes to-green-mid {
+	0%, 35% { background: #f87171; }
+	55%, 92% { background: #4ade80; }
+	100% { background: #f87171; }
+}
+@keyframes to-green-late {
+	0%, 50% { background: #facc15; }
+	70%, 92% { background: #4ade80; }
+	100% { background: #facc15; }
+}
+
+/* Bottom Face (Solves to Yellow #facc15) */
+.cs-solve-y1, .cs-solve-y2 { animation: to-yellow-early 2.4s infinite; }
+.cs-solve-y3, .cs-solve-y4 { animation: to-yellow-mid 2.4s infinite; }
+.cs-solve-y5, .cs-solve-y6, .cs-solve-y7, .cs-solve-y8 { animation: to-yellow-late 2.4s infinite; }
+
+@keyframes to-yellow-early {
+	0%, 15% { background: #f8fafc; }
+	35%, 92% { background: #facc15; }
+	100% { background: #f8fafc; }
+}
+@keyframes to-yellow-mid {
+	0%, 35% { background: #4ade80; }
+	55%, 92% { background: #facc15; }
+	100% { background: #4ade80; }
+}
+@keyframes to-yellow-late {
+	0%, 50% { background: #38bdf8; }
+	70%, 92% { background: #facc15; }
+	100% { background: #38bdf8; }
 }
 
 body.running .stage-cube-wrap,
@@ -709,34 +856,34 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 				<div class="cube-anim-box" title="Rubik's Cube">
 					<div class="cube-3d">
 						<div class="cube-face cube-front">
-							<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
-							<span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span>
-							<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
+							<span class="c-sticker cs-solve-b1"></span><span class="c-sticker cs-solve-b2"></span><span class="c-sticker cs-solve-b3"></span>
+							<span class="c-sticker cs-solve-b4"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-solve-b5"></span>
+							<span class="c-sticker cs-solve-b6"></span><span class="c-sticker cs-solve-b7"></span><span class="c-sticker cs-solve-b8"></span>
 						</div>
 						<div class="cube-face cube-back">
-							<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
-							<span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span>
-							<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
+							<span class="c-sticker cs-solve-g1"></span><span class="c-sticker cs-solve-g2"></span><span class="c-sticker cs-solve-g3"></span>
+							<span class="c-sticker cs-solve-g4"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-solve-g5"></span>
+							<span class="c-sticker cs-solve-g6"></span><span class="c-sticker cs-solve-g7"></span><span class="c-sticker cs-solve-g8"></span>
 						</div>
 						<div class="cube-face cube-right">
-							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
-							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
-							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+							<span class="c-sticker cs-solve-r1"></span><span class="c-sticker cs-solve-r2"></span><span class="c-sticker cs-solve-r3"></span>
+							<span class="c-sticker cs-solve-r4"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-solve-r5"></span>
+							<span class="c-sticker cs-solve-r6"></span><span class="c-sticker cs-solve-r7"></span><span class="c-sticker cs-solve-r8"></span>
 						</div>
 						<div class="cube-face cube-left">
-							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
-							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
-							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+							<span class="c-sticker cs-solve-o1"></span><span class="c-sticker cs-solve-o2"></span><span class="c-sticker cs-solve-o3"></span>
+							<span class="c-sticker cs-solve-o4"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-solve-o5"></span>
+							<span class="c-sticker cs-solve-o6"></span><span class="c-sticker cs-solve-o7"></span><span class="c-sticker cs-solve-o8"></span>
 						</div>
 						<div class="cube-face cube-top">
-							<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
-							<span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span>
-							<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
+							<span class="c-sticker cs-solve-w1"></span><span class="c-sticker cs-solve-w2"></span><span class="c-sticker cs-solve-w3"></span>
+							<span class="c-sticker cs-solve-w4"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-solve-w5"></span>
+							<span class="c-sticker cs-solve-w6"></span><span class="c-sticker cs-solve-w7"></span><span class="c-sticker cs-solve-w8"></span>
 						</div>
 						<div class="cube-face cube-bottom">
-							<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
-							<span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span>
-							<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
+							<span class="c-sticker cs-solve-y1"></span><span class="c-sticker cs-solve-y2"></span><span class="c-sticker cs-solve-y3"></span>
+							<span class="c-sticker cs-solve-y4"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-solve-y5"></span>
+							<span class="c-sticker cs-solve-y6"></span><span class="c-sticker cs-solve-y7"></span><span class="c-sticker cs-solve-y8"></span>
 						</div>
 					</div>
 				</div>
@@ -793,7 +940,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=20"></script>
-<script src="app.js?v=20"></script>
+<script src="stats.js?v=21"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>
