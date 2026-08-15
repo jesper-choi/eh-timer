@@ -253,9 +253,9 @@ select#event:focus {
 	color: var(--muted);
 }
 .btn-cancel:hover {
-	color: var(--hold);
-	border-color: rgba(248, 113, 113, 0.35);
-	background: rgba(248, 113, 113, 0.08);
+	color: var(--warn);
+	border-color: rgba(251, 191, 36, 0.35);
+	background: rgba(251, 191, 36, 0.08);
 }
 .btn-sync.on {
 	background: rgba(74, 222, 128, 0.12);
@@ -402,17 +402,17 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 				</div>
 				<button id="insp" class="hdr-btn toggle" title="인스펙션 15초 카운트다운 토글"><span class="btn-dot"></span>인스펙션 15s</button>
 				<button id="newscr" class="hdr-btn" title="새 스크램블 생성"><span class="btn-icon">↻</span>새 스크램블</button>
+				<button id="cancel" class="hdr-btn btn-cancel" title="타이머 0초로 되돌리기 (Esc)"><span class="btn-icon">↺</span>타이머 리셋</button>
 			</div>
 			<span class="spacer"></span>
 			<div class="hdr-group hdr-right">
 				<span class="hint" id="status"></span>
-				<button id="cancel" class="hdr-btn btn-cancel" title="현재 솔브 취소 (Esc)"><span class="btn-icon">✕</span>솔브 취소</button>
 				<button id="sync" class="hdr-btn toggle btn-sync" title="Gist 동기화 설정"><span class="btn-icon">☁</span>동기화</button>
 			</div>
 		</header>
 		<div id="scramble">스크램블 생성 중…</div>
 		<div id="stage"><div id="time" style="--ch: 6">0.000</div></div>
-		<footer>스페이스를 누르고 있다가 떼면 시작(인스펙션 켜면 카운트다운 먼저) · 아무 키나 누르면 정지 · Esc 취소 · 스크램블 클릭하면 새로 생성</footer>
+		<footer>스페이스를 누르고 있다가 떼면 시작(인스펙션 켜면 카운트다운 먼저) · 아무 키나 누르면 정지 · Esc 타이머 리셋 · 스크램블 클릭하면 새로 생성</footer>
 	</main>
 </div>
 <input type="file" id="file" accept="application/json" hidden>
@@ -461,7 +461,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=12"></script>
-<script src="app.js?v=12"></script>
+<script src="stats.js?v=13"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>
