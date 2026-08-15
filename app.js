@@ -310,12 +310,63 @@ function renderSessions() {
 	el.event.value = ev.id;
 }
 
-function updateCubeType() {
-	document.body.dataset.cube = (ev && ev.id === '222') ? '222' : '333';
+function getCubeN(eventId) {
+	if (eventId === '222') return 2;
+	if (eventId === '444') return 4;
+	if (eventId === '555') return 5;
+	if (eventId === '666') return 6;
+	if (eventId === '777') return 7;
+	return 3;
+}
+
+let currentRenderedN = 0;
+
+function updateStageCube() {
+	const n = getCubeN(ev.id);
+	if (currentRenderedN === n) return;
+	currentRenderedN = n;
+
+	const box = document.querySelector('.stage-cube-wrap .cube-anim-box');
+	if (!box) return;
+
+	const faces = [
+		{ cls: 'cube-front',  c: 'b' },
+		{ cls: 'cube-back',   c: 'g' },
+		{ cls: 'cube-right',  c: 'r' },
+		{ cls: 'cube-left',   c: 'o' },
+		{ cls: 'cube-top',    c: 'w' },
+		{ cls: 'cube-bottom', c: 'y' }
+	];
+
+	let html = `<div class="cube-3d cube-nxn">`;
+	for (const f of faces) {
+		html += `<div class="cube-face ${f.cls} grid-${n}">`;
+		for (let r = 0; r < n; r++) {
+			for (let c = 0; c < n; c++) {
+				let phase;
+				const isCorner = (r === 0 || r === n - 1) && (c === 0 || c === n - 1);
+				const isEdge = (r === 0 || r === n - 1 || c === 0 || c === n - 1);
+				if (n === 2) {
+					const idx = r * 2 + c;
+					phase = (idx + 1);
+				} else if (isCorner) {
+					phase = 4;
+				} else if (isEdge) {
+					phase = ((r + c) % 2 === 0) ? 3 : 2;
+				} else {
+					phase = 1;
+				}
+				html += `<span class="c-sticker cs-${f.c}-p${phase}"></span>`;
+			}
+		}
+		html += `</div>`;
+	}
+	html += `</div>`;
+	box.innerHTML = html;
 }
 
 function render() {
-	updateCubeType();
+	updateStageCube();
 	renderSessions();
 	renderStats();
 	renderTimes();
