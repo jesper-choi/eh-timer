@@ -66,10 +66,10 @@ aside {
 	min-height: 0;
 }
 .brand {
-	padding: 18px 20px 12px;
+	padding: 16px 20px 12px;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	font-size: 13px;
 	letter-spacing: .15em;
 	text-transform: uppercase;
@@ -86,6 +86,74 @@ aside {
 	box-shadow: 0 2px 6px rgba(56, 189, 248, 0.3);
 }
 .brand b { color: var(--text); font-weight: 700; }
+
+/* ── 3D Animated Rubik's Cube ── */
+.cube-anim-box {
+	width: 24px;
+	height: 24px;
+	perspective: 120px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+.cube-3d {
+	width: 16px;
+	height: 16px;
+	position: relative;
+	transform-style: preserve-3d;
+	animation: cube-spin 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cube-spin {
+	0% {
+		transform: rotateX(-22deg) rotateY(32deg) rotateZ(0deg);
+	}
+	20% {
+		transform: rotateX(-22deg) rotateY(122deg) rotateZ(6deg);
+	}
+	40% {
+		transform: rotateX(68deg) rotateY(212deg) rotateZ(0deg);
+	}
+	60% {
+		transform: rotateX(-112deg) rotateY(302deg) rotateZ(-6deg);
+	}
+	80% {
+		transform: rotateX(-22deg) rotateY(392deg) rotateZ(0deg);
+	}
+	100% {
+		transform: rotateX(-22deg) rotateY(392deg) rotateZ(0deg);
+	}
+}
+.cube-face {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background: #090d16;
+	border: 0.5px solid #111827;
+	border-radius: 2px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1px;
+	padding: 1px;
+	box-sizing: border-box;
+}
+.cube-front  { transform: rotateY(0deg) translateZ(8px); }
+.cube-back   { transform: rotateY(180deg) translateZ(8px); }
+.cube-right  { transform: rotateY(90deg) translateZ(8px); }
+.cube-left   { transform: rotateY(-90deg) translateZ(8px); }
+.cube-top    { transform: rotateX(90deg) translateZ(8px); }
+.cube-bottom { transform: rotateX(-90deg) translateZ(8px); }
+
+.c-sticker {
+	border-radius: 0.5px;
+	display: block;
+}
+.cs-b { background: #38bdf8; } /* Electric Blue */
+.cs-g { background: #4ade80; } /* Emerald Green */
+.cs-r { background: #f87171; } /* Coral Red */
+.cs-o { background: #fb923c; } /* Cyber Orange */
+.cs-w { background: #f8fafc; } /* Ice White */
+.cs-y { background: #facc15; } /* Sun Yellow */
 
 .session-ctrl {
 	display: flex;
@@ -347,12 +415,20 @@ header {
 	box-shadow: 0 0 6px var(--ready);
 }
 .btn-cancel {
-	color: var(--muted);
-}
-.btn-cancel:hover {
-	color: var(--warn);
+	color: #fbbf24;
 	border-color: rgba(251, 191, 36, 0.35);
 	background: rgba(251, 191, 36, 0.08);
+	font-weight: 600;
+}
+.btn-cancel:hover {
+	color: #fde047;
+	border-color: rgba(251, 191, 36, 0.6);
+	background: rgba(251, 191, 36, 0.16);
+	box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+}
+.btn-cancel:active {
+	background: rgba(251, 191, 36, 0.25);
+	transform: scale(0.97);
 }
 .btn-sync.on {
 	background: rgba(74, 222, 128, 0.12);
@@ -432,9 +508,9 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 
 /* ── 터치 기기(태블릿/폰) 전용 배율. 마우스 쓰는 PC에는 적용되지 않는다 ── */
 @media (pointer: coarse) {
-	/* 타이머 크기 조절: 가운데 20vh 값만 바꾸면 된다 (크게 26vh / 작게 16vh) */
-	#time { font-size: min(calc(68cqw / (var(--ch, 6) * 0.62)), 20vh, 180px); }
-	#scramble { font-size: clamp(15px, 1.8vw, 20px); min-height: 2.6em; padding: 4px 24px 0; }
+	/* 태블릿 타이머 크기 2배 대화면 최적화 */
+	#time { font-size: min(calc(94cqw / (var(--ch, 6) * 0.60)), 38vh, 340px); font-weight: 400; }
+	#scramble { font-size: clamp(15px, 2.0vw, 22px); min-height: 2.6em; padding: 4px 24px 0; }
 	header {
 		padding: 10px 14px;
 		gap: 6px;
@@ -474,7 +550,44 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 <body>
 <div id="app">
 	<aside>
-		<div class="brand"><span class="brand-badge">EH</span><b>TIMER</b></div>
+		<div class="brand">
+			<div class="cube-anim-box" title="EH Timer">
+				<div class="cube-3d">
+					<div class="cube-face cube-front">
+						<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
+						<span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span>
+						<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
+					</div>
+					<div class="cube-face cube-back">
+						<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
+						<span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span>
+						<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
+					</div>
+					<div class="cube-face cube-right">
+						<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+						<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+						<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+					</div>
+					<div class="cube-face cube-left">
+						<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+						<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+						<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+					</div>
+					<div class="cube-face cube-top">
+						<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
+						<span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span>
+						<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
+					</div>
+					<div class="cube-face cube-bottom">
+						<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
+						<span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span>
+						<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
+					</div>
+				</div>
+			</div>
+			<span class="brand-badge">EH</span>
+			<b>TIMER</b>
+		</div>
 		<div class="session-ctrl">
 			<div class="session-select-wrap">
 				<select id="session" title="세션 선택"></select>
@@ -510,8 +623,8 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 					<svg class="select-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 				</div>
 				<button id="insp" class="hdr-btn toggle" title="인스펙션 15초 카운트다운 토글"><span class="btn-dot"></span>인스펙션 15s</button>
-				<button id="newscr" class="hdr-btn" title="새 스크램블 생성"><span class="btn-icon">↻</span>새 스크램블</button>
 				<button id="cancel" class="hdr-btn btn-cancel" title="타이머 0초로 되돌리기 (Esc)"><span class="btn-icon">↺</span>타이머 리셋</button>
+				<button id="newscr" class="hdr-btn" title="새 스크램블 생성"><span class="btn-icon">↻</span>새 스크램블</button>
 			</div>
 			<span class="spacer"></span>
 			<div class="hdr-group hdr-right">
@@ -571,7 +684,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=15"></script>
-<script src="app.js?v=15"></script>
+<script src="stats.js?v=16"></script>
+<script src="app.js?v=16"></script>
 </body>
 </html>
