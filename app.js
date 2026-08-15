@@ -535,22 +535,24 @@ function up(ts) {
 	clearTimeout(holdTimer);
 	if (state === 'hold') { setState(holdBack); return; }   // 너무 짧게 눌렀음
 	if (state !== 'ready') return;
+	const now = performance.now();
 	if (inspOn && !inspAt) {                                // 인스펙션 시작
-		inspAt = ts;
+		inspAt = now;
 		setState('inspect');
 		cancelAnimationFrame(raf); loop();
 		return;
 	}
-	penalty = inspAt ? inspPenaltyOf(ts - inspAt) : 0;      // 인스펙션 초과 시 WCA 페널티
+	penalty = inspAt ? inspPenaltyOf(now - inspAt) : 0;     // 인스펙션 초과 시 WCA 페널티
 	inspAt = 0;
-	startAt = ts;
+	startAt = now;
 	setState('running');
 	cancelAnimationFrame(raf); loop();
 }
-function stop(ts) {
+function stop() {
 	cancelAnimationFrame(raf);
 	setState('idle');
-	const ms = ts - startAt;
+	const now = performance.now();
+	const ms = Math.max(0, now - startAt);
 	setTime(fmt(ms) + (penalty === 2 ? '+' : penalty === -1 ? ' DNF' : ''));
 	solves().push({ ms: ms, p: penalty, scr: scramble, ts: Date.now() });
 	penalty = 0;

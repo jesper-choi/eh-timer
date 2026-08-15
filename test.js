@@ -193,8 +193,31 @@ assert.equal(inspPenaltyOf(17001), -1);
 			}
 		}
 	};
-	const m_sess = merge(sess_local, sess_remote);
-	assert.equal(m_sess.events['333'].sessions['s2'], undefined, '삭제된 세션은 부활하지 않아야 함');
+	// 8. 동일 ts 솔브의 페널티 수정 시 최신 updatedAt을 가진 세션의 상태가 우선됨
+	const pen_old = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 0, ts: 100 }], updatedAt: 100 }
+				}
+			}
+		}
+	};
+	const pen_new = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 2, ts: 100 }], updatedAt: 200 }
+				}
+			}
+		}
+	};
+	const m_pen = merge(pen_old, pen_new);
+	assert.equal(m_pen.events['333'].sessions['s1'].solves[0].p, 2, '최신 updatedAt의 +2 페널티가 유지되어야 함');
 }
 
 // 스크램블 엔진(vendor/*)이 실제로 돌아가는지

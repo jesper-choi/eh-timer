@@ -177,11 +177,19 @@ function merge(a, b) {
 				const clearedAt = Math.max(sa.clearedAt || 0, sb.clearedAt || 0);
 				const delSolves = new Set([...(sa.deleted || []), ...(sb.deleted || [])]);
 
-				const seen = new Set();
-				const combined = (sa.solves || []).concat(sb.solves || []);
-				const solves = combined
-					.filter(s => s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts) && !seen.has(s.ts) && seen.add(s.ts))
-					.sort((x, y) => x.ts - y.ts);
+				const map = new Map();
+				const [older, newer] = aTime >= bTime ? [sb.solves || [], sa.solves || []] : [sa.solves || [], sb.solves || []];
+				for (const s of older) {
+					if (s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts)) {
+						map.set(s.ts, s);
+					}
+				}
+				for (const s of newer) {
+					if (s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts)) {
+						map.set(s.ts, s);
+					}
+				}
+				const solves = Array.from(map.values()).sort((x, y) => x.ts - y.ts);
 
 				sessions[sId] = {
 					id: sId,
