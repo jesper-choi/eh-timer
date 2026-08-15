@@ -462,29 +462,29 @@ header .hint {
 	container-type: inline-size;
 	touch-action: none;        /* 롱프레스·스크롤·확대 제스처를 브라우저가 가로채지 않게 */
 	position: relative;
-	gap: 12px;
-	padding: 10px 16px;
+	gap: 32px;
+	padding: 24px 16px 12px;
 }
 .stage-cube-wrap {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: opacity 0.25s ease, transform 0.25s ease;
-	margin-bottom: 8px;
+	margin-bottom: 14px;
 	position: relative;
-	animation: stage-cube-glow-pulse 4.8s ease-in-out infinite;
+	animation: stage-cube-glow-pulse 6.0s ease-in-out infinite;
 }
 @keyframes stage-cube-glow-pulse {
-	0%, 68% {
+	0%, 48% {
 		filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2));
 	}
-	72%, 92% {
-		/* 🎉 SOLVED VICTORY BURST! Glorious emerald & electric cyan ambient shockwave */
+	52%, 88% {
+		/* 🎉 SOLVED VICTORY BURST! Glorious emerald & electric cyan ambient shockwave (2+ sec hold) */
 		filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95))
 		        drop-shadow(0 0 18px rgba(74, 222, 128, 0.8))
 		        drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
 	}
-	96%, 100% {
+	94%, 100% {
 		filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2));
 	}
 }
@@ -496,21 +496,21 @@ header .hint {
 	border: 2px solid rgba(56, 189, 248, 0);
 	pointer-events: none;
 	opacity: 0;
-	animation: solve-halo-burst 4.8s ease-out infinite;
+	animation: solve-halo-burst 6.0s ease-out infinite;
 }
 @keyframes solve-halo-burst {
-	0%, 71% {
+	0%, 51% {
 		transform: scale(0.6);
 		opacity: 0;
 		border-color: rgba(56, 189, 248, 0);
 	}
-	72% {
+	52% {
 		transform: scale(0.85);
 		opacity: 1;
 		border-color: rgba(56, 189, 248, 0.9);
 		box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4);
 	}
-	86% {
+	68% {
 		transform: scale(1.6);
 		opacity: 0;
 		border-color: rgba(74, 222, 128, 0);
@@ -531,37 +531,36 @@ header .hint {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: stage-cube-solve-spin 4.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+	animation: stage-cube-solve-spin 6.0s cubic-bezier(0.35, 0, 0.25, 1) infinite;
 }
 @keyframes stage-cube-solve-spin {
-	/* ── PHASE 1: Cross & First Layer solving (0.0s - 1.2s) ── */
+	/* ── PHASE 1: Cross & First Layer solving (0.0s - 1.5s) ── */
 	0%   { transform: rotateX(-30deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
 	12%  { transform: rotateX(-22deg) rotateY(135deg) rotateZ(10deg) scale(1); }
 	24%  { transform: rotateX(55deg) rotateY(225deg) rotateZ(-8deg); }
 	
-	/* ── PHASE 2: F2L Middle Layer solving (1.2s - 2.6s) ── */
-	36%  { transform: rotateX(-125deg) rotateY(315deg) rotateZ(8deg); }
-	48%  { transform: rotateX(-28deg) rotateY(405deg) rotateZ(-6deg) scale(1.02); }
-	60%  { transform: rotateX(60deg) rotateY(495deg) rotateZ(8deg); }
+	/* ── PHASE 2: F2L Middle Layer solving (1.5s - 2.4s) ── */
+	34%  { transform: rotateX(-125deg) rotateY(315deg) rotateZ(8deg); }
+	42%  { transform: rotateX(-28deg) rotateY(405deg) rotateZ(-6deg) scale(1.02); }
 
-	/* ── PHASE 3: OLL / PLL Last Layer solving (2.6s - 3.5s) ── */
-	68%  { transform: rotateX(-34deg) rotateY(585deg) rotateZ(-4deg); }
+	/* ── PHASE 3: OLL / PLL Last Layer solving (2.4s - 3.1s) ── */
+	48%  { transform: rotateX(-34deg) rotateY(585deg) rotateZ(-4deg); }
 
-	/* ── PHASE 4: 🎉 SOLVED! Proud Showcase & Victory Pulse (3.5s - 4.4s) ── */
-	72%  {
+	/* ── PHASE 4: 🎉 SOLVED! Proud Showcase & Long 2.2s Victory Hold (3.1s - 5.4s) ── */
+	52%  {
 		/* Snaps proudly into perfect isometric showcase angle with celebratory pop */
 		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.14);
 	}
-	76%  {
+	56%  {
 		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.08);
 	}
-	92%  {
-		/* Solved hold */
+	88%  {
+		/* Solved hold - 2.2s celebration time! */
 		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.08);
 	}
 
-	/* ── PHASE 5: Scramble snap for next cycle (4.4s - 4.8s) ── */
-	97%  { transform: rotateX(30deg) rotateY(795deg) rotateZ(15deg) scale(0.92); }
+	/* ── PHASE 5: Scramble snap for next cycle (5.4s - 6.0s) ── */
+	95%  { transform: rotateX(30deg) rotateY(795deg) rotateZ(15deg) scale(0.92); }
 	100% { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(0.96); }
 }
 .stage-cube-wrap .cube-face {
@@ -591,174 +590,278 @@ header .hint {
 	box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.4);
 }
 
-/* ── Progressive solve sticker animations (4.8s multi-phase) ── */
+/* ── Progressive solve sticker animations (6.0s multi-phase) ── */
 /* Front Face (Solves to Electric Blue #38bdf8) */
-.cs-solve-b1, .cs-solve-b2 { animation: to-blue-f2l1 4.8s infinite; }
-.cs-solve-b3, .cs-solve-b4 { animation: to-blue-f2l2 4.8s infinite; }
-.cs-solve-b5, .cs-solve-b6 { animation: to-blue-oll 4.8s infinite; }
-.cs-solve-b7, .cs-solve-b8 { animation: to-blue-pll 4.8s infinite; }
+.cs-solve-b1, .cs-solve-b2 { animation: to-blue-f2l1 6.0s infinite; }
+.cs-solve-b3, .cs-solve-b4 { animation: to-blue-f2l2 6.0s infinite; }
+.cs-solve-b5, .cs-solve-b6 { animation: to-blue-oll 6.0s infinite; }
+.cs-solve-b7, .cs-solve-b8 { animation: to-blue-pll 6.0s infinite; }
 
 @keyframes to-blue-f2l1 {
-	0%, 15% { background: #f87171; }
-	30%, 92% { background: #38bdf8; }
+	0%, 12% { background: #f87171; }
+	24%, 90% { background: #38bdf8; }
 	96%, 100% { background: #f87171; }
 }
 @keyframes to-blue-f2l2 {
-	0%, 25% { background: #facc15; }
-	45%, 92% { background: #38bdf8; }
+	0%, 20% { background: #facc15; }
+	35%, 90% { background: #38bdf8; }
 	96%, 100% { background: #facc15; }
 }
 @keyframes to-blue-oll {
-	0%, 45% { background: #4ade80; }
-	60%, 92% { background: #38bdf8; }
+	0%, 35% { background: #4ade80; }
+	45%, 90% { background: #38bdf8; }
 	96%, 100% { background: #4ade80; }
 }
 @keyframes to-blue-pll {
-	0%, 58% { background: #fb923c; }
-	72%, 92% { background: #38bdf8; }
+	0%, 42% { background: #fb923c; }
+	52%, 90% { background: #38bdf8; }
 	96%, 100% { background: #fb923c; }
 }
 
 /* Right Face (Solves to Red #f87171) */
-.cs-solve-r1, .cs-solve-r2 { animation: to-red-f2l1 4.8s infinite; }
-.cs-solve-r3, .cs-solve-r4 { animation: to-red-f2l2 4.8s infinite; }
-.cs-solve-r5, .cs-solve-r6 { animation: to-red-oll 4.8s infinite; }
-.cs-solve-r7, .cs-solve-r8 { animation: to-red-pll 4.8s infinite; }
+.cs-solve-r1, .cs-solve-r2 { animation: to-red-f2l1 6.0s infinite; }
+.cs-solve-r3, .cs-solve-r4 { animation: to-red-f2l2 6.0s infinite; }
+.cs-solve-r5, .cs-solve-r6 { animation: to-red-oll 6.0s infinite; }
+.cs-solve-r7, .cs-solve-r8 { animation: to-red-pll 6.0s infinite; }
 
 @keyframes to-red-f2l1 {
-	0%, 15% { background: #38bdf8; }
-	30%, 92% { background: #f87171; }
+	0%, 12% { background: #38bdf8; }
+	24%, 90% { background: #f87171; }
 	96%, 100% { background: #38bdf8; }
 }
 @keyframes to-red-f2l2 {
-	0%, 25% { background: #fb923c; }
-	45%, 92% { background: #f87171; }
+	0%, 20% { background: #fb923c; }
+	35%, 90% { background: #f87171; }
 	96%, 100% { background: #fb923c; }
 }
 @keyframes to-red-oll {
-	0%, 45% { background: #f8fafc; }
-	60%, 92% { background: #f87171; }
+	0%, 35% { background: #f8fafc; }
+	45%, 90% { background: #f87171; }
 	96%, 100% { background: #f8fafc; }
 }
 @keyframes to-red-pll {
-	0%, 58% { background: #facc15; }
-	72%, 92% { background: #f87171; }
+	0%, 42% { background: #facc15; }
+	52%, 90% { background: #f87171; }
 	96%, 100% { background: #facc15; }
 }
 
 /* Top Face (Solves to White #f8fafc) */
-.cs-solve-w1, .cs-solve-w2 { animation: to-white-f2l1 4.8s infinite; }
-.cs-solve-w3, .cs-solve-w4 { animation: to-white-f2l2 4.8s infinite; }
-.cs-solve-w5, .cs-solve-w6 { animation: to-white-oll 4.8s infinite; }
-.cs-solve-w7, .cs-solve-w8 { animation: to-white-pll 4.8s infinite; }
+.cs-solve-w1, .cs-solve-w2 { animation: to-white-f2l1 6.0s infinite; }
+.cs-solve-w3, .cs-solve-w4 { animation: to-white-f2l2 6.0s infinite; }
+.cs-solve-w5, .cs-solve-w6 { animation: to-white-oll 6.0s infinite; }
+.cs-solve-w7, .cs-solve-w8 { animation: to-white-pll 6.0s infinite; }
 
 @keyframes to-white-f2l1 {
-	0%, 15% { background: #facc15; }
-	30%, 92% { background: #f8fafc; }
+	0%, 12% { background: #facc15; }
+	24%, 90% { background: #f8fafc; }
 	96%, 100% { background: #facc15; }
 }
 @keyframes to-white-f2l2 {
-	0%, 25% { background: #38bdf8; }
-	45%, 92% { background: #f8fafc; }
+	0%, 20% { background: #38bdf8; }
+	35%, 90% { background: #f8fafc; }
 	96%, 100% { background: #38bdf8; }
 }
 @keyframes to-white-oll {
-	0%, 45% { background: #fb923c; }
-	60%, 92% { background: #f8fafc; }
+	0%, 35% { background: #fb923c; }
+	45%, 90% { background: #f8fafc; }
 	96%, 100% { background: #fb923c; }
 }
 @keyframes to-white-pll {
-	0%, 58% { background: #4ade80; }
-	72%, 92% { background: #f8fafc; }
+	0%, 42% { background: #4ade80; }
+	52%, 90% { background: #f8fafc; }
 	96%, 100% { background: #4ade80; }
 }
 
 /* Left Face (Solves to Orange #fb923c) */
-.cs-solve-o1, .cs-solve-o2 { animation: to-orange-f2l1 4.8s infinite; }
-.cs-solve-o3, .cs-solve-o4 { animation: to-orange-f2l2 4.8s infinite; }
-.cs-solve-o5, .cs-solve-o6 { animation: to-orange-oll 4.8s infinite; }
-.cs-solve-o7, .cs-solve-o8 { animation: to-orange-pll 4.8s infinite; }
+.cs-solve-o1, .cs-solve-o2 { animation: to-orange-f2l1 6.0s infinite; }
+.cs-solve-o3, .cs-solve-o4 { animation: to-orange-f2l2 6.0s infinite; }
+.cs-solve-o5, .cs-solve-o6 { animation: to-orange-oll 6.0s infinite; }
+.cs-solve-o7, .cs-solve-o8 { animation: to-orange-pll 6.0s infinite; }
 
 @keyframes to-orange-f2l1 {
-	0%, 15% { background: #4ade80; }
-	30%, 92% { background: #fb923c; }
+	0%, 12% { background: #4ade80; }
+	24%, 90% { background: #fb923c; }
 	96%, 100% { background: #4ade80; }
 }
 @keyframes to-orange-f2l2 {
-	0%, 25% { background: #f87171; }
-	45%, 92% { background: #fb923c; }
+	0%, 20% { background: #f87171; }
+	35%, 90% { background: #fb923c; }
 	96%, 100% { background: #f87171; }
 }
 @keyframes to-orange-oll {
-	0%, 45% { background: #38bdf8; }
-	60%, 92% { background: #fb923c; }
+	0%, 35% { background: #38bdf8; }
+	45%, 90% { background: #fb923c; }
 	96%, 100% { background: #38bdf8; }
 }
 @keyframes to-orange-pll {
-	0%, 58% { background: #facc15; }
-	72%, 92% { background: #fb923c; }
+	0%, 42% { background: #facc15; }
+	52%, 90% { background: #fb923c; }
 	96%, 100% { background: #facc15; }
 }
 
 /* Back Face (Solves to Green #4ade80) */
-.cs-solve-g1, .cs-solve-g2 { animation: to-green-f2l1 4.8s infinite; }
-.cs-solve-g3, .cs-solve-g4 { animation: to-green-f2l2 4.8s infinite; }
-.cs-solve-g5, .cs-solve-g6 { animation: to-green-oll 4.8s infinite; }
-.cs-solve-g7, .cs-solve-g8 { animation: to-green-pll 4.8s infinite; }
+.cs-solve-g1, .cs-solve-g2 { animation: to-green-f2l1 6.0s infinite; }
+.cs-solve-g3, .cs-solve-g4 { animation: to-green-f2l2 6.0s infinite; }
+.cs-solve-g5, .cs-solve-g6 { animation: to-green-oll 6.0s infinite; }
+.cs-solve-g7, .cs-solve-g8 { animation: to-green-pll 6.0s infinite; }
 
 @keyframes to-green-f2l1 {
-	0%, 15% { background: #fb923c; }
-	30%, 92% { background: #4ade80; }
+	0%, 12% { background: #fb923c; }
+	24%, 90% { background: #4ade80; }
 	96%, 100% { background: #fb923c; }
 }
 @keyframes to-green-f2l2 {
-	0%, 25% { background: #f87171; }
-	45%, 92% { background: #4ade80; }
+	0%, 20% { background: #f87171; }
+	35%, 90% { background: #4ade80; }
 	96%, 100% { background: #f87171; }
 }
 @keyframes to-green-oll {
-	0%, 45% { background: #facc15; }
-	60%, 92% { background: #4ade80; }
+	0%, 35% { background: #facc15; }
+	45%, 90% { background: #4ade80; }
 	96%, 100% { background: #facc15; }
 }
 @keyframes to-green-pll {
-	0%, 58% { background: #38bdf8; }
-	72%, 92% { background: #4ade80; }
+	0%, 42% { background: #38bdf8; }
+	52%, 90% { background: #4ade80; }
 	96%, 100% { background: #38bdf8; }
 }
 
 /* Bottom Face (Solves to Yellow #facc15) */
-.cs-solve-y1, .cs-solve-y2 { animation: to-yellow-f2l1 4.8s infinite; }
-.cs-solve-y3, .cs-solve-y4 { animation: to-yellow-f2l2 4.8s infinite; }
-.cs-solve-y5, .cs-solve-y6 { animation: to-yellow-oll 4.8s infinite; }
-.cs-solve-y7, .cs-solve-y8 { animation: to-yellow-pll 4.8s infinite; }
+.cs-solve-y1, .cs-solve-y2 { animation: to-yellow-f2l1 6.0s infinite; }
+.cs-solve-y3, .cs-solve-y4 { animation: to-yellow-f2l2 6.0s infinite; }
+.cs-solve-y5, .cs-solve-y6 { animation: to-yellow-oll 6.0s infinite; }
+.cs-solve-y7, .cs-solve-y8 { animation: to-yellow-pll 6.0s infinite; }
 
 @keyframes to-yellow-f2l1 {
-	0%, 15% { background: #f8fafc; }
-	30%, 92% { background: #facc15; }
+	0%, 12% { background: #f8fafc; }
+	24%, 90% { background: #facc15; }
 	96%, 100% { background: #f8fafc; }
 }
 @keyframes to-yellow-f2l2 {
-	0%, 25% { background: #4ade80; }
-	45%, 92% { background: #facc15; }
+	0%, 20% { background: #4ade80; }
+	35%, 90% { background: #facc15; }
 	96%, 100% { background: #4ade80; }
 }
 @keyframes to-yellow-oll {
-	0%, 45% { background: #38bdf8; }
-	60%, 92% { background: #facc15; }
+	0%, 35% { background: #38bdf8; }
+	45%, 90% { background: #facc15; }
 	96%, 100% { background: #38bdf8; }
 }
 @keyframes to-yellow-pll {
-	0%, 58% { background: #f87171; }
-	72%, 92% { background: #facc15; }
+	0%, 42% { background: #f87171; }
+	52%, 90% { background: #facc15; }
 	96%, 100% { background: #f87171; }
 }
 
-body.running .stage-cube-wrap,
+/* ── 🔍 1. 인스펙션 상태: 큐브를 맞추지 않고 돌려가며 훑어보는 애니메이션 ── */
+body.inspect .stage-cube-wrap {
+	animation: none;
+	filter: drop-shadow(0 10px 20px rgba(251, 191, 36, 0.25));
+}
+body.inspect .stage-cube-wrap::after {
+	display: none;
+}
+body.inspect .stage-cube-wrap .cube-3d {
+	animation: cube-inspect-turn 4.5s linear infinite;
+}
+@keyframes cube-inspect-turn {
+	0%   { transform: rotateX(-24deg) rotateY(0deg); }
+	50%  { transform: rotateX(-32deg) rotateY(180deg) rotateZ(6deg); }
+	100% { transform: rotateX(-24deg) rotateY(360deg); }
+}
+body.inspect .stage-cube-wrap .c-sticker {
+	animation: none !important; /* 인스펙션 중에는 색상이 맞춰지지 않고 스크램블 유지 */
+}
+
+/* ── ⏱️ 2. 솔브 진행 중 (Running): 멈추지 않고 계속 빠르게 돌기만 함 (완성 X) ── */
+body.running .stage-cube-wrap {
+	opacity: 0.95;
+	animation: none;
+	filter: drop-shadow(0 10px 24px rgba(56, 189, 248, 0.3));
+}
+body.running .stage-cube-wrap::after {
+	display: none;
+}
+body.running .stage-cube-wrap .cube-3d {
+	animation: cube-running-fast-solve 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cube-running-fast-solve {
+	0%   { transform: rotateX(-28deg) rotateY(35deg) rotateZ(0deg); }
+	25%  { transform: rotateX(-20deg) rotateY(125deg) rotateZ(8deg); }
+	50%  { transform: rotateX(60deg) rotateY(215deg) rotateZ(-6deg); }
+	75%  { transform: rotateX(-120deg) rotateY(305deg) rotateZ(6deg); }
+	100% { transform: rotateX(-28deg) rotateY(395deg) rotateZ(0deg); }
+}
+body.running .stage-cube-wrap .c-sticker {
+	animation: running-scramble-twist 0.75s infinite !important;
+}
+@keyframes running-scramble-twist {
+	0%   { filter: hue-rotate(0deg); }
+	50%  { filter: hue-rotate(180deg); }
+	100% { filter: hue-rotate(360deg); }
+}
+
+/* ── 🏆 3. 최종 스탑 순간: 100% 완성 쇼케이스 & 빅토리 쇼크웨이브 발동! ── */
+body.just-solved .stage-cube-wrap {
+	animation: just-solved-halo-glow 3.5s ease-out forwards;
+}
+@keyframes just-solved-halo-glow {
+	0% {
+		filter: drop-shadow(0 0 45px rgba(56, 189, 248, 1))
+		        drop-shadow(0 0 25px rgba(74, 222, 128, 0.9))
+		        drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
+	}
+	80% {
+		filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.85))
+		        drop-shadow(0 0 16px rgba(74, 222, 128, 0.7));
+	}
+	100% {
+		filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2));
+	}
+}
+body.just-solved .stage-cube-wrap::after {
+	animation: just-solved-shockwave-burst 1.2s ease-out forwards;
+}
+@keyframes just-solved-shockwave-burst {
+	0% {
+		transform: scale(0.7);
+		opacity: 1;
+		border-color: rgba(56, 189, 248, 1);
+		box-shadow: 0 0 30px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(74, 222, 128, 0.6);
+	}
+	70% {
+		transform: scale(1.8);
+		opacity: 0.2;
+		border-color: rgba(74, 222, 128, 0.6);
+	}
+	100% {
+		transform: scale(2.0);
+		opacity: 0;
+		border-color: rgba(74, 222, 128, 0);
+	}
+}
+body.just-solved .stage-cube-wrap .cube-3d {
+	animation: just-solved-showcase 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes just-solved-showcase {
+	0%   { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.22); }
+	15%  { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.10); }
+	85%  { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.10); }
+	100% { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.0); }
+}
+/* 스탑 시 전체 6면 100% 완벽한 단색 완성 */
+body.just-solved .cube-front .c-sticker  { background: #38bdf8 !important; animation: none !important; }
+body.just-solved .cube-back .c-sticker   { background: #4ade80 !important; animation: none !important; }
+body.just-solved .cube-right .c-sticker  { background: #f87171 !important; animation: none !important; }
+body.just-solved .cube-left .c-sticker   { background: #fb923c !important; animation: none !important; }
+body.just-solved .cube-top .c-sticker    { background: #f8fafc !important; animation: none !important; }
+body.just-solved .cube-bottom .c-sticker { background: #facc15 !important; animation: none !important; }
+
+/* ── ✋ 4. 누르고 있는 상태 (Hold / Ready) ── */
 body.hold .stage-cube-wrap,
 body.ready .stage-cube-wrap {
-	opacity: 0;
-	transform: scale(0.75);
+	opacity: 0.65;
+	transform: scale(0.92);
 }
 #time {
 	/* 글자 수(--ch)에 맞춰 가로폭을 꽉 채우는 크기. 고정폭 폰트 한 자 ≈ 0.62em */
@@ -1026,7 +1129,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=23"></script>
-<script src="app.js?v=23"></script>
+<script src="stats.js?v=24"></script>
+<script src="app.js?v=24"></script>
 </body>
 </html>

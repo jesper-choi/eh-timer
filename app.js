@@ -355,8 +355,12 @@ function loop() {
 	raf = requestAnimationFrame(loop);
 }
 
+let solvedCelebrationTimer = 0;
+
 function down() {
 	if (state !== 'idle' && state !== 'inspect') return;
+	document.body.classList.remove('just-solved');
+	clearTimeout(solvedCelebrationTimer);
 	const back = state;
 	setState('hold');
 	holdTimer = setTimeout(() => setState('ready'), HOLD_MS);
@@ -387,9 +391,18 @@ function stop(ts) {
 	penalty = 0;
 	save(); render();
 	nextScramble();
+
+	// 🏆 타이머 정지 시 100% 완성 쇼케이스 & 빅토리 쇼크웨이브 애니메이션 발동
+	document.body.classList.add('just-solved');
+	clearTimeout(solvedCelebrationTimer);
+	solvedCelebrationTimer = setTimeout(() => {
+		document.body.classList.remove('just-solved');
+	}, 3800);
 }
 function cancel() {
 	clearTimeout(holdTimer);
+	clearTimeout(solvedCelebrationTimer);
+	document.body.classList.remove('just-solved');
 	cancelAnimationFrame(raf);
 	inspAt = 0; penalty = 0;
 	setState('idle');
