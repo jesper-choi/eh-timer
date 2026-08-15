@@ -1,0 +1,41 @@
+#!/bin/bash
+# 더블클릭하면 서버를 띄우고 브라우저를 연다.
+# 이 앱은 프로젝트 폴더 안에 있어야 한다 (폴더째로 옮기는 건 상관없음).
+PORT=8000
+cd "$(dirname "$0")/../../.." || exit 1
+
+alert() { osascript -e "display dialog \"$1\" buttons {\"확인\"} default button 1 with icon caution with title \"eh timer\"" >/dev/null 2>&1; }
+
+# Finder에서 실행하면 PATH가 최소한이라 node를 직접 찾아준다
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+if ! command -v node >/dev/null 2>&1; then
+	for dir in "$HOME"/.nvm/versions/node/*/bin "$HOME"/.volta/bin "$HOME"/.local/bin; do
+		[ -x "$dir/node" ] && export PATH="$dir:$PATH" && break
+	done
+fi
+if ! command -v node >/dev/null 2>&1; then
+	alert "Node.js가 필요합니다.\n\nhttps://nodejs.org 에서 LTS 버전을 설치한 뒤 다시 실행해 주세요."
+	exit 1
+fi
+
+# 이미 떠 있으면 서버를 또 띄우지 않고 브라우저만 연다
+if curl -s -o /dev/null --max-time 1 "http://localhost:$PORT/"; then
+	open "http://localhost:$PORT/"
+	exit 0
+fi
+
+ENVFLAG=()
+[ -f .env ] && ENVFLAG=(--env-file=.env)     # gist 동기화 설정이 있으면 사용
+
+node "${ENVFLAG[@]}" server.js "$PORT" >> server.log 2>&1 &
+SRV=$!
+trap 'kill $SRV 2>/dev/null' EXIT INT TERM
+
+for _ in $(seq 1 60); do
+	curl -s -o /dev/null --max-time 1 "http://localhost:$PORT/" && break
+	kill -0 $SRV 2>/dev/null || { alert "서버를 시작하지 못했습니다.\n\nserver.log 를 확인해 주세요."; exit 1; }
+	sleep 0.1
+done
+
+open "http://localhost:$PORT/"
+wait $SRV

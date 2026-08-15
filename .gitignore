@@ -1,0 +1,6 @@
+.env
+solves.json
+solves.json.tmp
+server.log
+assets/_png/
+.DS_Store
