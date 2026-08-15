@@ -66,30 +66,32 @@ aside {
 	min-height: 0;
 }
 .brand {
-	padding: 16px 20px 14px;
+	padding: 16px 18px 14px;
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	font-size: 13px;
-	letter-spacing: .15em;
-	text-transform: uppercase;
-	color: var(--muted);
+	gap: 11px;
+	user-select: none;
 }
-.brand-badge {
-	background: rgba(56, 189, 248, 0.12);
-	border: 1px solid rgba(56, 189, 248, 0.4);
+.brand-title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.brand-eh {
 	color: #38bdf8;
 	font-weight: 800;
-	font-size: 11px;
-	padding: 2px 7px;
-	border-radius: 6px;
-	letter-spacing: 0.08em;
-	box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+	font-size: 15px;
+	letter-spacing: 0.05em;
+	line-height: 1;
 }
-.brand b { color: var(--text); font-weight: 700; letter-spacing: 0.12em; }
+.brand-timer {
+	color: var(--text);
+	font-weight: 600;
+	font-size: 13px;
+	letter-spacing: 0.16em;
+	line-height: 1;
+	opacity: 0.88;
+}
 
 /* ── 3D Animated Rubik's Cube ── */
 .cube-anim-box {
@@ -984,8 +986,10 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 					</div>
 				</div>
 			</div>
-			<span class="brand-badge">EH</span>
-			<b>TIMER</b>
+			<div class="brand-title">
+				<span class="brand-eh">EH</span>
+				<span class="brand-timer">TIMER</span>
+			</div>
 		</div>
 		<div class="session-ctrl">
 			<div class="session-select-wrap">
@@ -1121,7 +1125,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=25"></script>
-<script src="app.js?v=25"></script>
+<script src="stats.js?v=26"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>
