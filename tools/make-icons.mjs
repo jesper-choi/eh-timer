@@ -28,9 +28,9 @@ function icon(variant = 'wordmark') {
 
 	// 보는 방향이 (1,1,1) 이라 x=3, y=3, z=3 면이 앞으로 온다
 	const faces = [
-		['top', '#eef2f8', 1.00, (i, j, t) => [[i + t, j + t, 3], [i + 1 - t, j + t, 3], [i + 1 - t, j + 1 - t, 3], [i + t, j + 1 - t, 3]]],
-		['left', '#ff5a6e', 0.82, (i, j, t) => [[i + t, 3, j + 1 - t], [i + 1 - t, 3, j + 1 - t], [i + 1 - t, 3, j + t], [i + t, 3, j + t]]],
-		['right', '#5b7cfa', 0.68, (i, j, t) => [[3, i + t, j + 1 - t], [3, i + 1 - t, j + 1 - t], [3, i + 1 - t, j + t], [3, i + t, j + t]]]
+		['top', '#f8fafc', 1.15, (i, j, t) => [[i + t, j + t, 3], [i + 1 - t, j + t, 3], [i + 1 - t, j + 1 - t, 3], [i + t, j + 1 - t, 3]]],
+		['left', '#f87171', 0.88, (i, j, t) => [[i + t, 3, j + 1 - t], [i + 1 - t, 3, j + 1 - t], [i + 1 - t, 3, j + t], [i + t, 3, j + t]]],
+		['right', '#38bdf8', 0.95, (i, j, t) => [[3, i + t, j + 1 - t], [3, i + 1 - t, j + 1 - t], [3, i + 1 - t, j + t], [3, i + t, j + t]]]
 	];
 
 	let stickers = '';
@@ -50,30 +50,33 @@ function icon(variant = 'wordmark') {
 
 	let text = '';
 	if (variant === 'wordmark') {
-		text = `<text x="${C}" y="880" font-family='${FONT}' font-size="176" font-weight="600"
-			letter-spacing="6" text-anchor="middle" fill="#eef2f8">E.H</text>`;
+		text = `<text x="${C}" y="880" font-family='${FONT}' font-size="144" font-weight="800" text-anchor="middle">
+			<tspan fill="#38bdf8" letter-spacing="2">EH</tspan> <tspan fill="#f8fafc" font-weight="600" letter-spacing="8">TIMER</tspan>
+		</text>`;
 	} else {
 		// 윗면 평면 위에 글자를 얹는다 (아이소메트릭 기저벡터를 그대로 행렬로)
 		const [ox, oy] = proj(0, 0, 3);
 		const m = [0.866 * cell, 0.5 * cell, -0.866 * cell, 0.5 * cell, ox, oy].map(v => v.toFixed(3)).join(',');
 		const face = [[0, 0, 3], [3, 0, 3], [3, 3, 3], [0, 3, 3]].map(p => proj(...p).map(v => v.toFixed(1)).join(',')).join(' ');
-		text = `<polygon points="${face}" fill="#eef2f8" stroke="#eef2f8" stroke-width="${round}" stroke-linejoin="round"/>
-			<g transform="matrix(${m})"><text x="1.5" y="1.5" font-family='${FONT}' font-size="1.3" font-weight="700"
-			letter-spacing="0.04" text-anchor="middle" dominant-baseline="central" fill="#12161d">E.H</text></g>`;
+		text = `<polygon points="${face}" fill="#f8fafc" stroke="#f8fafc" stroke-width="${round}" stroke-linejoin="round"/>
+			<g transform="matrix(${m})"><text x="1.5" y="1.5" font-family='${FONT}' font-size="1.2" font-weight="800"
+			letter-spacing="0.04" text-anchor="middle" dominant-baseline="central" fill="#090d16">EH</text></g>`;
 	}
 
 	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}">
 <defs>
 	<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-		<stop offset="0" stop-color="#232a36"/><stop offset="0.55" stop-color="#141922"/><stop offset="1" stop-color="#0a0c10"/>
+		<stop offset="0" stop-color="#1e293b"/><stop offset="0.55" stop-color="#0f172a"/><stop offset="1" stop-color="#090d16"/>
 	</linearGradient>
-	<radialGradient id="glow" cx="0.5" cy="${(cy / S).toFixed(2)}" r="0.5">
-		<stop offset="0" stop-color="#5b7cfa" stop-opacity="0.30"/><stop offset="1" stop-color="#5b7cfa" stop-opacity="0"/>
+	<radialGradient id="glow" cx="0.5" cy="${(cy / S).toFixed(2)}" r="0.55">
+		<stop offset="0" stop-color="#38bdf8" stop-opacity="0.38"/>
+		<stop offset="0.6" stop-color="#4ade80" stop-opacity="0.12"/>
+		<stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
 	</radialGradient>
 </defs>
 <rect width="${S}" height="${S}" rx="228" fill="url(#bg)"/>
 <rect width="${S}" height="${S}" rx="228" fill="url(#glow)"/>
-<rect x="6" y="6" width="${S - 12}" height="${S - 12}" rx="222" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="12"/>
+<rect x="6" y="6" width="${S - 12}" height="${S - 12}" rx="222" fill="none" stroke="#38bdf8" stroke-opacity="0.16" stroke-width="12"/>
 ${stickers}
 ${text}
 </svg>`;

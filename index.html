@@ -494,7 +494,7 @@ header .hint {
 	margin-top: 0;
 	margin-bottom: 32px;
 	position: relative;
-	animation: stage-cube-glow-pulse 6.0s ease-in-out infinite;
+	animation: stage-cube-glow-pulse var(--cube-cycle, 6.0s) ease-in-out infinite;
 }
 @keyframes stage-cube-glow-pulse {
 	0%, 48% {
@@ -518,7 +518,7 @@ header .hint {
 	border: 2px solid rgba(56, 189, 248, 0);
 	pointer-events: none;
 	opacity: 0;
-	animation: solve-halo-burst 6.0s ease-out infinite;
+	animation: solve-halo-burst var(--cube-cycle, 6.0s) ease-out infinite;
 }
 @keyframes solve-halo-burst {
 	0%, 51% {
@@ -553,7 +553,7 @@ header .hint {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: stage-cube-solve-spin 6.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+	animation: stage-cube-solve-spin var(--cube-cycle, 6.0s) cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 @keyframes stage-cube-solve-spin {
 	/* ── PHASE 1: Cross & First Layer solving (0.0s - 1.5s) ── */
@@ -613,12 +613,12 @@ header .hint {
 .grid-7 { grid-template-columns: repeat(7, 1fr); gap: 0.8px; padding: 1.5px; }
 .grid-7 .c-sticker { border-radius: 0.8px; box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.3); }
 
-/* ── Progressive solve sticker animations (6.0s multi-phase) ── */
+/* ── Progressive solve sticker animations (multi-phase) ── */
 /* Front Face (Solves to Electric Blue #38bdf8) */
-.cs-b-p1 { animation: to-blue-p1 6.0s infinite; }
-.cs-b-p2 { animation: to-blue-p2 6.0s infinite; }
-.cs-b-p3 { animation: to-blue-p3 6.0s infinite; }
-.cs-b-p4 { animation: to-blue-p4 6.0s infinite; }
+.cs-b-p1 { animation: to-blue-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-b-p2 { animation: to-blue-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-b-p3 { animation: to-blue-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-b-p4 { animation: to-blue-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-blue-p1 {
 	0%, 12% { background: #f87171; }
@@ -642,10 +642,10 @@ header .hint {
 }
 
 /* Right Face (Solves to Red #f87171) */
-.cs-r-p1 { animation: to-red-p1 6.0s infinite; }
-.cs-r-p2 { animation: to-red-p2 6.0s infinite; }
-.cs-r-p3 { animation: to-red-p3 6.0s infinite; }
-.cs-r-p4 { animation: to-red-p4 6.0s infinite; }
+.cs-r-p1 { animation: to-red-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-r-p2 { animation: to-red-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-r-p3 { animation: to-red-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-r-p4 { animation: to-red-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-red-p1 {
 	0%, 12% { background: #38bdf8; }
@@ -669,10 +669,10 @@ header .hint {
 }
 
 /* Top Face (Solves to White #f8fafc) */
-.cs-w-p1 { animation: to-white-p1 6.0s infinite; }
-.cs-w-p2 { animation: to-white-p2 6.0s infinite; }
-.cs-w-p3 { animation: to-white-p3 6.0s infinite; }
-.cs-w-p4 { animation: to-white-p4 6.0s infinite; }
+.cs-w-p1 { animation: to-white-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-w-p2 { animation: to-white-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-w-p3 { animation: to-white-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-w-p4 { animation: to-white-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-white-p1 {
 	0%, 12% { background: #facc15; }
@@ -696,10 +696,10 @@ header .hint {
 }
 
 /* Left Face (Solves to Orange #fb923c) */
-.cs-o-p1 { animation: to-orange-p1 6.0s infinite; }
-.cs-o-p2 { animation: to-orange-p2 6.0s infinite; }
-.cs-o-p3 { animation: to-orange-p3 6.0s infinite; }
-.cs-o-p4 { animation: to-orange-p4 6.0s infinite; }
+.cs-o-p1 { animation: to-orange-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-o-p2 { animation: to-orange-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-o-p3 { animation: to-orange-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-o-p4 { animation: to-orange-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-orange-p1 {
 	0%, 12% { background: #4ade80; }
@@ -723,10 +723,10 @@ header .hint {
 }
 
 /* Back Face (Solves to Green #4ade80) */
-.cs-g-p1 { animation: to-green-p1 6.0s infinite; }
-.cs-g-p2 { animation: to-green-p2 6.0s infinite; }
-.cs-g-p3 { animation: to-green-p3 6.0s infinite; }
-.cs-g-p4 { animation: to-green-p4 6.0s infinite; }
+.cs-g-p1 { animation: to-green-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-g-p2 { animation: to-green-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-g-p3 { animation: to-green-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-g-p4 { animation: to-green-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-green-p1 {
 	0%, 12% { background: #fb923c; }
@@ -750,10 +750,10 @@ header .hint {
 }
 
 /* Bottom Face (Solves to Yellow #facc15) */
-.cs-y-p1 { animation: to-yellow-p1 6.0s infinite; }
-.cs-y-p2 { animation: to-yellow-p2 6.0s infinite; }
-.cs-y-p3 { animation: to-yellow-p3 6.0s infinite; }
-.cs-y-p4 { animation: to-yellow-p4 6.0s infinite; }
+.cs-y-p1 { animation: to-yellow-p1 var(--cube-cycle, 6.0s) infinite; }
+.cs-y-p2 { animation: to-yellow-p2 var(--cube-cycle, 6.0s) infinite; }
+.cs-y-p3 { animation: to-yellow-p3 var(--cube-cycle, 6.0s) infinite; }
+.cs-y-p4 { animation: to-yellow-p4 var(--cube-cycle, 6.0s) infinite; }
 
 @keyframes to-yellow-p1 {
 	0%, 12% { background: #f8fafc; }
@@ -1142,7 +1142,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="stats.js?v=31"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>

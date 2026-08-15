@@ -310,6 +310,17 @@ function renderSessions() {
 	el.event.value = ev.id;
 }
 
+const CUBE_CYCLES = {
+	'222': '4.2s',
+	'333': '6.0s',
+	'333oh': '6.0s',
+	'333bld': '6.0s',
+	'444': '8.2s',
+	'555': '10.5s',
+	'666': '13.0s',
+	'777': '16.0s'
+};
+
 function getCubeN(eventId) {
 	if (eventId === '222') return 2;
 	if (eventId === '444') return 4;
@@ -323,6 +334,9 @@ let currentRenderedN = 0;
 
 function updateStageCube() {
 	const n = getCubeN(ev.id);
+	const cycle = CUBE_CYCLES[ev.id] || '6.0s';
+	document.documentElement.style.setProperty('--cube-cycle', cycle);
+
 	if (currentRenderedN === n) return;
 	currentRenderedN = n;
 
