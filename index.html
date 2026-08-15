@@ -149,6 +149,7 @@ aside {
 .side-foot button {
 	flex: 1; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
 	padding: 8px; font-size: 12px; color: var(--muted); cursor: pointer;
+	white-space: nowrap;
 }
 .side-foot button:hover { color: var(--text); }
 
@@ -247,6 +248,8 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 	.stat { padding: 10px 12px; }
 	.stat b { font-size: 16px; }
 	.solve { padding: 6px 8px; }
+	.side-foot { padding: 10px 10px 14px; gap: 6px; }
+	.side-foot button { padding: 8px 4px; font-size: 11px; letter-spacing: -0.03em; }
 	footer { display: none; }      /* 키보드 안내는 터치에서 필요 없다 */
 }
 @media (pointer: coarse) and (min-width: 821px) {
@@ -268,6 +271,7 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 		<div class="session-ctrl">
 			<select id="session" title="세션 선택"></select>
 			<button id="addSession" title="새 세션 추가">+</button>
+			<button id="renSession" title="세션 이름 변경">✎</button>
 			<button id="delSession" title="세션 삭제">×</button>
 		</div>
 		<div class="stats" id="stats"></div>
@@ -284,6 +288,7 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 			<select id="event"></select>
 			<button id="insp" class="toggle">인스펙션 15초</button>
 			<button id="newscr" class="toggle">새 스크램블</button>
+			<button id="cancel" class="toggle">취소</button>
 			<button id="sync" class="toggle">동기화</button>
 			<span class="spacer"></span>
 			<span class="hint" id="status"></span>

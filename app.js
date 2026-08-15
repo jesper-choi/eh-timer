@@ -17,7 +17,7 @@ const $ = (id) => document.getElementById(id);
 const el = {
 	time: $('time'), scramble: $('scramble'), stats: $('stats'), times: $('times'),
 	count: $('count'), status: $('status'), event: $('event'), session: $('session'), file: $('file'),
-	addSession: $('addSession'), delSession: $('delSession')
+	addSession: $('addSession'), renSession: $('renSession'), delSession: $('delSession')
 };
 
 // ── storage ──────────────────────────────────────────────────────────────────
@@ -396,6 +396,15 @@ el.addSession.onclick = () => {
 	save(); render();
 };
 
+// 세션 이름 변경 (✎)
+el.renSession.onclick = () => {
+	const curr = currentSession();
+	const name = prompt('세션 이름 변경:', curr.name);
+	if (!name || !name.trim()) return;
+	curr.name = name.trim();
+	save(); renderSessions();
+};
+
 // 세션 삭제 (×)
 el.delSession.onclick = () => {
 	const ed = currentEventData();
@@ -416,6 +425,7 @@ el.delSession.onclick = () => {
 
 el.scramble.onclick = nextScramble;
 $('newscr').onclick = nextScramble;
+$('cancel').onclick = () => cancel();
 
 // ── 동기화 설정 창 ───────────────────────────────────────────────────────────
 const dlg = $('syncdlg'), gmsg = $('gmsg');
