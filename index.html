@@ -483,16 +483,16 @@ header .hint {
 	container-type: inline-size;
 	touch-action: none;        /* 롱프레스·스크롤·확대 제스처를 브라우저가 가로채지 않게 */
 	position: relative;
-	gap: 44px;
-	padding: 32px 16px 14px;
+	gap: 60px;
+	padding: 16px 16px 24px;
 }
 .stage-cube-wrap {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: opacity 0.25s ease, transform 0.25s ease;
-	margin-top: 8px;
-	margin-bottom: 22px;
+	margin-top: 0;
+	margin-bottom: 32px;
 	position: relative;
 	animation: stage-cube-glow-pulse 6.0s ease-in-out infinite;
 }
@@ -1024,8 +1024,8 @@ dialog .row button:first-child:hover {
 /* ── 터치 기기(태블릿/폰) 전용 배율. 마우스 쓰는 PC에는 적용되지 않는다 ── */
 @media (pointer: coarse) {
 	/* 태블릿 타이머와 대형 3D 큐브의 조화로운 레이아웃 */
-	#stage { gap: 36px; padding: 24px 16px 10px; }
-	.stage-cube-wrap { margin-top: 4px; margin-bottom: 16px; }
+	#stage { gap: 50px; padding: 14px 16px 20px; }
+	.stage-cube-wrap { margin-top: 0; margin-bottom: 24px; }
 	#time { font-size: min(calc(62cqw / (var(--ch, 6) * 0.62)), 17vh, 140px); font-weight: 300; }
 	#scramble { font-size: clamp(15px, 1.9vw, 21px); min-height: 2.5em; padding: 4px 20px 0; }
 	.stage-cube-wrap .cube-anim-box { width: 100px; height: 100px; perspective: 450px; }
@@ -1280,7 +1280,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=28"></script>
-<script src="app.js?v=28"></script>
+<script src="stats.js?v=29"></script>
+<script src="app.js?v=29"></script>
 </body>
 </html>
