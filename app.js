@@ -139,7 +139,8 @@ function gistSync() {
 			el.status.textContent = '';
 			render();
 		} catch (e) {
-			el.status.textContent = '동기화 실패 — 기록은 이 기기에 저장됨';
+			console.error('gistSync 실패:', e);
+			el.status.textContent = '동기화 실패: ' + (e.message || e) + ' — 기록은 이 기기에 저장됨';
 			throw e;
 		}
 	});
