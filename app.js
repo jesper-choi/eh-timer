@@ -446,7 +446,6 @@ $('renSave').onclick = () => {
 	curr.updatedAt = Date.now();
 	rendlg.close();
 	save(); renderSessions();
-	if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 };
 renInput.onkeydown = (e) => {
 	if (e.key === 'Enter') { e.preventDefault(); $('renSave').click(); }
@@ -463,7 +462,6 @@ el.delSession.onclick = () => {
 			curr.solves = [];
 			curr.updatedAt = Date.now();
 			save(); render();
-			if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 		}
 		return;
 	}
@@ -473,7 +471,6 @@ el.delSession.onclick = () => {
 	delete ed.sessions[ed.active];
 	ed.active = Object.keys(ed.sessions)[0];
 	save(); render();
-	if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 };
 
 el.scramble.onclick = nextScramble;
@@ -534,10 +531,6 @@ $('clear').onclick = () => {
 	curr.solves = [];
 	curr.updatedAt = Date.now();
 	save(); render();
-	if (!onServer && gist) {
-		clearTimeout(pushTimer);
-		gistSync().catch(() => {});
-	}
 };
 $('export').onclick = () => {
 	const a = document.createElement('a');
