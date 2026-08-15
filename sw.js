@@ -1,6 +1,6 @@
 // 오프라인 캐시. 태블릿에서 PC(서버) 없이도 열리게 한다.
 // 네트워크 우선 + 캐시 폴백: 온라인이면 항상 최신, 오프라인이면 캐시본.
-const CACHE = 'eh-timer-v7';   // 올리면 기기의 옛 캐시가 지워진다
+const CACHE = 'eh-timer-v8';   // 올리면 기기의 옛 캐시가 지워진다
 const ASSETS = [
 	'./', 'index.html', 'app.js', 'stats.js', 'scramble-worker.js', 'manifest.json',
 	'favicon.ico', 'assets/icon-192.png', 'assets/icon-512.png',
@@ -11,6 +11,11 @@ const ASSETS = [
 
 self.addEventListener('install', (e) => {
 	e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+
+// 페이지에서 SKIP_WAITING 메시지를 보내면 즉시 활성화
+self.addEventListener('message', (e) => {
+	if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {

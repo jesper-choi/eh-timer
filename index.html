@@ -322,7 +322,29 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 	</div>
 </dialog>
 
-<script src="stats.js?v=7"></script>
-<script src="app.js?v=7"></script>
+<script>
+// 서비스 워커 강제 갱신: index.html은 네트워크 우선이므로 이 인라인 스크립트는 항상 최신이다.
+// 구버전 SW가 구 app.js/stats.js를 캐시하고 있으면 여기서 강제로 갱신한다.
+if (navigator.serviceWorker) {
+	navigator.serviceWorker.register('sw.js').then(function(reg) {
+		reg.update().catch(function(){});
+		// 새 SW가 대기 중이면 즉시 활성화
+		if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+		reg.addEventListener('updatefound', function() {
+			var nw = reg.installing;
+			if (nw) nw.addEventListener('statechange', function() {
+				if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+					nw.postMessage({ type: 'SKIP_WAITING' });
+				}
+			});
+		});
+	}).catch(function(){});
+	navigator.serviceWorker.addEventListener('controllerchange', function() {
+		window.location.reload();
+	});
+}
+</script>
+<script src="stats.js?v=8"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

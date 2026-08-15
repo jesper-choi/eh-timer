@@ -353,15 +353,7 @@ document.addEventListener('pointerup', (e) => {
 	if (state === 'hold' || state === 'ready') up(e.timeStamp);
 });
 
-// 오프라인 캐시 등록 및 새 버전 배포 시 자동 갱신
-if (navigator.serviceWorker) {
-	navigator.serviceWorker.register('sw.js').then((reg) => {
-		reg.update().catch(() => {});
-	}).catch(() => {});
-	navigator.serviceWorker.addEventListener('controllerchange', () => {
-		window.location.reload();
-	});
-}
+// 서비스 워커 등록은 index.html 인라인 스크립트에서 처리 (구버전 캐시 문제 방지)
 
 // 태블릿/폰: 솔브 중에 화면이 꺼지지 않게 (지원 안 하는 브라우저면 조용히 무시)
 async function keepAwake() {
