@@ -6,6 +6,7 @@ function final(s) { return s.p === -1 ? Infinity : s.ms + (s.p === 2 ? 2000 : 0)
 // 소수 3자리(=1ms). 1분 넘으면 m:ss.sss
 function fmt(ms) {
 	if (!isFinite(ms)) return 'DNF';
+	ms = Math.max(0, ms);
 	const sec = ms / 1000;
 	if (sec >= 60) {
 		const m = Math.floor(sec / 60);
@@ -16,7 +17,7 @@ function fmt(ms) {
 
 // WCA average: 최고/최저 하나씩 버리고 평균, DNF 2개 이상이면 DNF
 function average(list) {
-	if (list.length < 3) return NaN;
+	if (!Array.isArray(list) || list.length < 3) return NaN;
 	const t = list.map(final).sort((a, b) => a - b);
 	if (t[t.length - 2] === Infinity) return Infinity;
 	const mid = t.slice(1, -1);

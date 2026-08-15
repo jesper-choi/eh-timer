@@ -492,6 +492,8 @@ header .hint {
 	margin-bottom: 32px;
 	position: relative;
 	animation: stage-cube-glow-pulse-3 6.0s ease-in-out infinite;
+	will-change: transform, filter;
+	transform: translateZ(0);
 }
 .stage-cube-wrap::after {
 	content: '';
@@ -515,6 +517,8 @@ header .hint {
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
 	animation: stage-cube-solve-spin-3 6.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+	will-change: transform;
+	transform: translateZ(0);
 }
 
 /* ── NxN 3D Cube Face Geometry ── */
@@ -1183,6 +1187,9 @@ body.ready .stage-cube-wrap {
 	font-weight: 300;
 	letter-spacing: -.02em;
 	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	contain: layout inline-size;
+	text-rendering: optimizeSpeed;
 	transition: color .08s, text-shadow .08s;
 }
 body.inspect #time { color: var(--warn); text-shadow: 0 0 20px rgba(251, 191, 36, 0.25); }
@@ -1430,7 +1437,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=36"></script>
-<script src="app.js?v=36"></script>
+<script src="stats.js?v=37"></script>
+<script src="app.js?v=37"></script>
 </body>
 </html>

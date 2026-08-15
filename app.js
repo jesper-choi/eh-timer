@@ -370,7 +370,8 @@ function renderStats() {
 	const all = solves();
 	const ok = all.map(final).filter(isFinite);
 	const mean = all.length && ok.length === all.length ? ok.reduce((a, b) => a + b, 0) / ok.length : NaN;
-	const tiles = [['best', ok.length ? Math.min(...ok) : NaN], ['avg', mean], ['ao5', ao(5)], ['ao12', ao(12)]];
+	const best = ok.length ? ok.reduce((m, x) => (x < m ? x : m), Infinity) : NaN;
+	const tiles = [['best', best], ['avg', mean], ['ao5', ao(5)], ['ao12', ao(12)]];
 	el.stats.innerHTML = tiles.map(([k, v]) =>
 		`<div class="stat"><span>${k}</span><b>${isNaN(v) ? '–' : fmt(v)}</b></div>`).join('');
 	el.count.textContent = all.length + ' solves';
@@ -510,9 +511,14 @@ function setState(s) {
 
 // 글자 수를 CSS에 알려줘서 폭에 맞는 최대 크기로 표시 (2:34.567 처럼 길어지면 자동으로 작아짐).
 // 최소 6칸으로 잡아둬서 9.999 → 10.000 넘어갈 때 크기가 튀지 않는다.
+let lastCh = -1;
 function setTime(txt) {
 	el.time.textContent = txt;
-	el.time.style.setProperty('--ch', Math.max(6, txt.length));
+	const ch = Math.max(6, txt.length);
+	if (ch !== lastCh) {
+		el.time.style.setProperty('--ch', ch);
+		lastCh = ch;
+	}
 }
 
 function loop() {
@@ -531,7 +537,7 @@ function down() {
 	holdTimer = setTimeout(() => setState('ready'), HOLD_MS);
 	holdBack = back;
 }
-function up(ts) {
+function up() {
 	clearTimeout(holdTimer);
 	if (state === 'hold') { setState(holdBack); return; }   // 너무 짧게 눌렀음
 	if (state !== 'ready') return;
@@ -577,15 +583,15 @@ function cancel() {
 }
 
 document.addEventListener('keydown', (e) => {
-	if (e.target.matches && e.target.matches('select, input')) return;
+	if (e.target.matches && e.target.matches('select, input, textarea')) return;
 	if (document.querySelector('dialog[open]')) return; // 다이얼로그가 열려 있으면 타이머는 반응하지 않는다
 	if (e.key === 'Escape') { cancel(); return; }
-	if (state === 'running') { e.preventDefault(); stop(e.timeStamp); return; }
-	if (e.key === ' ') { e.preventDefault(); if (!e.repeat) down(); }
+	if (state === 'running') { e.preventDefault(); stop(); return; }
+	if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); if (!e.repeat) down(); }
 });
 document.addEventListener('keyup', (e) => {
 	if (document.querySelector('dialog[open]')) return;
-	if (e.key === ' ') { e.preventDefault(); up(e.timeStamp); }
+	if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); up(); }
 });
 
 // ── 태블릿 / 모바일 롱프레스 팝업(뒤로/새로고침/공유/돋보기) 완전 차단 ─────────
@@ -604,26 +610,30 @@ window.addEventListener('selectstart', (e) => {
 // 터치 이벤트: touchstart에서 preventDefault를 해야 모바일 브라우저의 기본 롱프레스 팝업이 차단된다
 $('stage').addEventListener('touchstart', (e) => {
 	e.preventDefault();
-	state === 'running' ? stop(e.timeStamp) : down();
+	state === 'running' ? stop() : down();
 }, { passive: false });
 
 document.addEventListener('touchend', (e) => {
-	if (state === 'hold' || state === 'ready') up(e.timeStamp);
+	if (e.touches.length === 0 && (state === 'hold' || state === 'ready')) up();
+}, { passive: false });
+
+document.addEventListener('touchcancel', () => {
+	if (state === 'hold' || state === 'ready') cancel();
 }, { passive: false });
 
 // 마우스 / 스타일러스 클릭 지원 (터치는 touchstart/touchend 에서 전담)
 $('stage').addEventListener('pointerdown', (e) => {
 	if (e.pointerType === 'touch') return;
 	e.preventDefault();
-	state === 'running' ? stop(e.timeStamp) : down();
+	state === 'running' ? stop() : down();
 });
 document.addEventListener('pointerdown', (e) => {
 	if (e.pointerType === 'touch') return;
-	if (state === 'running') stop(e.timeStamp);
+	if (state === 'running') stop();
 });
 document.addEventListener('pointerup', (e) => {
 	if (e.pointerType === 'touch') return;
-	if (state === 'hold' || state === 'ready') up(e.timeStamp);
+	if (state === 'hold' || state === 'ready') up();
 });
 
 // 서비스 워커 등록은 index.html 인라인 스크립트에서 처리 (구버전 캐시 문제 방지)
