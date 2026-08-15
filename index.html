@@ -107,14 +107,14 @@ aside {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: cube-spin 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	animation: cube-spin 8s linear infinite;
 }
 @keyframes cube-spin {
-	0%   { transform: rotateX(-30deg) rotateY(45deg) rotateZ(0deg); }
-	25%  { transform: rotateX(-25deg) rotateY(135deg) rotateZ(6deg); }
-	50%  { transform: rotateX(55deg) rotateY(225deg) rotateZ(-6deg); }
-	75%  { transform: rotateX(-30deg) rotateY(405deg) rotateZ(0deg); }
-	100% { transform: rotateX(-30deg) rotateY(405deg) rotateZ(0deg); }
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg); }
+	25%  { transform: rotateX(-18deg) rotateY(135deg) rotateZ(5deg); }
+	50%  { transform: rotateX(22deg) rotateY(225deg) rotateZ(-4deg); }
+	75%  { transform: rotateX(-24deg) rotateY(315deg) rotateZ(4deg); }
+	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg); }
 }
 .cube-face {
 	position: absolute;
@@ -462,15 +462,16 @@ header .hint {
 	container-type: inline-size;
 	touch-action: none;        /* 롱프레스·스크롤·확대 제스처를 브라우저가 가로채지 않게 */
 	position: relative;
-	gap: 32px;
-	padding: 24px 16px 12px;
+	gap: 44px;
+	padding: 32px 16px 14px;
 }
 .stage-cube-wrap {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: opacity 0.25s ease, transform 0.25s ease;
-	margin-bottom: 14px;
+	margin-top: 8px;
+	margin-bottom: 22px;
 	position: relative;
 	animation: stage-cube-glow-pulse 6.0s ease-in-out infinite;
 }
@@ -531,37 +532,25 @@ header .hint {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: stage-cube-solve-spin 6.0s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+	animation: stage-cube-solve-spin 6.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 @keyframes stage-cube-solve-spin {
 	/* ── PHASE 1: Cross & First Layer solving (0.0s - 1.5s) ── */
-	0%   { transform: rotateX(-30deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
-	12%  { transform: rotateX(-22deg) rotateY(135deg) rotateZ(10deg) scale(1); }
-	24%  { transform: rotateX(55deg) rotateY(225deg) rotateZ(-8deg); }
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	15%  { transform: rotateX(-20deg) rotateY(150deg) rotateZ(6deg) scale(1); }
+	30%  { transform: rotateX(22deg) rotateY(255deg) rotateZ(-4deg) scale(1.02); }
 	
-	/* ── PHASE 2: F2L Middle Layer solving (1.5s - 2.4s) ── */
-	34%  { transform: rotateX(-125deg) rotateY(315deg) rotateZ(8deg); }
-	42%  { transform: rotateX(-28deg) rotateY(405deg) rotateZ(-6deg) scale(1.02); }
+	/* ── PHASE 2: F2L & OLL/PLL solving (1.5s - 3.1s) ── */
+	42%  { transform: rotateX(-22deg) rotateY(360deg) rotateZ(4deg) scale(1.03); }
+	50%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.12); }
 
-	/* ── PHASE 3: OLL / PLL Last Layer solving (2.4s - 3.1s) ── */
-	48%  { transform: rotateX(-34deg) rotateY(585deg) rotateZ(-4deg); }
+	/* ── PHASE 3: 🎉 SOLVED! Smooth Long Hold (3.1s - 5.4s) ── */
+	55%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.06); }
+	88%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.06); }
 
-	/* ── PHASE 4: 🎉 SOLVED! Proud Showcase & Long 2.2s Victory Hold (3.1s - 5.4s) ── */
-	52%  {
-		/* Snaps proudly into perfect isometric showcase angle with celebratory pop */
-		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.14);
-	}
-	56%  {
-		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.08);
-	}
-	88%  {
-		/* Solved hold - 2.2s celebration time! */
-		transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.08);
-	}
-
-	/* ── PHASE 5: Scramble snap for next cycle (5.4s - 6.0s) ── */
-	95%  { transform: rotateX(30deg) rotateY(795deg) rotateZ(15deg) scale(0.92); }
-	100% { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(0.96); }
+	/* ── PHASE 4: Smooth glide back to scramble (5.4s - 6.0s) ── */
+	95%  { transform: rotateX(-18deg) rotateY(420deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(0.96); }
 }
 .stage-cube-wrap .cube-face {
 	position: absolute;
@@ -762,18 +751,20 @@ body.inspect .stage-cube-wrap::after {
 	display: none;
 }
 body.inspect .stage-cube-wrap .cube-3d {
-	animation: cube-inspect-turn 4.5s linear infinite;
+	animation: cube-inspect-turn 5.0s linear infinite;
 }
 @keyframes cube-inspect-turn {
-	0%   { transform: rotateX(-24deg) rotateY(0deg); }
-	50%  { transform: rotateX(-32deg) rotateY(180deg) rotateZ(6deg); }
-	100% { transform: rotateX(-24deg) rotateY(360deg); }
+	0%   { transform: rotateX(-24deg) rotateY(0deg) rotateZ(0deg); }
+	25%  { transform: rotateX(-16deg) rotateY(90deg) rotateZ(4deg); }
+	50%  { transform: rotateX(-28deg) rotateY(180deg) rotateZ(0deg); }
+	75%  { transform: rotateX(-20deg) rotateY(270deg) rotateZ(-4deg); }
+	100% { transform: rotateX(-24deg) rotateY(360deg) rotateZ(0deg); }
 }
 body.inspect .stage-cube-wrap .c-sticker {
 	animation: none !important; /* 인스펙션 중에는 색상이 맞춰지지 않고 스크램블 유지 */
 }
 
-/* ── ⏱️ 2. 솔브 진행 중 (Running): 멈추지 않고 계속 빠르게 돌기만 함 (완성 X) ── */
+/* ── ⏱️ 2. 솔브 진행 중 (Running): 멈추지 않고 계속 매끄럽게 고속 회전 ── */
 body.running .stage-cube-wrap {
 	opacity: 0.95;
 	animation: none;
@@ -783,17 +774,17 @@ body.running .stage-cube-wrap::after {
 	display: none;
 }
 body.running .stage-cube-wrap .cube-3d {
-	animation: cube-running-fast-solve 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	animation: cube-running-fast-solve 1.0s linear infinite;
 }
 @keyframes cube-running-fast-solve {
-	0%   { transform: rotateX(-28deg) rotateY(35deg) rotateZ(0deg); }
-	25%  { transform: rotateX(-20deg) rotateY(125deg) rotateZ(8deg); }
-	50%  { transform: rotateX(60deg) rotateY(215deg) rotateZ(-6deg); }
-	75%  { transform: rotateX(-120deg) rotateY(305deg) rotateZ(6deg); }
-	100% { transform: rotateX(-28deg) rotateY(395deg) rotateZ(0deg); }
+	0%   { transform: rotateX(-24deg) rotateY(45deg) rotateZ(0deg); }
+	25%  { transform: rotateX(-18deg) rotateY(135deg) rotateZ(6deg); }
+	50%  { transform: rotateX(20deg) rotateY(225deg) rotateZ(-4deg); }
+	75%  { transform: rotateX(-22deg) rotateY(315deg) rotateZ(5deg); }
+	100% { transform: rotateX(-24deg) rotateY(405deg) rotateZ(0deg); }
 }
 body.running .stage-cube-wrap .c-sticker {
-	animation: running-scramble-twist 0.75s infinite !important;
+	animation: running-scramble-twist 1.0s linear infinite !important;
 }
 @keyframes running-scramble-twist {
 	0%   { filter: hue-rotate(0deg); }
@@ -841,13 +832,13 @@ body.just-solved .stage-cube-wrap::after {
 	}
 }
 body.just-solved .stage-cube-wrap .cube-3d {
-	animation: just-solved-showcase 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: just-solved-showcase 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes just-solved-showcase {
-	0%   { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.22); }
-	15%  { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.10); }
-	85%  { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.10); }
-	100% { transform: rotateX(-30deg) rotateY(765deg) rotateZ(0deg) scale(1.0); }
+	0%   { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.22); }
+	18%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.08); }
+	85%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.08); }
+	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.0); }
 }
 /* 스탑 시 전체 6면 100% 완벽한 단색 완성 */
 body.just-solved .cube-front .c-sticker  { background: #38bdf8 !important; animation: none !important; }
@@ -906,9 +897,10 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 /* ── 터치 기기(태블릿/폰) 전용 배율. 마우스 쓰는 PC에는 적용되지 않는다 ── */
 @media (pointer: coarse) {
 	/* 태블릿 타이머와 대형 3D 큐브의 조화로운 레이아웃 */
-	#time { font-size: min(calc(64cqw / (var(--ch, 6) * 0.62)), 18vh, 150px); font-weight: 300; }
+	#stage { gap: 36px; padding: 24px 16px 10px; }
+	.stage-cube-wrap { margin-top: 4px; margin-bottom: 16px; }
+	#time { font-size: min(calc(62cqw / (var(--ch, 6) * 0.62)), 17vh, 140px); font-weight: 300; }
 	#scramble { font-size: clamp(15px, 1.9vw, 21px); min-height: 2.5em; padding: 4px 20px 0; }
-	.stage-cube-wrap { margin-bottom: 6px; }
 	.stage-cube-wrap .cube-anim-box { width: 100px; height: 100px; perspective: 450px; }
 	.stage-cube-wrap .cube-3d { width: 68px; height: 68px; }
 	.stage-cube-wrap .cube-face { width: 68px; height: 68px; border-radius: 5px; padding: 2.5px; gap: 2.5px; }
@@ -1129,7 +1121,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=24"></script>
-<script src="app.js?v=24"></script>
+<script src="stats.js?v=25"></script>
+<script src="app.js?v=25"></script>
 </body>
 </html>
