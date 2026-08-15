@@ -88,6 +88,113 @@ assert.equal(inspPenaltyOf(17001), -1);
 	const empty = merge({}, {});
 	assert.ok(empty.events['333'].sessions['s_1']);
 	assert.equal(countSolves(empty), 0);
+
+	// 4. 세션 이름 변경 테스트 (더 최근 updatedAt을 가진 이름이 유지됨)
+	const ren_a = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '오래된 이름', solves: [], updatedAt: 100 }
+				}
+			}
+		}
+	};
+	const ren_b = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '새 이름', solves: [], updatedAt: 200 }
+				}
+			}
+		}
+	};
+	const m_ren = merge(ren_a, ren_b);
+	assert.equal(m_ren.events['333'].sessions['s1'].name, '새 이름');
+
+	// 5. 기록 비우기(clearedAt) 테스트 (clearedAt 이전 기록은 원격에 있어도 다시 부활하지 않음)
+	const clr_remote = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 0, ts: 100 }, { ms: 2000, p: 0, ts: 200 }] }
+				}
+			}
+		}
+	};
+	const clr_local = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 3000, p: 0, ts: 350 }], clearedAt: 300 }
+				}
+			}
+		}
+	};
+	const m_clr = merge(clr_local, clr_remote);
+	// ts: 100, 200은 clearedAt: 300 이하라 제거되고, ts: 350(비운 후 새 솔브)만 남아야 함
+	assert.deepEqual(m_clr.events['333'].sessions['s1'].solves.map(x => x.ts), [350]);
+
+	// 6. 개별 솔브 삭제(deleted) 테스트
+	const del_remote = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 1000, p: 0, ts: 100 }, { ms: 2000, p: 0, ts: 200 }] }
+				}
+			}
+		}
+	};
+	const del_local = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [{ ms: 2000, p: 0, ts: 200 }], deleted: [100] }
+				}
+			}
+		}
+	};
+	const m_del = merge(del_local, del_remote);
+	assert.deepEqual(m_del.events['333'].sessions['s1'].solves.map(x => x.ts), [200]);
+
+	// 7. 세션 삭제(deletedSessions) 테스트
+	const sess_remote = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [] },
+					s2: { id: 's2', name: '삭제될 세션', solves: [{ ms: 1000, p: 0, ts: 100 }] }
+				}
+			}
+		}
+	};
+	const sess_local = {
+		version: 2,
+		events: {
+			'333': {
+				active: 's1',
+				sessions: {
+					s1: { id: 's1', name: '메인', solves: [] }
+				},
+				deletedSessions: ['s2']
+			}
+		}
+	};
+	const m_sess = merge(sess_local, sess_remote);
+	assert.equal(m_sess.events['333'].sessions['s2'], undefined, '삭제된 세션은 부활하지 않아야 함');
 }
 
 // 스크램블 엔진(vendor/*)이 실제로 돌아가는지

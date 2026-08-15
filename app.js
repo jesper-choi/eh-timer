@@ -35,10 +35,10 @@ try {
 
 let ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
 
-const currentEventData = () => db.events[ev.id] || (db.events[ev.id] = { active: 's_1', sessions: { s_1: { id: 's_1', name: 'session 1', solves: [] } } });
+const currentEventData = () => db.events[ev.id] || (db.events[ev.id] = { active: 's_1', sessions: { s_1: { id: 's_1', name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] } }, deletedSessions: [] });
 const currentSession = () => {
 	const ed = currentEventData();
-	return ed.sessions[ed.active] || (ed.sessions[ed.active] = { id: ed.active, name: 'session 1', solves: [] });
+	return ed.sessions[ed.active] || (ed.sessions[ed.active] = { id: ed.active, name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] });
 };
 
 const solves = () => currentSession().solves;
@@ -60,15 +60,19 @@ function clean(data) {
 				sessions[sId] = {
 					id: String(s.id || sId),
 					name: String(s.name || 'session 1').slice(0, 50),
-					solves: cleanSolves
+					solves: cleanSolves,
+					updatedAt: typeof s.updatedAt === 'number' && isFinite(s.updatedAt) ? s.updatedAt : 0,
+					clearedAt: typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0,
+					deleted: Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : []
 				};
 			}
 		}
 		if (Object.keys(sessions).length === 0) {
-			sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [] };
+			sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] };
 		}
 		const active = (evData.active && sessions[evData.active]) ? evData.active : Object.keys(sessions)[0];
-		out.events[evId] = { active, sessions };
+		const deletedSessions = Array.isArray(evData.deletedSessions) ? evData.deletedSessions.filter(x => typeof x === 'string').slice(-100) : [];
+		out.events[evId] = { active, sessions, deletedSessions };
 	}
 	return out;
 }
@@ -223,8 +227,15 @@ el.times.onclick = (e) => {
 	const btn = e.target.closest('button'), row = e.target.closest('.solve');
 	if (!btn || !row) return;
 	const i = +row.dataset.i, act = btn.dataset.act;
-	if (act === 'x') solves().splice(i, 1);
-	else solves()[i].p = solves()[i].p === +act ? 0 : +act;
+	const curr = currentSession();
+	if (act === 'x') {
+		const del = curr.solves.splice(i, 1)[0];
+		if (del && del.ts) {
+			curr.deleted = (curr.deleted || []).concat(del.ts);
+		}
+	} else {
+		curr.solves[i].p = curr.solves[i].p === +act ? 0 : +act;
+	}
 	save(); render();
 };
 
@@ -294,13 +305,13 @@ function cancel() {
 
 document.addEventListener('keydown', (e) => {
 	if (e.target.matches && e.target.matches('select, input')) return;
-	if ($('syncdlg').open) return;                    // 설정 창이 열려 있으면 타이머는 반응하지 않는다
+	if (document.querySelector('dialog[open]')) return; // 다이얼로그가 열려 있으면 타이머는 반응하지 않는다
 	if (e.key === 'Escape') { cancel(); return; }
 	if (state === 'running') { e.preventDefault(); stop(e.timeStamp); return; }
 	if (e.key === ' ') { e.preventDefault(); if (!e.repeat) down(); }
 });
 document.addEventListener('keyup', (e) => {
-	if ($('syncdlg').open) return;
+	if (document.querySelector('dialog[open]')) return;
 	if (e.key === ' ') { e.preventDefault(); up(e.timeStamp); }
 });
 
@@ -391,18 +402,31 @@ el.addSession.onclick = () => {
 	}
 	const name = 'session ' + n;
 	const id = 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-	ed.sessions[id] = { id, name, solves: [] };
+	ed.sessions[id] = { id, name, solves: [], updatedAt: Date.now(), clearedAt: 0, deleted: [] };
 	ed.active = id;
 	save(); render();
 };
 
-// 세션 이름 변경 (✎)
+// 세션 이름 변경 (✎) - 모바일/태블릿에서도 100% 동작하는 커스텀 다이얼로그
+const rendlg = $('rendlg'), renInput = $('renInput');
 el.renSession.onclick = () => {
 	const curr = currentSession();
-	const name = prompt('세션 이름 변경:', curr.name);
-	if (!name || !name.trim()) return;
-	curr.name = name.trim();
+	renInput.value = curr.name;
+	rendlg.showModal();
+	setTimeout(() => renInput.focus(), 50);
+};
+$('renCancel').onclick = () => rendlg.close();
+$('renSave').onclick = () => {
+	const name = renInput.value.trim();
+	if (!name) return;
+	const curr = currentSession();
+	curr.name = name;
+	curr.updatedAt = Date.now();
+	rendlg.close();
 	save(); renderSessions();
+};
+renInput.onkeydown = (e) => {
+	if (e.key === 'Enter') { e.preventDefault(); $('renSave').click(); }
 };
 
 // 세션 삭제 (×)
@@ -411,13 +435,16 @@ el.delSession.onclick = () => {
 	const keys = Object.keys(ed.sessions);
 	if (keys.length <= 1) {
 		if (confirm('마지막 세션입니다. 기록을 모두 초기화하시겠습니까?')) {
-			currentSession().solves = [];
+			const curr = currentSession();
+			curr.clearedAt = Date.now();
+			curr.solves = [];
 			save(); render();
 		}
 		return;
 	}
 	const curr = currentSession();
 	if (!confirm(`'${curr.name}' 세션을 삭제하시겠습니까?\n(기록 ${curr.solves.length}개가 함께 삭제됩니다)`)) return;
+	ed.deletedSessions = (ed.deletedSessions || []).concat(ed.active);
 	delete ed.sessions[ed.active];
 	ed.active = Object.keys(ed.sessions)[0];
 	save(); render();
@@ -475,6 +502,7 @@ inspBtn.onclick = () => {
 $('clear').onclick = () => {
 	const curr = currentSession();
 	if (!confirm(`'${curr.name}' 세션의 기록 ${curr.solves.length}개를 모두 지웁니다.`)) return;
+	curr.clearedAt = Date.now();
 	curr.solves = [];
 	save(); render();
 };

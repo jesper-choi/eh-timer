@@ -59,16 +59,20 @@ function normalize(data) {
 					sessions[sId] = {
 						id: String(s.id || sId),
 						name: String(s.name || 'session 1'),
-						solves: Array.isArray(s.solves) ? s.solves : []
+						solves: Array.isArray(s.solves) ? s.solves : [],
+						updatedAt: typeof s.updatedAt === 'number' && isFinite(s.updatedAt) ? s.updatedAt : 0,
+						clearedAt: typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0,
+						deleted: Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : []
 					};
 				}
 				if (Object.keys(sessions).length === 0) {
-					sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [] };
+					sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] };
 				}
 				const active = (evData.active && sessions[evData.active]) ? evData.active : Object.keys(sessions)[0];
-				out.events[evId] = { active, sessions };
+				const deletedSessions = Array.isArray(evData.deletedSessions) ? evData.deletedSessions.filter(x => typeof x === 'string').slice(-100) : [];
+				out.events[evId] = { active, sessions, deletedSessions };
 			} else {
-				out.events[evId] = { active: 's_1', sessions: { s_1: { id: 's_1', name: 'session 1', solves: [] } } };
+				out.events[evId] = { active: 's_1', sessions: { s_1: { id: 's_1', name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] } }, deletedSessions: [] };
 			}
 		}
 		return out;
@@ -77,7 +81,7 @@ function normalize(data) {
 	// Case 2: Top-level sessions
 	if (data.sessions && typeof data.sessions === 'object' && !Array.isArray(data.sessions)) {
 		for (const evId of DEFAULT_EVENTS) {
-			out.events[evId] = { active: 's_1', sessions: {} };
+			out.events[evId] = { active: 's_1', sessions: {}, deletedSessions: [] };
 		}
 		for (const [sId, s] of Object.entries(data.sessions)) {
 			if (!s || typeof s !== 'object') continue;
@@ -85,12 +89,15 @@ function normalize(data) {
 			out.events[evId].sessions[sId] = {
 				id: String(s.id || sId),
 				name: String(s.name || 'session 1'),
-				solves: Array.isArray(s.solves) ? s.solves : []
+				solves: Array.isArray(s.solves) ? s.solves : [],
+				updatedAt: typeof s.updatedAt === 'number' && isFinite(s.updatedAt) ? s.updatedAt : 0,
+				clearedAt: typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0,
+				deleted: Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : []
 			};
 		}
 		for (const evId of DEFAULT_EVENTS) {
 			if (Object.keys(out.events[evId].sessions).length === 0) {
-				out.events[evId].sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [] };
+				out.events[evId].sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [], updatedAt: 0, clearedAt: 0, deleted: [] };
 			}
 			out.events[evId].active = Object.keys(out.events[evId].sessions)[0];
 		}
@@ -103,8 +110,9 @@ function normalize(data) {
 		out.events[evId] = {
 			active: 's_1',
 			sessions: {
-				s_1: { id: 's_1', name: 'session 1', solves }
-			}
+				s_1: { id: 's_1', name: 'session 1', solves, updatedAt: 0, clearedAt: 0, deleted: [] }
+			},
+			deletedSessions: []
 		};
 	}
 	return out;
@@ -133,37 +141,65 @@ function merge(a, b) {
 	};
 	const allEvents = new Set([...Object.keys(na.events), ...Object.keys(nb.events)]);
 	for (const evId of allEvents) {
-		const ea = na.events[evId];
-		const eb = nb.events[evId];
-		if (ea && eb) {
-			const sessions = {};
-			const allSessions = new Set([...Object.keys(ea.sessions), ...Object.keys(eb.sessions)]);
-			for (const sId of allSessions) {
-				const sa = ea.sessions[sId];
-				const sb = eb.sessions[sId];
-				if (sa && sb) {
-					const seen = new Set();
-					const solves = (sa.solves || []).concat(sb.solves || [])
-						.filter(s => s && typeof s === 'object' && typeof s.ts === 'number' && !seen.has(s.ts) && seen.add(s.ts))
-						.sort((x, y) => x.ts - y.ts);
-					sessions[sId] = {
-						id: sId,
-						name: sb.name || sa.name || 'session 1',
-						solves
-					};
-				} else if (sa) {
-					sessions[sId] = sa;
-				} else if (sb) {
-					sessions[sId] = sb;
-				}
+		const ea = na.events[evId] || { active: 's_1', sessions: {}, deletedSessions: [] };
+		const eb = nb.events[evId] || { active: 's_1', sessions: {}, deletedSessions: [] };
+
+		const delSessions = new Set([...(ea.deletedSessions || []), ...(eb.deletedSessions || [])]);
+		const sessions = {};
+		const allSessionIds = new Set([...Object.keys(ea.sessions || {}), ...Object.keys(eb.sessions || {})]);
+
+		for (const sId of allSessionIds) {
+			if (delSessions.has(sId)) continue; // 삭제된 세션은 복구하지 않음
+
+			const sa = ea.sessions && ea.sessions[sId];
+			const sb = eb.sessions && eb.sessions[sId];
+
+			if (sa && sb) {
+				const aTime = sa.updatedAt || 0;
+				const bTime = sb.updatedAt || 0;
+				const name = (aTime >= bTime ? sa.name : sb.name) || sa.name || sb.name || 'session 1';
+				const updatedAt = Math.max(aTime, bTime);
+
+				const clearedAt = Math.max(sa.clearedAt || 0, sb.clearedAt || 0);
+				const delSolves = new Set([...(sa.deleted || []), ...(sb.deleted || [])]);
+
+				const seen = new Set();
+				const combined = (sa.solves || []).concat(sb.solves || []);
+				const solves = combined
+					.filter(s => s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts) && !seen.has(s.ts) && seen.add(s.ts))
+					.sort((x, y) => x.ts - y.ts);
+
+				sessions[sId] = {
+					id: sId,
+					name,
+					solves,
+					updatedAt,
+					clearedAt,
+					deleted: Array.from(delSolves).slice(-500)
+				};
+			} else if (sa) {
+				const clearedAt = sa.clearedAt || 0;
+				const delSolves = new Set(sa.deleted || []);
+				const solves = (sa.solves || []).filter(s => s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts));
+				sessions[sId] = { ...sa, solves };
+			} else if (sb) {
+				const clearedAt = sb.clearedAt || 0;
+				const delSolves = new Set(sb.deleted || []);
+				const solves = (sb.solves || []).filter(s => s && typeof s === 'object' && typeof s.ts === 'number' && s.ts > clearedAt && !delSolves.has(s.ts));
+				sessions[sId] = { ...sb, solves };
 			}
-			const active = (eb.active && sessions[eb.active]) ? eb.active : ((ea.active && sessions[ea.active]) ? ea.active : Object.keys(sessions)[0]);
-			out.events[evId] = { active, sessions };
-		} else if (ea) {
-			out.events[evId] = ea;
-		} else if (eb) {
-			out.events[evId] = eb;
 		}
+
+		if (Object.keys(sessions).length === 0) {
+			sessions['s_1'] = { id: 's_1', name: 'session 1', solves: [], updatedAt: Date.now(), clearedAt: 0, deleted: [] };
+		}
+
+		const active = (ea.active && sessions[ea.active]) ? ea.active : ((eb.active && sessions[eb.active]) ? eb.active : Object.keys(sessions)[0]);
+		out.events[evId] = {
+			active,
+			sessions,
+			deletedSessions: Array.from(delSessions).slice(-100)
+		};
 	}
 	return out;
 }
