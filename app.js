@@ -275,7 +275,7 @@ function renderStats() {
 	const all = solves();
 	const ok = all.map(final).filter(isFinite);
 	const mean = all.length && ok.length === all.length ? ok.reduce((a, b) => a + b, 0) / ok.length : NaN;
-	const tiles = [['best', ok.length ? Math.min(...ok) : NaN], ['mean', mean], ['ao5', ao(5)], ['ao12', ao(12)]];
+	const tiles = [['best', ok.length ? Math.min(...ok) : NaN], ['avg', mean], ['ao5', ao(5)], ['ao12', ao(12)]];
 	el.stats.innerHTML = tiles.map(([k, v]) =>
 		`<div class="stat"><span>${k}</span><b>${isNaN(v) ? '–' : fmt(v)}</b></div>`).join('');
 	el.count.textContent = all.length + ' solves';
