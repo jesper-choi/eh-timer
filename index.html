@@ -460,11 +460,55 @@ header .hint {
 }
 #stage {
 	flex: 1;
-	display: grid;
-	place-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	min-height: 0;
 	container-type: inline-size;
 	touch-action: none;        /* 롱프레스·스크롤·확대 제스처를 브라우저가 가로채지 않게 */
+	position: relative;
+	gap: 6px;
+}
+.stage-cube-wrap {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	margin-bottom: -4px;
+}
+.stage-cube-wrap .cube-anim-box {
+	width: 36px;
+	height: 36px;
+	perspective: 160px;
+}
+.stage-cube-wrap .cube-3d {
+	width: 22px;
+	height: 22px;
+}
+.stage-cube-wrap .cube-face {
+	width: 22px;
+	height: 22px;
+	border-radius: 3px;
+	padding: 1.5px;
+	gap: 1px;
+}
+.stage-cube-wrap .cube-front  { transform: rotateY(0deg) translateZ(11px); }
+.stage-cube-wrap .cube-back   { transform: rotateY(180deg) translateZ(11px); }
+.stage-cube-wrap .cube-right  { transform: rotateY(90deg) translateZ(11px); }
+.stage-cube-wrap .cube-left   { transform: rotateY(-90deg) translateZ(11px); }
+.stage-cube-wrap .cube-top    { transform: rotateX(90deg) translateZ(11px); }
+.stage-cube-wrap .cube-bottom { transform: rotateX(-90deg) translateZ(11px); }
+
+.stage-cube-wrap .c-sticker {
+	border-radius: 1px;
+}
+
+body.running .stage-cube-wrap,
+body.hold .stage-cube-wrap,
+body.ready .stage-cube-wrap {
+	opacity: 0;
+	transform: scale(0.75);
 }
 #time {
 	/* 글자 수(--ch)에 맞춰 가로폭을 꽉 채우는 크기. 고정폭 폰트 한 자 ≈ 0.62em */
@@ -633,7 +677,45 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 			</div>
 		</header>
 		<div id="scramble">스크램블 생성 중…</div>
-		<div id="stage"><div id="time" style="--ch: 6">0.000</div></div>
+		<div id="stage">
+			<div class="stage-cube-wrap">
+				<div class="cube-anim-box" title="Rubik's Cube">
+					<div class="cube-3d">
+						<div class="cube-face cube-front">
+							<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
+							<span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span>
+							<span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-b"></span>
+						</div>
+						<div class="cube-face cube-back">
+							<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
+							<span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span>
+							<span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-g"></span>
+						</div>
+						<div class="cube-face cube-right">
+							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+							<span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span><span class="c-sticker cs-r"></span>
+						</div>
+						<div class="cube-face cube-left">
+							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+							<span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span><span class="c-sticker cs-o"></span>
+						</div>
+						<div class="cube-face cube-top">
+							<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
+							<span class="c-sticker cs-w"></span><span class="c-sticker cs-b"></span><span class="c-sticker cs-w"></span>
+							<span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span><span class="c-sticker cs-w"></span>
+						</div>
+						<div class="cube-face cube-bottom">
+							<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
+							<span class="c-sticker cs-y"></span><span class="c-sticker cs-g"></span><span class="c-sticker cs-y"></span>
+							<span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span><span class="c-sticker cs-y"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="time" style="--ch: 6">0.000</div>
+		</div>
 		<footer>스페이스를 누르고 있다가 떼면 시작(인스펙션 켜면 카운트다운 먼저) · 아무 키나 누르면 정지 · Esc 타이머 리셋 · 스크램블 클릭하면 새로 생성</footer>
 	</main>
 </div>
@@ -684,7 +766,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=17"></script>
-<script src="app.js?v=17"></script>
+<script src="stats.js?v=18"></script>
+<script src="app.js?v=18"></script>
 </body>
 </html>
