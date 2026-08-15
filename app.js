@@ -255,6 +255,12 @@ document.addEventListener('keyup', (e) => {
 	if (e.key === ' ') { e.preventDefault(); up(e.timeStamp); }
 });
 
+// 안드로이드는 길게 누르면 컨텍스트 메뉴를 띄운다. 홀드로 시작하는 앱이라 막아야 한다.
+// 단, 입력창에서는 붙여넣기가 필요하니 그대로 둔다.
+document.addEventListener('contextmenu', (e) => {
+	if (!(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault();
+});
+
 // 터치/클릭도 동일하게 (스테이지 영역에서만 시작)
 $('stage').addEventListener('pointerdown', (e) => { e.preventDefault(); state === 'running' ? stop(e.timeStamp) : down(); });
 document.addEventListener('pointerdown', (e) => { if (state === 'running') stop(e.timeStamp); });
