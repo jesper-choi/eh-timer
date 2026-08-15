@@ -475,33 +475,44 @@ header .hint {
 	align-items: center;
 	justify-content: center;
 	transition: opacity 0.25s ease, transform 0.25s ease;
-	margin-bottom: -4px;
+	margin-bottom: 2px;
 }
 .stage-cube-wrap .cube-anim-box {
-	width: 36px;
-	height: 36px;
-	perspective: 160px;
+	width: 72px;
+	height: 72px;
+	perspective: 280px;
 }
 .stage-cube-wrap .cube-3d {
-	width: 22px;
-	height: 22px;
+	width: 48px;
+	height: 48px;
+	animation: stage-cube-fast-spin 3.2s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+}
+@keyframes stage-cube-fast-spin {
+	0%   { transform: rotateX(-20deg) rotateY(32deg) rotateZ(0deg); }
+	20%  { transform: rotateX(-20deg) rotateY(122deg) rotateZ(8deg); }
+	40%  { transform: rotateX(68deg) rotateY(212deg) rotateZ(0deg); }
+	60%  { transform: rotateX(-112deg) rotateY(302deg) rotateZ(-8deg); }
+	80%  { transform: rotateX(-20deg) rotateY(392deg) rotateZ(0deg); }
+	100% { transform: rotateX(-20deg) rotateY(392deg) rotateZ(0deg); }
 }
 .stage-cube-wrap .cube-face {
-	width: 22px;
-	height: 22px;
-	border-radius: 3px;
-	padding: 1.5px;
-	gap: 1px;
+	width: 48px;
+	height: 48px;
+	border-radius: 5px;
+	padding: 2px;
+	gap: 2px;
+	border: 1px solid #111827;
 }
-.stage-cube-wrap .cube-front  { transform: rotateY(0deg) translateZ(11px); }
-.stage-cube-wrap .cube-back   { transform: rotateY(180deg) translateZ(11px); }
-.stage-cube-wrap .cube-right  { transform: rotateY(90deg) translateZ(11px); }
-.stage-cube-wrap .cube-left   { transform: rotateY(-90deg) translateZ(11px); }
-.stage-cube-wrap .cube-top    { transform: rotateX(90deg) translateZ(11px); }
-.stage-cube-wrap .cube-bottom { transform: rotateX(-90deg) translateZ(11px); }
+.stage-cube-wrap .cube-front  { transform: rotateY(0deg) translateZ(24px); }
+.stage-cube-wrap .cube-back   { transform: rotateY(180deg) translateZ(24px); }
+.stage-cube-wrap .cube-right  { transform: rotateY(90deg) translateZ(24px); }
+.stage-cube-wrap .cube-left   { transform: rotateY(-90deg) translateZ(24px); }
+.stage-cube-wrap .cube-top    { transform: rotateX(90deg) translateZ(24px); }
+.stage-cube-wrap .cube-bottom { transform: rotateX(-90deg) translateZ(24px); }
 
 .stage-cube-wrap .c-sticker {
-	border-radius: 1px;
+	border-radius: 2px;
+	box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.4);
 }
 
 body.running .stage-cube-wrap,
@@ -766,7 +777,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=18"></script>
-<script src="app.js?v=18"></script>
+<script src="stats.js?v=19"></script>
+<script src="app.js?v=19"></script>
 </body>
 </html>
