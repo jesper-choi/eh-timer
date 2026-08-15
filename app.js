@@ -330,12 +330,12 @@ function getCubeN(eventId) {
 	return 3;
 }
 
-let currentRenderedN = 0;
-
 function updateStageCube() {
 	const n = getCubeN(ev.id);
-	const cycle = CUBE_CYCLES[ev.id] || '6.0s';
-	document.documentElement.style.setProperty('--cube-cycle', cycle);
+	const wrap = document.querySelector('.stage-cube-wrap');
+	if (wrap) {
+		wrap.className = 'stage-cube-wrap cube-grid-' + n;
+	}
 
 	if (currentRenderedN === n) return;
 	currentRenderedN = n;

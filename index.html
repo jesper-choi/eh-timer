@@ -494,21 +494,7 @@ header .hint {
 	margin-top: 0;
 	margin-bottom: 32px;
 	position: relative;
-	animation: stage-cube-glow-pulse var(--cube-cycle, 6.0s) ease-in-out infinite;
-}
-@keyframes stage-cube-glow-pulse {
-	0%, 48% {
-		filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2));
-	}
-	52%, 88% {
-		/* 🎉 SOLVED VICTORY BURST! Glorious emerald & electric cyan ambient shockwave (2+ sec hold) */
-		filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95))
-		        drop-shadow(0 0 18px rgba(74, 222, 128, 0.8))
-		        drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
-	}
-	94%, 100% {
-		filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2));
-	}
+	animation: stage-cube-glow-pulse-3 6.6s ease-in-out infinite;
 }
 .stage-cube-wrap::after {
 	content: '';
@@ -518,29 +504,7 @@ header .hint {
 	border: 2px solid rgba(56, 189, 248, 0);
 	pointer-events: none;
 	opacity: 0;
-	animation: solve-halo-burst var(--cube-cycle, 6.0s) ease-out infinite;
-}
-@keyframes solve-halo-burst {
-	0%, 51% {
-		transform: scale(0.6);
-		opacity: 0;
-		border-color: rgba(56, 189, 248, 0);
-	}
-	52% {
-		transform: scale(0.85);
-		opacity: 1;
-		border-color: rgba(56, 189, 248, 0.9);
-		box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4);
-	}
-	68% {
-		transform: scale(1.6);
-		opacity: 0;
-		border-color: rgba(74, 222, 128, 0);
-	}
-	100% {
-		transform: scale(1.7);
-		opacity: 0;
-	}
+	animation: solve-halo-burst-3 6.6s ease-out infinite;
 }
 .stage-cube-wrap .cube-anim-box {
 	width: 120px;
@@ -553,25 +517,7 @@ header .hint {
 	position: relative;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
-	animation: stage-cube-solve-spin var(--cube-cycle, 6.0s) cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-}
-@keyframes stage-cube-solve-spin {
-	/* ── PHASE 1: Cross & First Layer solving (0.0s - 1.5s) ── */
-	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
-	15%  { transform: rotateX(-20deg) rotateY(150deg) rotateZ(6deg) scale(1); }
-	30%  { transform: rotateX(22deg) rotateY(255deg) rotateZ(-4deg) scale(1.02); }
-	
-	/* ── PHASE 2: F2L & OLL/PLL solving (1.5s - 3.1s) ── */
-	42%  { transform: rotateX(-22deg) rotateY(360deg) rotateZ(4deg) scale(1.03); }
-	50%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.12); }
-
-	/* ── PHASE 3: 🎉 SOLVED! Smooth Long Hold (3.1s - 5.4s) ── */
-	55%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.06); }
-	88%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.06); }
-
-	/* ── PHASE 4: Smooth glide back to scramble (5.4s - 6.0s) ── */
-	95%  { transform: rotateX(-18deg) rotateY(420deg) rotateZ(6deg) scale(0.94); }
-	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(0.96); }
+	animation: stage-cube-solve-spin-3 6.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
 /* ── NxN 3D Cube Face Geometry ── */
@@ -613,168 +559,513 @@ header .hint {
 .grid-7 { grid-template-columns: repeat(7, 1fr); gap: 0.8px; padding: 1.5px; }
 .grid-7 .c-sticker { border-radius: 0.8px; box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.3); }
 
-/* ── Progressive solve sticker animations (multi-phase) ── */
-/* Front Face (Solves to Electric Blue #38bdf8) */
-.cs-b-p1 { animation: to-blue-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-b-p2 { animation: to-blue-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-b-p3 { animation: to-blue-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-b-p4 { animation: to-blue-p4 var(--cube-cycle, 6.0s) infinite; }
+/* ── 2x2 Fast Solving System (4.4s cycle: ~2.0s solve, 2.0s hold) ── */
+.cube-grid-2 { animation: stage-cube-glow-pulse-2 4.4s ease-in-out infinite; }
+.cube-grid-2::after { animation: solve-halo-burst-2 4.4s ease-out infinite; }
+.cube-grid-2 .cube-3d { animation: stage-cube-solve-spin-2 4.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-2 .cs-b-p1 { animation: to-blue-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-b-p2 { animation: to-blue-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-b-p3 { animation: to-blue-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-b-p4 { animation: to-blue-2-p4 4.4s infinite; }
+.cube-grid-2 .cs-r-p1 { animation: to-red-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-r-p2 { animation: to-red-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-r-p3 { animation: to-red-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-r-p4 { animation: to-red-2-p4 4.4s infinite; }
+.cube-grid-2 .cs-w-p1 { animation: to-white-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-w-p2 { animation: to-white-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-w-p3 { animation: to-white-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-w-p4 { animation: to-white-2-p4 4.4s infinite; }
+.cube-grid-2 .cs-o-p1 { animation: to-orange-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-o-p2 { animation: to-orange-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-o-p3 { animation: to-orange-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-o-p4 { animation: to-orange-2-p4 4.4s infinite; }
+.cube-grid-2 .cs-g-p1 { animation: to-green-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-g-p2 { animation: to-green-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-g-p3 { animation: to-green-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-g-p4 { animation: to-green-2-p4 4.4s infinite; }
+.cube-grid-2 .cs-y-p1 { animation: to-yellow-2-p1 4.4s infinite; }
+.cube-grid-2 .cs-y-p2 { animation: to-yellow-2-p2 4.4s infinite; }
+.cube-grid-2 .cs-y-p3 { animation: to-yellow-2-p3 4.4s infinite; }
+.cube-grid-2 .cs-y-p4 { animation: to-yellow-2-p4 4.4s infinite; }
 
-@keyframes to-blue-p1 {
-	0%, 12% { background: #f87171; }
-	24%, 90% { background: #38bdf8; }
-	96%, 100% { background: #f87171; }
+@keyframes stage-cube-solve-spin-2 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	15%  { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg) scale(1); }
+	30%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg) scale(1.02); }
+	45%  { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.12); }
+	48%, 90% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(1.06); }
+	96%  { transform: rotateX(-18deg) rotateY(420deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(405deg) rotateZ(0deg) scale(0.96); }
 }
-@keyframes to-blue-p2 {
-	0%, 20% { background: #facc15; }
-	35%, 90% { background: #38bdf8; }
-	96%, 100% { background: #facc15; }
+@keyframes stage-cube-glow-pulse-2 {
+	0%, 42% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	45%, 90% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	96%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
 }
-@keyframes to-blue-p3 {
-	0%, 35% { background: #4ade80; }
-	45%, 90% { background: #38bdf8; }
-	96%, 100% { background: #4ade80; }
+@keyframes solve-halo-burst-2 {
+	0%, 44% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	45% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	62% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
 }
-@keyframes to-blue-p4 {
-	0%, 42% { background: #fb923c; }
-	52%, 90% { background: #38bdf8; }
-	96%, 100% { background: #fb923c; }
-}
+@keyframes to-blue-2-p1 { 0%, 15% { background: #f87171; } 25%, 90% { background: #38bdf8; } 96%, 100% { background: #f87171; } }
+@keyframes to-blue-2-p2 { 0%, 25% { background: #facc15; } 35%, 90% { background: #38bdf8; } 96%, 100% { background: #facc15; } }
+@keyframes to-blue-2-p3 { 0%, 35% { background: #4ade80; } 42%, 90% { background: #38bdf8; } 96%, 100% { background: #4ade80; } }
+@keyframes to-blue-2-p4 { 0%, 40% { background: #fb923c; } 45%, 90% { background: #38bdf8; } 96%, 100% { background: #fb923c; } }
 
-/* Right Face (Solves to Red #f87171) */
-.cs-r-p1 { animation: to-red-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-r-p2 { animation: to-red-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-r-p3 { animation: to-red-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-r-p4 { animation: to-red-p4 var(--cube-cycle, 6.0s) infinite; }
+@keyframes to-red-2-p1 { 0%, 15% { background: #38bdf8; } 25%, 90% { background: #f87171; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-red-2-p2 { 0%, 25% { background: #fb923c; } 35%, 90% { background: #f87171; } 96%, 100% { background: #fb923c; } }
+@keyframes to-red-2-p3 { 0%, 35% { background: #f8fafc; } 42%, 90% { background: #f87171; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-red-2-p4 { 0%, 40% { background: #facc15; } 45%, 90% { background: #f87171; } 96%, 100% { background: #facc15; } }
 
-@keyframes to-red-p1 {
-	0%, 12% { background: #38bdf8; }
-	24%, 90% { background: #f87171; }
-	96%, 100% { background: #38bdf8; }
-}
-@keyframes to-red-p2 {
-	0%, 20% { background: #fb923c; }
-	35%, 90% { background: #f87171; }
-	96%, 100% { background: #fb923c; }
-}
-@keyframes to-red-p3 {
-	0%, 35% { background: #f8fafc; }
-	45%, 90% { background: #f87171; }
-	96%, 100% { background: #f8fafc; }
-}
-@keyframes to-red-p4 {
-	0%, 42% { background: #facc15; }
-	52%, 90% { background: #f87171; }
-	96%, 100% { background: #facc15; }
-}
+@keyframes to-white-2-p1 { 0%, 15% { background: #facc15; } 25%, 90% { background: #f8fafc; } 96%, 100% { background: #facc15; } }
+@keyframes to-white-2-p2 { 0%, 25% { background: #38bdf8; } 35%, 90% { background: #f8fafc; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-white-2-p3 { 0%, 35% { background: #fb923c; } 42%, 90% { background: #f8fafc; } 96%, 100% { background: #fb923c; } }
+@keyframes to-white-2-p4 { 0%, 40% { background: #4ade80; } 45%, 90% { background: #f8fafc; } 96%, 100% { background: #4ade80; } }
 
-/* Top Face (Solves to White #f8fafc) */
-.cs-w-p1 { animation: to-white-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-w-p2 { animation: to-white-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-w-p3 { animation: to-white-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-w-p4 { animation: to-white-p4 var(--cube-cycle, 6.0s) infinite; }
+@keyframes to-orange-2-p1 { 0%, 15% { background: #4ade80; } 25%, 90% { background: #fb923c; } 96%, 100% { background: #4ade80; } }
+@keyframes to-orange-2-p2 { 0%, 25% { background: #f87171; } 35%, 90% { background: #fb923c; } 96%, 100% { background: #f87171; } }
+@keyframes to-orange-2-p3 { 0%, 35% { background: #38bdf8; } 42%, 90% { background: #fb923c; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-orange-2-p4 { 0%, 40% { background: #facc15; } 45%, 90% { background: #fb923c; } 96%, 100% { background: #facc15; } }
 
-@keyframes to-white-p1 {
-	0%, 12% { background: #facc15; }
-	24%, 90% { background: #f8fafc; }
-	96%, 100% { background: #facc15; }
-}
-@keyframes to-white-p2 {
-	0%, 20% { background: #38bdf8; }
-	35%, 90% { background: #f8fafc; }
-	96%, 100% { background: #38bdf8; }
-}
-@keyframes to-white-p3 {
-	0%, 35% { background: #fb923c; }
-	45%, 90% { background: #f8fafc; }
-	96%, 100% { background: #fb923c; }
-}
-@keyframes to-white-p4 {
-	0%, 42% { background: #4ade80; }
-	52%, 90% { background: #f8fafc; }
-	96%, 100% { background: #4ade80; }
-}
+@keyframes to-green-2-p1 { 0%, 15% { background: #fb923c; } 25%, 90% { background: #4ade80; } 96%, 100% { background: #fb923c; } }
+@keyframes to-green-2-p2 { 0%, 25% { background: #f87171; } 35%, 90% { background: #4ade80; } 96%, 100% { background: #f87171; } }
+@keyframes to-green-2-p3 { 0%, 35% { background: #facc15; } 42%, 90% { background: #4ade80; } 96%, 100% { background: #facc15; } }
+@keyframes to-green-2-p4 { 0%, 40% { background: #38bdf8; } 45%, 90% { background: #4ade80; } 96%, 100% { background: #38bdf8; } }
 
-/* Left Face (Solves to Orange #fb923c) */
-.cs-o-p1 { animation: to-orange-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-o-p2 { animation: to-orange-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-o-p3 { animation: to-orange-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-o-p4 { animation: to-orange-p4 var(--cube-cycle, 6.0s) infinite; }
+@keyframes to-yellow-2-p1 { 0%, 15% { background: #f8fafc; } 25%, 90% { background: #facc15; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-2-p2 { 0%, 25% { background: #4ade80; } 35%, 90% { background: #facc15; } 96%, 100% { background: #4ade80; } }
+@keyframes to-yellow-2-p3 { 0%, 35% { background: #38bdf8; } 42%, 90% { background: #facc15; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-2-p4 { 0%, 40% { background: #f87171; } 45%, 90% { background: #facc15; } 96%, 100% { background: #f87171; } }
 
-@keyframes to-orange-p1 {
-	0%, 12% { background: #4ade80; }
-	24%, 90% { background: #fb923c; }
-	96%, 100% { background: #4ade80; }
-}
-@keyframes to-orange-p2 {
-	0%, 20% { background: #f87171; }
-	35%, 90% { background: #fb923c; }
-	96%, 100% { background: #f87171; }
-}
-@keyframes to-orange-p3 {
-	0%, 35% { background: #38bdf8; }
-	45%, 90% { background: #fb923c; }
-	96%, 100% { background: #38bdf8; }
-}
-@keyframes to-orange-p4 {
-	0%, 42% { background: #facc15; }
-	52%, 90% { background: #fb923c; }
-	96%, 100% { background: #facc15; }
-}
+/* ── 3x3 CFOP Solving System (6.6s cycle: ~4.0s solve, 2.1s hold) ── */
+.cube-grid-3 { animation: stage-cube-glow-pulse-3 6.6s ease-in-out infinite; }
+.cube-grid-3::after { animation: solve-halo-burst-3 6.6s ease-out infinite; }
+.cube-grid-3 .cube-3d { animation: stage-cube-solve-spin-3 6.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-3 .cs-b-p1 { animation: to-blue-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-b-p2 { animation: to-blue-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-b-p3 { animation: to-blue-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-b-p4 { animation: to-blue-3-p4 6.6s infinite; }
+.cube-grid-3 .cs-r-p1 { animation: to-red-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-r-p2 { animation: to-red-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-r-p3 { animation: to-red-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-r-p4 { animation: to-red-3-p4 6.6s infinite; }
+.cube-grid-3 .cs-w-p1 { animation: to-white-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-w-p2 { animation: to-white-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-w-p3 { animation: to-white-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-w-p4 { animation: to-white-3-p4 6.6s infinite; }
+.cube-grid-3 .cs-o-p1 { animation: to-orange-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-o-p2 { animation: to-orange-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-o-p3 { animation: to-orange-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-o-p4 { animation: to-orange-3-p4 6.6s infinite; }
+.cube-grid-3 .cs-g-p1 { animation: to-green-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-g-p2 { animation: to-green-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-g-p3 { animation: to-green-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-g-p4 { animation: to-green-3-p4 6.6s infinite; }
+.cube-grid-3 .cs-y-p1 { animation: to-yellow-3-p1 6.6s infinite; }
+.cube-grid-3 .cs-y-p2 { animation: to-yellow-3-p2 6.6s infinite; }
+.cube-grid-3 .cs-y-p3 { animation: to-yellow-3-p3 6.6s infinite; }
+.cube-grid-3 .cs-y-p4 { animation: to-yellow-3-p4 6.6s infinite; }
 
-/* Back Face (Solves to Green #4ade80) */
-.cs-g-p1 { animation: to-green-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-g-p2 { animation: to-green-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-g-p3 { animation: to-green-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-g-p4 { animation: to-green-p4 var(--cube-cycle, 6.0s) infinite; }
+@keyframes stage-cube-solve-spin-3 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	10%  { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg); }
+	20%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg); }
+	30%  { transform: rotateX(-24deg) rotateY(450deg) rotateZ(4deg); }
+	40%  { transform: rotateX(18deg) rotateY(585deg) rotateZ(-6deg); }
+	50%  { transform: rotateX(-20deg) rotateY(720deg) rotateZ(4deg); }
+	60%  { transform: rotateX(-26deg) rotateY(765deg) rotateZ(0deg) scale(1.12); }
+	63%, 92% { transform: rotateX(-26deg) rotateY(765deg) rotateZ(0deg) scale(1.06); }
+	96%  { transform: rotateX(-18deg) rotateY(780deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(765deg) rotateZ(0deg) scale(0.96); }
+}
+@keyframes stage-cube-glow-pulse-3 {
+	0%, 56% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	60%, 92% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	96%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+}
+@keyframes solve-halo-burst-3 {
+	0%, 59% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	60% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	74% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes to-blue-3-p1 { 0%, 12% { background: #f87171; } 20%, 92% { background: #38bdf8; } 96%, 100% { background: #f87171; } }
+@keyframes to-blue-3-p2 { 0%, 25% { background: #facc15; } 38%, 92% { background: #38bdf8; } 96%, 100% { background: #facc15; } }
+@keyframes to-blue-3-p3 { 0%, 38% { background: #4ade80; } 50%, 92% { background: #38bdf8; } 96%, 100% { background: #4ade80; } }
+@keyframes to-blue-3-p4 { 0%, 50% { background: #fb923c; } 60%, 92% { background: #38bdf8; } 96%, 100% { background: #fb923c; } }
 
-@keyframes to-green-p1 {
-	0%, 12% { background: #fb923c; }
-	24%, 90% { background: #4ade80; }
-	96%, 100% { background: #fb923c; }
-}
-@keyframes to-green-p2 {
-	0%, 20% { background: #f87171; }
-	35%, 90% { background: #4ade80; }
-	96%, 100% { background: #f87171; }
-}
-@keyframes to-green-p3 {
-	0%, 35% { background: #facc15; }
-	45%, 90% { background: #4ade80; }
-	96%, 100% { background: #facc15; }
-}
-@keyframes to-green-p4 {
-	0%, 42% { background: #38bdf8; }
-	52%, 90% { background: #4ade80; }
-	96%, 100% { background: #38bdf8; }
-}
+@keyframes to-red-3-p1 { 0%, 12% { background: #38bdf8; } 20%, 92% { background: #f87171; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-red-3-p2 { 0%, 25% { background: #fb923c; } 38%, 92% { background: #f87171; } 96%, 100% { background: #fb923c; } }
+@keyframes to-red-3-p3 { 0%, 38% { background: #f8fafc; } 50%, 92% { background: #f87171; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-red-3-p4 { 0%, 50% { background: #facc15; } 60%, 92% { background: #f87171; } 96%, 100% { background: #facc15; } }
 
-/* Bottom Face (Solves to Yellow #facc15) */
-.cs-y-p1 { animation: to-yellow-p1 var(--cube-cycle, 6.0s) infinite; }
-.cs-y-p2 { animation: to-yellow-p2 var(--cube-cycle, 6.0s) infinite; }
-.cs-y-p3 { animation: to-yellow-p3 var(--cube-cycle, 6.0s) infinite; }
-.cs-y-p4 { animation: to-yellow-p4 var(--cube-cycle, 6.0s) infinite; }
+@keyframes to-white-3-p1 { 0%, 12% { background: #facc15; } 20%, 92% { background: #f8fafc; } 96%, 100% { background: #facc15; } }
+@keyframes to-white-3-p2 { 0%, 25% { background: #38bdf8; } 38%, 92% { background: #f8fafc; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-white-3-p3 { 0%, 38% { background: #fb923c; } 50%, 92% { background: #f8fafc; } 96%, 100% { background: #fb923c; } }
+@keyframes to-white-3-p4 { 0%, 50% { background: #4ade80; } 60%, 92% { background: #f8fafc; } 96%, 100% { background: #4ade80; } }
 
-@keyframes to-yellow-p1 {
-	0%, 12% { background: #f8fafc; }
-	24%, 90% { background: #facc15; }
-	96%, 100% { background: #f8fafc; }
+@keyframes to-orange-3-p1 { 0%, 12% { background: #4ade80; } 20%, 92% { background: #fb923c; } 96%, 100% { background: #4ade80; } }
+@keyframes to-orange-3-p2 { 0%, 25% { background: #f87171; } 38%, 92% { background: #fb923c; } 96%, 100% { background: #f87171; } }
+@keyframes to-orange-3-p3 { 0%, 38% { background: #38bdf8; } 50%, 92% { background: #fb923c; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-orange-3-p4 { 0%, 50% { background: #facc15; } 60%, 92% { background: #fb923c; } 96%, 100% { background: #facc15; } }
+
+@keyframes to-green-3-p1 { 0%, 12% { background: #fb923c; } 20%, 92% { background: #4ade80; } 96%, 100% { background: #fb923c; } }
+@keyframes to-green-3-p2 { 0%, 25% { background: #f87171; } 38%, 92% { background: #4ade80; } 96%, 100% { background: #f87171; } }
+@keyframes to-green-3-p3 { 0%, 38% { background: #facc15; } 50%, 92% { background: #4ade80; } 96%, 100% { background: #facc15; } }
+@keyframes to-green-3-p4 { 0%, 50% { background: #38bdf8; } 60%, 92% { background: #4ade80; } 96%, 100% { background: #38bdf8; } }
+
+@keyframes to-yellow-3-p1 { 0%, 12% { background: #f8fafc; } 20%, 92% { background: #facc15; } 96%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-3-p2 { 0%, 25% { background: #4ade80; } 38%, 92% { background: #facc15; } 96%, 100% { background: #4ade80; } }
+@keyframes to-yellow-3-p3 { 0%, 38% { background: #38bdf8; } 50%, 92% { background: #facc15; } 96%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-3-p4 { 0%, 50% { background: #f87171; } 60%, 92% { background: #facc15; } 96%, 100% { background: #f87171; } }
+
+/* ── 4x4 Big Cube Solving System (9.0s cycle: ~6.0s solve, 2.4s hold) ── */
+.cube-grid-4 { animation: stage-cube-glow-pulse-4 9.0s ease-in-out infinite; }
+.cube-grid-4::after { animation: solve-halo-burst-4 9.0s ease-out infinite; }
+.cube-grid-4 .cube-3d { animation: stage-cube-solve-spin-4 9.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-4 .cs-b-p1 { animation: to-blue-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-b-p2 { animation: to-blue-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-b-p3 { animation: to-blue-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-b-p4 { animation: to-blue-4-p4 9.0s infinite; }
+.cube-grid-4 .cs-r-p1 { animation: to-red-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-r-p2 { animation: to-red-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-r-p3 { animation: to-red-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-r-p4 { animation: to-red-4-p4 9.0s infinite; }
+.cube-grid-4 .cs-w-p1 { animation: to-white-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-w-p2 { animation: to-white-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-w-p3 { animation: to-white-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-w-p4 { animation: to-white-4-p4 9.0s infinite; }
+.cube-grid-4 .cs-o-p1 { animation: to-orange-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-o-p2 { animation: to-orange-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-o-p3 { animation: to-orange-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-o-p4 { animation: to-orange-4-p4 9.0s infinite; }
+.cube-grid-4 .cs-g-p1 { animation: to-green-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-g-p2 { animation: to-green-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-g-p3 { animation: to-green-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-g-p4 { animation: to-green-4-p4 9.0s infinite; }
+.cube-grid-4 .cs-y-p1 { animation: to-yellow-4-p1 9.0s infinite; }
+.cube-grid-4 .cs-y-p2 { animation: to-yellow-4-p2 9.0s infinite; }
+.cube-grid-4 .cs-y-p3 { animation: to-yellow-4-p3 9.0s infinite; }
+.cube-grid-4 .cs-y-p4 { animation: to-yellow-4-p4 9.0s infinite; }
+
+@keyframes stage-cube-solve-spin-4 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	8%   { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg); }
+	16%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg); }
+	25%  { transform: rotateX(-24deg) rotateY(450deg) rotateZ(4deg); }
+	33%  { transform: rotateX(18deg) rotateY(585deg) rotateZ(-6deg); }
+	41%  { transform: rotateX(-20deg) rotateY(720deg) rotateZ(4deg); }
+	50%  { transform: rotateX(22deg) rotateY(855deg) rotateZ(-4deg); }
+	58%  { transform: rotateX(-18deg) rotateY(990deg) rotateZ(4deg); }
+	66%  { transform: rotateX(-26deg) rotateY(1125deg) rotateZ(0deg) scale(1.12); }
+	69%, 93% { transform: rotateX(-26deg) rotateY(1125deg) rotateZ(0deg) scale(1.06); }
+	97%  { transform: rotateX(-18deg) rotateY(1140deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(1125deg) rotateZ(0deg) scale(0.96); }
 }
-@keyframes to-yellow-p2 {
-	0%, 20% { background: #4ade80; }
-	35%, 90% { background: #facc15; }
-	96%, 100% { background: #4ade80; }
+@keyframes stage-cube-glow-pulse-4 {
+	0%, 62% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	66%, 93% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	97%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
 }
-@keyframes to-yellow-p3 {
-	0%, 35% { background: #38bdf8; }
-	45%, 90% { background: #facc15; }
-	96%, 100% { background: #38bdf8; }
+@keyframes solve-halo-burst-4 {
+	0%, 65% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	66% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	77% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
 }
-@keyframes to-yellow-p4 {
-	0%, 42% { background: #f87171; }
-	52%, 90% { background: #facc15; }
-	96%, 100% { background: #f87171; }
+@keyframes to-blue-4-p1 { 0%, 15% { background: #f87171; } 25%, 93% { background: #38bdf8; } 97%, 100% { background: #f87171; } }
+@keyframes to-blue-4-p2 { 0%, 30% { background: #facc15; } 45%, 93% { background: #38bdf8; } 97%, 100% { background: #facc15; } }
+@keyframes to-blue-4-p3 { 0%, 45% { background: #4ade80; } 58%, 93% { background: #38bdf8; } 97%, 100% { background: #4ade80; } }
+@keyframes to-blue-4-p4 { 0%, 58% { background: #fb923c; } 66%, 93% { background: #38bdf8; } 97%, 100% { background: #fb923c; } }
+
+@keyframes to-red-4-p1 { 0%, 15% { background: #38bdf8; } 25%, 93% { background: #f87171; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-red-4-p2 { 0%, 30% { background: #fb923c; } 45%, 93% { background: #f87171; } 97%, 100% { background: #fb923c; } }
+@keyframes to-red-4-p3 { 0%, 45% { background: #f8fafc; } 58%, 93% { background: #f87171; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-red-4-p4 { 0%, 58% { background: #facc15; } 66%, 93% { background: #f87171; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-white-4-p1 { 0%, 15% { background: #facc15; } 25%, 93% { background: #f8fafc; } 97%, 100% { background: #facc15; } }
+@keyframes to-white-4-p2 { 0%, 30% { background: #38bdf8; } 45%, 93% { background: #f8fafc; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-white-4-p3 { 0%, 45% { background: #fb923c; } 58%, 93% { background: #f8fafc; } 97%, 100% { background: #fb923c; } }
+@keyframes to-white-4-p4 { 0%, 58% { background: #4ade80; } 66%, 93% { background: #f8fafc; } 97%, 100% { background: #4ade80; } }
+
+@keyframes to-orange-4-p1 { 0%, 15% { background: #4ade80; } 25%, 93% { background: #fb923c; } 97%, 100% { background: #4ade80; } }
+@keyframes to-orange-4-p2 { 0%, 30% { background: #f87171; } 45%, 93% { background: #fb923c; } 97%, 100% { background: #f87171; } }
+@keyframes to-orange-4-p3 { 0%, 45% { background: #38bdf8; } 58%, 93% { background: #fb923c; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-orange-4-p4 { 0%, 58% { background: #facc15; } 66%, 93% { background: #fb923c; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-green-4-p1 { 0%, 15% { background: #fb923c; } 25%, 93% { background: #4ade80; } 97%, 100% { background: #fb923c; } }
+@keyframes to-green-4-p2 { 0%, 30% { background: #f87171; } 45%, 93% { background: #4ade80; } 97%, 100% { background: #f87171; } }
+@keyframes to-green-4-p3 { 0%, 45% { background: #facc15; } 58%, 93% { background: #4ade80; } 97%, 100% { background: #facc15; } }
+@keyframes to-green-4-p4 { 0%, 58% { background: #38bdf8; } 66%, 93% { background: #4ade80; } 97%, 100% { background: #38bdf8; } }
+
+@keyframes to-yellow-4-p1 { 0%, 15% { background: #f8fafc; } 25%, 93% { background: #facc15; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-4-p2 { 0%, 30% { background: #4ade80; } 45%, 93% { background: #facc15; } 97%, 100% { background: #4ade80; } }
+@keyframes to-yellow-4-p3 { 0%, 45% { background: #38bdf8; } 58%, 93% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-4-p4 { 0%, 58% { background: #f87171; } 66%, 93% { background: #facc15; } 97%, 100% { background: #f87171; } }
+
+/* ── 5x5 Big Cube Solving System (11.5s cycle: ~8.0s solve, 2.8s hold) ── */
+.cube-grid-5 { animation: stage-cube-glow-pulse-5 11.5s ease-in-out infinite; }
+.cube-grid-5::after { animation: solve-halo-burst-5 11.5s ease-out infinite; }
+.cube-grid-5 .cube-3d { animation: stage-cube-solve-spin-5 11.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-5 .cs-b-p1 { animation: to-blue-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-b-p2 { animation: to-blue-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-b-p3 { animation: to-blue-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-b-p4 { animation: to-blue-5-p4 11.5s infinite; }
+.cube-grid-5 .cs-r-p1 { animation: to-red-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-r-p2 { animation: to-red-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-r-p3 { animation: to-red-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-r-p4 { animation: to-red-5-p4 11.5s infinite; }
+.cube-grid-5 .cs-w-p1 { animation: to-white-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-w-p2 { animation: to-white-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-w-p3 { animation: to-white-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-w-p4 { animation: to-white-5-p4 11.5s infinite; }
+.cube-grid-5 .cs-o-p1 { animation: to-orange-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-o-p2 { animation: to-orange-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-o-p3 { animation: to-orange-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-o-p4 { animation: to-orange-5-p4 11.5s infinite; }
+.cube-grid-5 .cs-g-p1 { animation: to-green-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-g-p2 { animation: to-green-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-g-p3 { animation: to-green-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-g-p4 { animation: to-green-5-p4 11.5s infinite; }
+.cube-grid-5 .cs-y-p1 { animation: to-yellow-5-p1 11.5s infinite; }
+.cube-grid-5 .cs-y-p2 { animation: to-yellow-5-p2 11.5s infinite; }
+.cube-grid-5 .cs-y-p3 { animation: to-yellow-5-p3 11.5s infinite; }
+.cube-grid-5 .cs-y-p4 { animation: to-yellow-5-p4 11.5s infinite; }
+
+@keyframes stage-cube-solve-spin-5 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	7%   { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg); }
+	14%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg); }
+	21%  { transform: rotateX(-24deg) rotateY(450deg) rotateZ(4deg); }
+	28%  { transform: rotateX(18deg) rotateY(585deg) rotateZ(-6deg); }
+	35%  { transform: rotateX(-20deg) rotateY(720deg) rotateZ(4deg); }
+	42%  { transform: rotateX(22deg) rotateY(855deg) rotateZ(-4deg); }
+	49%  { transform: rotateX(-18deg) rotateY(990deg) rotateZ(4deg); }
+	56%  { transform: rotateX(20deg) rotateY(1125deg) rotateZ(-4deg); }
+	63%  { transform: rotateX(-22deg) rotateY(1260deg) rotateZ(4deg); }
+	70%  { transform: rotateX(-26deg) rotateY(1485deg) rotateZ(0deg) scale(1.12); }
+	73%, 94% { transform: rotateX(-26deg) rotateY(1485deg) rotateZ(0deg) scale(1.06); }
+	97%  { transform: rotateX(-18deg) rotateY(1500deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(1485deg) rotateZ(0deg) scale(0.96); }
 }
+@keyframes stage-cube-glow-pulse-5 {
+	0%, 66% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	70%, 94% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	97%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+}
+@keyframes solve-halo-burst-5 {
+	0%, 69% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	70% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	80% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes to-blue-5-p1 { 0%, 18% { background: #f87171; } 28%, 94% { background: #38bdf8; } 97%, 100% { background: #f87171; } }
+@keyframes to-blue-5-p2 { 0%, 35% { background: #facc15; } 50%, 94% { background: #38bdf8; } 97%, 100% { background: #facc15; } }
+@keyframes to-blue-5-p3 { 0%, 50% { background: #4ade80; } 62%, 94% { background: #38bdf8; } 97%, 100% { background: #4ade80; } }
+@keyframes to-blue-5-p4 { 0%, 62% { background: #fb923c; } 70%, 94% { background: #38bdf8; } 97%, 100% { background: #fb923c; } }
+
+@keyframes to-red-5-p1 { 0%, 18% { background: #38bdf8; } 28%, 94% { background: #f87171; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-red-5-p2 { 0%, 35% { background: #fb923c; } 50%, 94% { background: #f87171; } 97%, 100% { background: #fb923c; } }
+@keyframes to-red-5-p3 { 0%, 50% { background: #f8fafc; } 62%, 94% { background: #f87171; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-red-5-p4 { 0%, 62% { background: #facc15; } 70%, 94% { background: #f87171; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-white-5-p1 { 0%, 18% { background: #facc15; } 28%, 94% { background: #f8fafc; } 97%, 100% { background: #facc15; } }
+@keyframes to-white-5-p2 { 0%, 35% { background: #38bdf8; } 50%, 94% { background: #f8fafc; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-white-5-p3 { 0%, 50% { background: #fb923c; } 62%, 94% { background: #f8fafc; } 97%, 100% { background: #fb923c; } }
+@keyframes to-white-5-p4 { 0%, 62% { background: #4ade80; } 70%, 94% { background: #f8fafc; } 97%, 100% { background: #4ade80; } }
+
+@keyframes to-orange-5-p1 { 0%, 18% { background: #4ade80; } 28%, 94% { background: #fb923c; } 97%, 100% { background: #4ade80; } }
+@keyframes to-orange-5-p2 { 0%, 35% { background: #f87171; } 50%, 94% { background: #fb923c; } 97%, 100% { background: #f87171; } }
+@keyframes to-orange-5-p3 { 0%, 50% { background: #38bdf8; } 62%, 94% { background: #fb923c; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-orange-5-p4 { 0%, 62% { background: #facc15; } 70%, 94% { background: #fb923c; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-green-5-p1 { 0%, 18% { background: #fb923c; } 28%, 94% { background: #4ade80; } 97%, 100% { background: #fb923c; } }
+@keyframes to-green-5-p2 { 0%, 35% { background: #f87171; } 50%, 94% { background: #4ade80; } 97%, 100% { background: #f87171; } }
+@keyframes to-green-5-p3 { 0%, 50% { background: #facc15; } 62%, 94% { background: #4ade80; } 97%, 100% { background: #facc15; } }
+@keyframes to-green-5-p4 { 0%, 62% { background: #38bdf8; } 70%, 94% { background: #4ade80; } 97%, 100% { background: #38bdf8; } }
+
+@keyframes to-yellow-5-p1 { 0%, 18% { background: #f8fafc; } 28%, 94% { background: #facc15; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-5-p2 { 0%, 35% { background: #4ade80; } 50%, 94% { background: #facc15; } 97%, 100% { background: #4ade80; } }
+@keyframes to-yellow-5-p3 { 0%, 50% { background: #38bdf8; } 62%, 94% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-5-p4 { 0%, 62% { background: #f87171; } 70%, 94% { background: #facc15; } 97%, 100% { background: #f87171; } }
+
+/* ── 6x6 & 7x7 Big Cube Solving System (14.0s / 16.5s cycles) ── */
+.cube-grid-6 { animation: stage-cube-glow-pulse-6 14.0s ease-in-out infinite; }
+.cube-grid-6::after { animation: solve-halo-burst-6 14.0s ease-out infinite; }
+.cube-grid-6 .cube-3d { animation: stage-cube-solve-spin-6 14.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-6 .cs-b-p1 { animation: to-blue-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-b-p2 { animation: to-blue-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-b-p3 { animation: to-blue-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-b-p4 { animation: to-blue-6-p4 14.0s infinite; }
+.cube-grid-6 .cs-r-p1 { animation: to-red-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-r-p2 { animation: to-red-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-r-p3 { animation: to-red-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-r-p4 { animation: to-red-6-p4 14.0s infinite; }
+.cube-grid-6 .cs-w-p1 { animation: to-white-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-w-p2 { animation: to-white-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-w-p3 { animation: to-white-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-w-p4 { animation: to-white-6-p4 14.0s infinite; }
+.cube-grid-6 .cs-o-p1 { animation: to-orange-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-o-p2 { animation: to-orange-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-o-p3 { animation: to-orange-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-o-p4 { animation: to-orange-6-p4 14.0s infinite; }
+.cube-grid-6 .cs-g-p1 { animation: to-green-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-g-p2 { animation: to-green-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-g-p3 { animation: to-green-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-g-p4 { animation: to-green-6-p4 14.0s infinite; }
+.cube-grid-6 .cs-y-p1 { animation: to-yellow-6-p1 14.0s infinite; }
+.cube-grid-6 .cs-y-p2 { animation: to-yellow-6-p2 14.0s infinite; }
+.cube-grid-6 .cs-y-p3 { animation: to-yellow-6-p3 14.0s infinite; }
+.cube-grid-6 .cs-y-p4 { animation: to-yellow-6-p4 14.0s infinite; }
+
+@keyframes stage-cube-solve-spin-6 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	6%   { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg); }
+	12%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg); }
+	18%  { transform: rotateX(-24deg) rotateY(450deg) rotateZ(4deg); }
+	24%  { transform: rotateX(18deg) rotateY(585deg) rotateZ(-6deg); }
+	30%  { transform: rotateX(-20deg) rotateY(720deg) rotateZ(4deg); }
+	36%  { transform: rotateX(22deg) rotateY(855deg) rotateZ(-4deg); }
+	42%  { transform: rotateX(-18deg) rotateY(990deg) rotateZ(4deg); }
+	48%  { transform: rotateX(20deg) rotateY(1125deg) rotateZ(-4deg); }
+	54%  { transform: rotateX(-22deg) rotateY(1260deg) rotateZ(4deg); }
+	60%  { transform: rotateX(18deg) rotateY(1395deg) rotateZ(-4deg); }
+	66%  { transform: rotateX(-20deg) rotateY(1530deg) rotateZ(4deg); }
+	71%  { transform: rotateX(-26deg) rotateY(1845deg) rotateZ(0deg) scale(1.12); }
+	74%, 94% { transform: rotateX(-26deg) rotateY(1845deg) rotateZ(0deg) scale(1.06); }
+	97%  { transform: rotateX(-18deg) rotateY(1860deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(1845deg) rotateZ(0deg) scale(0.96); }
+}
+@keyframes stage-cube-glow-pulse-6 {
+	0%, 67% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	71%, 94% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	97%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+}
+@keyframes solve-halo-burst-6 {
+	0%, 70% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	71% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	82% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes to-blue-6-p1 { 0%, 20% { background: #f87171; } 30%, 94% { background: #38bdf8; } 97%, 100% { background: #f87171; } }
+@keyframes to-blue-6-p2 { 0%, 38% { background: #facc15; } 52%, 94% { background: #38bdf8; } 97%, 100% { background: #facc15; } }
+@keyframes to-blue-6-p3 { 0%, 52% { background: #4ade80; } 64%, 94% { background: #38bdf8; } 97%, 100% { background: #4ade80; } }
+@keyframes to-blue-6-p4 { 0%, 64% { background: #fb923c; } 71%, 94% { background: #38bdf8; } 97%, 100% { background: #fb923c; } }
+
+@keyframes to-red-6-p1 { 0%, 20% { background: #38bdf8; } 30%, 94% { background: #f87171; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-red-6-p2 { 0%, 38% { background: #fb923c; } 52%, 94% { background: #f87171; } 97%, 100% { background: #fb923c; } }
+@keyframes to-red-6-p3 { 0%, 52% { background: #f8fafc; } 64%, 94% { background: #f87171; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-red-6-p4 { 0%, 64% { background: #facc15; } 71%, 94% { background: #f87171; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-white-6-p1 { 0%, 20% { background: #facc15; } 30%, 94% { background: #f8fafc; } 97%, 100% { background: #facc15; } }
+@keyframes to-white-6-p2 { 0%, 38% { background: #38bdf8; } 52%, 94% { background: #f8fafc; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-white-6-p3 { 0%, 52% { background: #fb923c; } 64%, 94% { background: #f8fafc; } 97%, 100% { background: #fb923c; } }
+@keyframes to-white-6-p4 { 0%, 64% { background: #4ade80; } 71%, 94% { background: #f8fafc; } 97%, 100% { background: #4ade80; } }
+
+@keyframes to-orange-6-p1 { 0%, 20% { background: #4ade80; } 30%, 94% { background: #fb923c; } 97%, 100% { background: #4ade80; } }
+@keyframes to-orange-6-p2 { 0%, 38% { background: #f87171; } 52%, 94% { background: #fb923c; } 97%, 100% { background: #f87171; } }
+@keyframes to-orange-6-p3 { 0%, 52% { background: #38bdf8; } 64%, 94% { background: #fb923c; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-orange-6-p4 { 0%, 64% { background: #facc15; } 71%, 94% { background: #fb923c; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-green-6-p1 { 0%, 20% { background: #fb923c; } 30%, 94% { background: #4ade80; } 97%, 100% { background: #fb923c; } }
+@keyframes to-green-6-p2 { 0%, 38% { background: #f87171; } 52%, 94% { background: #4ade80; } 97%, 100% { background: #f87171; } }
+@keyframes to-green-6-p3 { 0%, 52% { background: #facc15; } 64%, 94% { background: #4ade80; } 97%, 100% { background: #facc15; } }
+@keyframes to-green-6-p4 { 0%, 64% { background: #38bdf8; } 71%, 94% { background: #4ade80; } 97%, 100% { background: #38bdf8; } }
+
+@keyframes to-yellow-6-p1 { 0%, 20% { background: #f8fafc; } 30%, 94% { background: #facc15; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-6-p2 { 0%, 38% { background: #4ade80; } 52%, 94% { background: #facc15; } 97%, 100% { background: #4ade80; } }
+@keyframes to-yellow-6-p3 { 0%, 52% { background: #38bdf8; } 64%, 94% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-6-p4 { 0%, 64% { background: #f87171; } 71%, 94% { background: #facc15; } 97%, 100% { background: #f87171; } }
+
+.cube-grid-7 { animation: stage-cube-glow-pulse-7 16.5s ease-in-out infinite; }
+.cube-grid-7::after { animation: solve-halo-burst-7 16.5s ease-out infinite; }
+.cube-grid-7 .cube-3d { animation: stage-cube-solve-spin-7 16.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+.cube-grid-7 .cs-b-p1 { animation: to-blue-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-b-p2 { animation: to-blue-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-b-p3 { animation: to-blue-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-b-p4 { animation: to-blue-7-p4 16.5s infinite; }
+.cube-grid-7 .cs-r-p1 { animation: to-red-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-r-p2 { animation: to-red-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-r-p3 { animation: to-red-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-r-p4 { animation: to-red-7-p4 16.5s infinite; }
+.cube-grid-7 .cs-w-p1 { animation: to-white-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-w-p2 { animation: to-white-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-w-p3 { animation: to-white-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-w-p4 { animation: to-white-7-p4 16.5s infinite; }
+.cube-grid-7 .cs-o-p1 { animation: to-orange-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-o-p2 { animation: to-orange-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-o-p3 { animation: to-orange-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-o-p4 { animation: to-orange-7-p4 16.5s infinite; }
+.cube-grid-7 .cs-g-p1 { animation: to-green-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-g-p2 { animation: to-green-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-g-p3 { animation: to-green-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-g-p4 { animation: to-green-7-p4 16.5s infinite; }
+.cube-grid-7 .cs-y-p1 { animation: to-yellow-7-p1 16.5s infinite; }
+.cube-grid-7 .cs-y-p2 { animation: to-yellow-7-p2 16.5s infinite; }
+.cube-grid-7 .cs-y-p3 { animation: to-yellow-7-p3 16.5s infinite; }
+.cube-grid-7 .cs-y-p4 { animation: to-yellow-7-p4 16.5s infinite; }
+
+@keyframes stage-cube-solve-spin-7 {
+	0%   { transform: rotateX(-26deg) rotateY(45deg) rotateZ(0deg) scale(0.96); }
+	5%   { transform: rotateX(-18deg) rotateY(180deg) rotateZ(6deg); }
+	10%  { transform: rotateX(20deg) rotateY(315deg) rotateZ(-4deg); }
+	15%  { transform: rotateX(-24deg) rotateY(450deg) rotateZ(4deg); }
+	20%  { transform: rotateX(18deg) rotateY(585deg) rotateZ(-6deg); }
+	25%  { transform: rotateX(-20deg) rotateY(720deg) rotateZ(4deg); }
+	30%  { transform: rotateX(22deg) rotateY(855deg) rotateZ(-4deg); }
+	35%  { transform: rotateX(-18deg) rotateY(990deg) rotateZ(4deg); }
+	40%  { transform: rotateX(20deg) rotateY(1125deg) rotateZ(-4deg); }
+	45%  { transform: rotateX(-22deg) rotateY(1260deg) rotateZ(4deg); }
+	50%  { transform: rotateX(18deg) rotateY(1395deg) rotateZ(-4deg); }
+	55%  { transform: rotateX(-20deg) rotateY(1530deg) rotateZ(4deg); }
+	60%  { transform: rotateX(22deg) rotateY(1665deg) rotateZ(-4deg); }
+	66%  { transform: rotateX(-18deg) rotateY(1800deg) rotateZ(4deg); }
+	73%  { transform: rotateX(-26deg) rotateY(2205deg) rotateZ(0deg) scale(1.12); }
+	76%, 94% { transform: rotateX(-26deg) rotateY(2205deg) rotateZ(0deg) scale(1.06); }
+	97%  { transform: rotateX(-18deg) rotateY(2220deg) rotateZ(6deg) scale(0.94); }
+	100% { transform: rotateX(-26deg) rotateY(2205deg) rotateZ(0deg) scale(0.96); }
+}
+@keyframes stage-cube-glow-pulse-7 {
+	0%, 69% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+	73%, 94% { filter: drop-shadow(0 0 36px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 18px rgba(74, 222, 128, 0.8)) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6)); }
+	97%, 100% { filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.2)); }
+}
+@keyframes solve-halo-burst-7 {
+	0%, 72% { transform: scale(0.6); opacity: 0; border-color: rgba(56, 189, 248, 0); }
+	73% { transform: scale(0.85); opacity: 1; border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(74, 222, 128, 0.4); }
+	84% { transform: scale(1.6); opacity: 0; border-color: rgba(74, 222, 128, 0); }
+	100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes to-blue-7-p1 { 0%, 22% { background: #f87171; } 32%, 94% { background: #38bdf8; } 97%, 100% { background: #f87171; } }
+@keyframes to-blue-7-p2 { 0%, 40% { background: #facc15; } 54%, 94% { background: #38bdf8; } 97%, 100% { background: #facc15; } }
+@keyframes to-blue-7-p3 { 0%, 54% { background: #4ade80; } 66%, 94% { background: #38bdf8; } 97%, 100% { background: #4ade80; } }
+@keyframes to-blue-7-p4 { 0%, 66% { background: #fb923c; } 73%, 94% { background: #38bdf8; } 97%, 100% { background: #fb923c; } }
+
+@keyframes to-red-7-p1 { 0%, 22% { background: #38bdf8; } 32%, 94% { background: #f87171; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-red-7-p2 { 0%, 40% { background: #fb923c; } 54%, 94% { background: #f87171; } 97%, 100% { background: #fb923c; } }
+@keyframes to-red-7-p3 { 0%, 54% { background: #f8fafc; } 66%, 94% { background: #f87171; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-red-7-p4 { 0%, 66% { background: #facc15; } 73%, 94% { background: #f87171; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-white-7-p1 { 0%, 22% { background: #facc15; } 32%, 94% { background: #f8fafc; } 97%, 100% { background: #facc15; } }
+@keyframes to-white-7-p2 { 0%, 40% { background: #38bdf8; } 54%, 94% { background: #f8fafc; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-white-7-p3 { 0%, 54% { background: #fb923c; } 66%, 94% { background: #f8fafc; } 97%, 100% { background: #fb923c; } }
+@keyframes to-white-7-p4 { 0%, 66% { background: #4ade80; } 73%, 94% { background: #f8fafc; } 97%, 100% { background: #4ade80; } }
+
+@keyframes to-orange-7-p1 { 0%, 22% { background: #4ade80; } 32%, 94% { background: #fb923c; } 97%, 100% { background: #4ade80; } }
+@keyframes to-orange-7-p2 { 0%, 40% { background: #f87171; } 54%, 94% { background: #fb923c; } 97%, 100% { background: #f87171; } }
+@keyframes to-orange-7-p3 { 0%, 54% { background: #38bdf8; } 66%, 94% { background: #fb923c; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-orange-7-p4 { 0%, 66% { background: #facc15; } 73%, 94% { background: #fb923c; } 97%, 100% { background: #facc15; } }
+
+@keyframes to-green-7-p1 { 0%, 22% { background: #fb923c; } 32%, 94% { background: #4ade80; } 97%, 100% { background: #fb923c; } }
+@keyframes to-green-7-p2 { 0%, 40% { background: #f87171; } 54%, 94% { background: #4ade80; } 97%, 100% { background: #f87171; } }
+@keyframes to-green-7-p3 { 0%, 54% { background: #facc15; } 66%, 94% { background: #4ade80; } 97%, 100% { background: #facc15; } }
+@keyframes to-green-7-p4 { 0%, 66% { background: #38bdf8; } 73%, 94% { background: #4ade80; } 97%, 100% { background: #38bdf8; } }
+
+@keyframes to-yellow-7-p1 { 0%, 22% { background: #f8fafc; } 32%, 94% { background: #facc15; } 97%, 100% { background: #f8fafc; } }
+@keyframes to-yellow-7-p2 { 0%, 40% { background: #4ade80; } 54%, 94% { background: #facc15; } 97%, 100% { background: #4ade80; } }
+@keyframes to-yellow-7-p3 { 0%, 54% { background: #38bdf8; } 66%, 94% { background: #facc15; } 97%, 100% { background: #38bdf8; } }
+@keyframes to-yellow-7-p4 { 0%, 66% { background: #f87171; } 73%, 94% { background: #facc15; } 97%, 100% { background: #f87171; } }
 
 /* ── 🔍 1. 인스펙션 상태: 큐브를 맞추지 않고 돌려가며 훑어보는 애니메이션 ── */
 body.inspect .stage-cube-wrap {
@@ -1142,7 +1433,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=31"></script>
-<script src="app.js?v=31"></script>
+<script src="stats.js?v=32"></script>
+<script src="app.js?v=32"></script>
 </body>
 </html>
