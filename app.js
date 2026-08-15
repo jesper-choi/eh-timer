@@ -366,15 +366,25 @@ function ao(n) {
 	const all = solves();
 	return all.length < n ? NaN : average(all.slice(-n));
 }
+let lastStatsHtml = '';
+let lastCountText = '';
 function renderStats() {
 	const all = solves();
 	const ok = all.map(final).filter(isFinite);
 	const mean = all.length && ok.length === all.length ? ok.reduce((a, b) => a + b, 0) / ok.length : NaN;
 	const best = ok.length ? ok.reduce((m, x) => (x < m ? x : m), Infinity) : NaN;
 	const tiles = [['best', best], ['avg', mean], ['ao5', ao(5)], ['ao12', ao(12)]];
-	el.stats.innerHTML = tiles.map(([k, v]) =>
+	const html = tiles.map(([k, v]) =>
 		`<div class="stat"><span>${k}</span><b>${isNaN(v) ? '–' : fmt(v)}</b></div>`).join('');
-	el.count.textContent = all.length + ' solves';
+	if (html !== lastStatsHtml) {
+		el.stats.innerHTML = html;
+		lastStatsHtml = html;
+	}
+	const countText = all.length + ' solves';
+	if (countText !== lastCountText) {
+		el.count.textContent = countText;
+		lastCountText = countText;
+	}
 }
 
 // 가져오기로 들어온 남의 JSON이 HTML로 실행되지 않게
@@ -395,11 +405,16 @@ function renderTimes() {
 		</div>`).reverse().join('');
 }
 
+let lastSessionsHtml = '';
 function renderSessions() {
 	const ed = currentEventData();
 	const sessionList = Object.values(ed.sessions);
-	el.session.innerHTML = sessionList.map(s =>
+	const html = sessionList.map(s =>
 		`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+	if (html !== lastSessionsHtml) {
+		el.session.innerHTML = html;
+		lastSessionsHtml = html;
+	}
 	el.session.value = ed.active;
 	el.event.value = ev.id;
 }
@@ -428,13 +443,13 @@ let currentRenderedN = 0;
 
 function updateStageCube() {
 	const n = getCubeN(ev.id);
+	if (currentRenderedN === n) return;
+	currentRenderedN = n;
+
 	const wrap = document.querySelector('.stage-cube-wrap');
 	if (wrap) {
 		wrap.className = 'stage-cube-wrap cube-grid-' + n;
 	}
-
-	if (currentRenderedN === n) return;
-	currentRenderedN = n;
 
 	const box = document.querySelector('.stage-cube-wrap .cube-anim-box');
 	if (!box) return;
