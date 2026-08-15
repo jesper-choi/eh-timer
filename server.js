@@ -65,17 +65,20 @@ async function gistWrite(db) {
 
 // 항상 원격과 합쳐서 올린다. 다른 기기가 먼저 올린 기록을 덮어쓰지 않기 위함.
 async function sync(why) {
-	const merged = merge(readLocal(), await gistRead());
+	const remote = await gistRead();
+	const merged = merge(readLocal(), remote);
 	writeLocal(merged);
-	await gistWrite(merged);
+	if (JSON.stringify(merged) !== JSON.stringify(remote)) {
+		await gistWrite(merged);
+	}
 	console.log(`gist 동기화(${why}): 총 ${count(merged)}개`);
 }
 
 let pushTimer = null;
 function schedulePush() {
 	if (!gistOn) return;
-	clearTimeout(pushTimer);   // 솔브마다 때리지 않고 3초 모아서 한 번
-	pushTimer = setTimeout(() => sync('저장').catch((e) => console.log('gist 동기화 실패:', e.message)), 3000);
+	clearTimeout(pushTimer);   // 여러 번 변경되어도 5초 모아서 한 번
+	pushTimer = setTimeout(() => sync('저장').catch((e) => console.log('gist 동기화 실패:', e.message)), 5000);
 }
 
 // ── 서버 ─────────────────────────────────────────────────────────────────────

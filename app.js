@@ -106,33 +106,88 @@ const GIST_API = 'https://api.github.com/gists/';
 let gist = null;
 try { gist = JSON.parse(localStorage.getItem(GKEY)) || null; } catch (e) { gist = null; }
 
-function ghHeaders() {
-	return {
+function ghHeaders(etag) {
+	const h = {
 		Authorization: 'Bearer ' + gist.token,
 		Accept: 'application/vnd.github+json',
 		'Content-Type': 'application/json'
 	};
+	if (etag) h['If-None-Match'] = etag;
+	return h;
 }
+
+let lastEtag = null;
+let lastGistDataStr = '';
+let rateLimitResetAt = 0; // Epoch ms
+
+function checkRateLimitHeaders(r) {
+	const remaining = r.headers.get('x-ratelimit-remaining');
+	const reset = r.headers.get('x-ratelimit-reset');
+	const retryAfter = r.headers.get('retry-after');
+
+	if (reset) {
+		rateLimitResetAt = Number(reset) * 1000;
+	}
+	if (retryAfter) {
+		rateLimitResetAt = Date.now() + Number(retryAfter) * 1000;
+	}
+
+	if (remaining === '0' || r.status === 429 || (r.status === 403 && remaining === '0')) {
+		const mins = Math.max(1, Math.ceil((rateLimitResetAt - Date.now()) / 60000));
+		const timeStr = new Date(rateLimitResetAt).toLocaleTimeString();
+		throw new Error(`API 요청 한도 초과: 약 ${mins}분 뒤(${timeStr})에 자동 리셋됩니다.`);
+	}
+}
+
 async function gistRead() {
-	const r = await fetch(GIST_API + gist.id, { headers: ghHeaders(), signal: AbortSignal.timeout(15000) });
+	if (rateLimitResetAt > Date.now()) {
+		const mins = Math.ceil((rateLimitResetAt - Date.now()) / 60000);
+		throw new Error(`API 한도 보호 중: ${mins}분 뒤에 재시도합니다.`);
+	}
+
+	const r = await fetch(GIST_API + gist.id, { headers: ghHeaders(lastEtag), signal: AbortSignal.timeout(15000) });
+	checkRateLimitHeaders(r);
+
+	// 304 Not Modified: 내용이 전혀 바뀌지 않았으므로 캐시된 데이터를 그대로 사용 (API 쿼터 절약)
+	if (r.status === 304 && lastGistDataStr) {
+		return clean(JSON.parse(lastGistDataStr));
+	}
+
 	if (!r.ok) {
 		let detail = '';
 		try { const err = await r.json(); detail = err.message ? ` (${err.message})` : ''; } catch (e) {}
 		if (r.status === 404) throw new Error('Gist를 찾을 수 없습니다. Gist ID를 확인하세요' + detail);
 		if (r.status === 401) throw new Error('토큰 인증 실패 (토큰 확인)' + detail);
-		if (r.status === 403) throw new Error('읽기 실패 HTTP 403: 토큰 권한 부족 또는 API 요청 한도 초과' + detail);
+		if (r.status === 403) throw new Error(`읽기 실패 HTTP 403: 토큰 권한 부족 또는 일시적 차단${detail}`);
 		throw new Error('HTTP ' + r.status + detail);
 	}
+
+	lastEtag = r.headers.get('etag') || lastEtag;
 	const f = (await r.json()).files['solves.json'];
 	if (!f) return {};
 	const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;   // 1MB 넘으면 잘려서 옴
-	return clean(JSON.parse(text || '{}'));
+	lastGistDataStr = text || '{}';
+	return clean(JSON.parse(lastGistDataStr));
 }
+
 async function gistWrite(data) {
+	const newStr = JSON.stringify(data);
+	// 로컬과 원격이 완벽히 동일하면 불필요한 PATCH 요청을 생략하여 쿼터 50% 절약
+	if (lastGistDataStr && newStr === lastGistDataStr) {
+		return;
+	}
+
+	if (rateLimitResetAt > Date.now()) {
+		const mins = Math.ceil((rateLimitResetAt - Date.now()) / 60000);
+		throw new Error(`API 한도 보호 중: ${mins}분 뒤에 재시도합니다.`);
+	}
+
 	const r = await fetch(GIST_API + gist.id, {
 		method: 'PATCH', headers: ghHeaders(), signal: AbortSignal.timeout(15000),
-		body: JSON.stringify({ files: { 'solves.json': { content: JSON.stringify(data) } } })
+		body: JSON.stringify({ files: { 'solves.json': { content: newStr } } })
 	});
+	checkRateLimitHeaders(r);
+
 	if (!r.ok) {
 		let detail = '';
 		try { const err = await r.json(); detail = err.message ? ` (${err.message})` : ''; } catch (e) {}
@@ -143,7 +198,11 @@ async function gistWrite(data) {
 		if (r.status === 401) throw new Error('토큰이 올바르지 않거나 만료되었습니다' + detail);
 		throw new Error('쓰기 실패 HTTP ' + r.status + detail);
 	}
+
+	lastEtag = r.headers.get('etag') || lastEtag;
+	lastGistDataStr = newStr;
 }
+
 // 항상 원격과 합쳐서 올린다. 다른 기기가 먼저 올린 기록을 덮지 않기 위함.
 // 겹쳐 실행되면 읽기/쓰기가 엇갈릴 수 있으므로 한 번에 하나씩 직렬로 돈다.
 let syncing = Promise.resolve();
@@ -151,7 +210,7 @@ let isSyncing = false;
 function gistSync() {
 	if (!gist || onServer) return Promise.resolve();
 	if (isSyncing) {
-		schedulePush(); // 이미 동기화 중이면 3초 뒤에 다시 묶어서 요청
+		schedulePush(); // 이미 동기화 중이면 5초 뒤에 다시 묶어서 요청
 		return syncing;
 	}
 	isSyncing = true;
@@ -159,7 +218,8 @@ function gistSync() {
 		el.status.textContent = '동기화 중…';
 		try {
 			const keepEvent = ev.id;          // 사용자가 보고 있는 종목을 기억
-			db = merge(db, await gistRead());
+			const remoteData = await gistRead();
+			db = merge(db, remoteData);
 			db.currentEvent = keepEvent;       // 동기화가 사용자의 종목 선택을 바꾸지 않게
 			ev = EVENTS.find(e => e.id === keepEvent) || EVENTS[0];
 			localStorage.setItem(KEY, JSON.stringify(db));
@@ -179,8 +239,8 @@ function gistSync() {
 let pushTimer = 0;
 function schedulePush() {
 	if (!gist || onServer) return;
-	clearTimeout(pushTimer);      // 여러 번 변경되어도 3초 모아서 딱 한 번만 동기화
-	pushTimer = setTimeout(() => gistSync().catch(() => {}), 3000);
+	clearTimeout(pushTimer);      // 여러 번 변경되어도 5초 모아서 딱 한 번만 동기화
+	pushTimer = setTimeout(() => gistSync().catch(() => {}), 5000);
 }
 
 // ── scramble worker ──────────────────────────────────────────────────────────

@@ -272,7 +272,7 @@ for (const [type, len] of [['333', 0], ['222so', 0], ['444wca', 0], ['555wca', 6
 		method: 'PUT',
 		body: JSON.stringify(updated)
 	});
-	await wait(4000);
+	await wait(6000);
 	assert.deepEqual(remote.events['333'].sessions['s1'].solves.map(x => x.ts), [111, 222], '원격 기록을 덮어쓰지 않고 합쳐야 함');
 	assert.deepEqual(remote.events['222'].sessions['s2'].solves.map(x => x.ts), [333], '222 새 세션도 병합되어 올라가야 함');
 	assert.ok(patches >= 1, 'gist에 PATCH 되어야 함');
