@@ -56,13 +56,20 @@ function normalize(data) {
 				const sessions = {};
 				for (const [sId, s] of Object.entries(evData.sessions)) {
 					if (!s || typeof s !== 'object') continue;
+					const clearedAt = typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0;
+					const deleted = Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : [];
+					const delSet = new Set(deleted);
+					const rawSolves = Array.isArray(s.solves) ? s.solves : [];
+					const cleanSolves = rawSolves
+						.filter(x => x && typeof x === 'object' && typeof x.ms === 'number' && isFinite(x.ms) && x.ms >= 0 && typeof x.ts === 'number' && isFinite(x.ts) && x.ts > clearedAt && !delSet.has(x.ts))
+						.map(x => ({ ms: x.ms, p: x.p === 2 || x.p === -1 ? x.p : 0, scr: typeof x.scr === 'string' ? x.scr.slice(0, 1000) : '', ts: x.ts }));
 					sessions[sId] = {
 						id: String(s.id || sId),
 						name: String(s.name || 'session 1'),
-						solves: Array.isArray(s.solves) ? s.solves : [],
+						solves: cleanSolves,
 						updatedAt: typeof s.updatedAt === 'number' && isFinite(s.updatedAt) ? s.updatedAt : 0,
-						clearedAt: typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0,
-						deleted: Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : []
+						clearedAt,
+						deleted
 					};
 				}
 				if (Object.keys(sessions).length === 0) {
@@ -86,13 +93,20 @@ function normalize(data) {
 		for (const [sId, s] of Object.entries(data.sessions)) {
 			if (!s || typeof s !== 'object') continue;
 			const evId = (typeof s.event === 'string' && DEFAULT_EVENTS.includes(s.event)) ? s.event : '333';
+			const clearedAt = typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0;
+			const deleted = Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : [];
+			const delSet = new Set(deleted);
+			const rawSolves = Array.isArray(s.solves) ? s.solves : [];
+			const cleanSolves = rawSolves
+				.filter(x => x && typeof x === 'object' && typeof x.ms === 'number' && isFinite(x.ms) && x.ms >= 0 && typeof x.ts === 'number' && isFinite(x.ts) && x.ts > clearedAt && !delSet.has(x.ts))
+				.map(x => ({ ms: x.ms, p: x.p === 2 || x.p === -1 ? x.p : 0, scr: typeof x.scr === 'string' ? x.scr.slice(0, 1000) : '', ts: x.ts }));
 			out.events[evId].sessions[sId] = {
 				id: String(s.id || sId),
 				name: String(s.name || 'session 1'),
-				solves: Array.isArray(s.solves) ? s.solves : [],
+				solves: cleanSolves,
 				updatedAt: typeof s.updatedAt === 'number' && isFinite(s.updatedAt) ? s.updatedAt : 0,
-				clearedAt: typeof s.clearedAt === 'number' && isFinite(s.clearedAt) ? s.clearedAt : 0,
-				deleted: Array.isArray(s.deleted) ? s.deleted.filter(t => typeof t === 'number' && isFinite(t)).slice(-500) : []
+				clearedAt,
+				deleted
 			};
 		}
 		for (const evId of DEFAULT_EVENTS) {

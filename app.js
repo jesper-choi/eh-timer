@@ -353,8 +353,15 @@ document.addEventListener('pointerup', (e) => {
 	if (state === 'hold' || state === 'ready') up(e.timeStamp);
 });
 
-// 오프라인 캐시 등록. https 또는 localhost 에서만 동작하고, 그 외에는 조용히 무시된다.
-navigator.serviceWorker && navigator.serviceWorker.register('sw.js').catch(() => {});
+// 오프라인 캐시 등록 및 새 버전 배포 시 자동 갱신
+if (navigator.serviceWorker) {
+	navigator.serviceWorker.register('sw.js').then((reg) => {
+		reg.update().catch(() => {});
+	}).catch(() => {});
+	navigator.serviceWorker.addEventListener('controllerchange', () => {
+		window.location.reload();
+	});
+}
 
 // 태블릿/폰: 솔브 중에 화면이 꺼지지 않게 (지원 안 하는 브라우저면 조용히 무시)
 async function keepAwake() {
@@ -424,6 +431,7 @@ $('renSave').onclick = () => {
 	curr.updatedAt = Date.now();
 	rendlg.close();
 	save(); renderSessions();
+	if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 };
 renInput.onkeydown = (e) => {
 	if (e.key === 'Enter') { e.preventDefault(); $('renSave').click(); }
@@ -438,7 +446,9 @@ el.delSession.onclick = () => {
 			const curr = currentSession();
 			curr.clearedAt = Date.now();
 			curr.solves = [];
+			curr.updatedAt = Date.now();
 			save(); render();
+			if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 		}
 		return;
 	}
@@ -448,6 +458,7 @@ el.delSession.onclick = () => {
 	delete ed.sessions[ed.active];
 	ed.active = Object.keys(ed.sessions)[0];
 	save(); render();
+	if (!onServer && gist) { clearTimeout(pushTimer); gistSync().catch(() => {}); }
 };
 
 el.scramble.onclick = nextScramble;
@@ -504,7 +515,12 @@ $('clear').onclick = () => {
 	if (!confirm(`'${curr.name}' 세션의 기록 ${curr.solves.length}개를 모두 지웁니다.`)) return;
 	curr.clearedAt = Date.now();
 	curr.solves = [];
+	curr.updatedAt = Date.now();
 	save(); render();
+	if (!onServer && gist) {
+		clearTimeout(pushTimer);
+		gistSync().catch(() => {});
+	}
 };
 $('export').onclick = () => {
 	const a = document.createElement('a');
