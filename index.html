@@ -160,21 +160,117 @@ main {
 	position: relative;
 }
 header {
-	display: flex; align-items: center; gap: 10px;
-	padding: 16px 24px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 24px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.hdr-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.select-wrap {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
 }
 select#event {
-	background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-	padding: 7px 12px; cursor: pointer; -webkit-appearance: none; appearance: none;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 7px 28px 7px 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: border-color 0.15s, background 0.15s;
 }
-button.toggle {
-	background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-	padding: 7px 12px; color: var(--muted); cursor: pointer;
+select#event:hover {
+	border-color: var(--muted);
 }
-button.toggle:hover { color: var(--text); }
-button.toggle.on { background: var(--accent); border-color: var(--accent); color: #0b0d11; }
+select#event:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.select-arrow {
+	position: absolute;
+	right: 10px;
+	pointer-events: none;
+	color: var(--muted);
+}
+.hdr-btn {
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 7px 12px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--muted);
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.08s;
+	white-space: nowrap;
+}
+.hdr-btn:hover {
+	color: var(--text);
+	border-color: rgba(255, 255, 255, 0.15);
+	background: #202733;
+}
+.hdr-btn:active {
+	transform: scale(0.98);
+}
+.hdr-btn .btn-icon {
+	font-size: 13px;
+	line-height: 1;
+	opacity: 0.85;
+}
+.hdr-btn.toggle.on {
+	background: rgba(122, 162, 247, 0.15);
+	border-color: var(--accent);
+	color: var(--accent);
+	font-weight: 600;
+}
+#insp .btn-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--muted);
+	display: inline-block;
+	transition: background 0.15s, box-shadow 0.15s;
+}
+#insp.on .btn-dot {
+	background: var(--ready);
+	box-shadow: 0 0 6px var(--ready);
+}
+.btn-cancel {
+	color: var(--muted);
+}
+.btn-cancel:hover {
+	color: var(--hold);
+	border-color: rgba(248, 113, 113, 0.35);
+	background: rgba(248, 113, 113, 0.08);
+}
+.btn-sync.on {
+	background: rgba(74, 222, 128, 0.12);
+	border-color: rgba(74, 222, 128, 0.4);
+	color: var(--ready);
+}
 header .spacer { flex: 1; }
-header .hint { color: var(--muted); font-size: 12px; }
+header .hint {
+	color: var(--muted);
+	font-size: 12px;
+	max-width: 240px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 
 #scramble {
 	padding: 8px 40px 0;
@@ -242,8 +338,22 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 	/* 타이머 크기 조절: 가운데 20vh 값만 바꾸면 된다 (크게 26vh / 작게 16vh) */
 	#time { font-size: min(calc(68cqw / (var(--ch, 6) * 0.62)), 20vh, 180px); }
 	#scramble { font-size: clamp(15px, 1.8vw, 20px); min-height: 2.6em; padding: 4px 24px 0; }
-	header { padding: 12px 16px; gap: 8px; }
-	select#event, button.toggle { padding: 6px 10px; font-size: 13px; }
+	header {
+		padding: 10px 14px;
+		gap: 6px;
+		flex-wrap: wrap;
+	}
+	.hdr-group {
+		gap: 6px;
+	}
+	select#event, .hdr-btn {
+		padding: 6px 10px;
+		font-size: 12px;
+		border-radius: 8px;
+	}
+	select#event {
+		padding-right: 24px;
+	}
 	.brand { padding: 12px 16px 10px; }
 	.stat { padding: 10px 12px; }
 	.stat b { font-size: 16px; }
@@ -285,13 +395,20 @@ dialog .row button:first-child { background: var(--accent); border-color: var(--
 	</aside>
 	<main>
 		<header>
-			<select id="event"></select>
-			<button id="insp" class="toggle">인스펙션 15초</button>
-			<button id="newscr" class="toggle">새 스크램블</button>
-			<button id="cancel" class="toggle">취소</button>
-			<button id="sync" class="toggle">동기화</button>
+			<div class="hdr-group hdr-left">
+				<div class="select-wrap">
+					<select id="event" title="종목 선택"></select>
+					<svg class="select-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				</div>
+				<button id="insp" class="hdr-btn toggle" title="인스펙션 15초 카운트다운 토글"><span class="btn-dot"></span>인스펙션 15s</button>
+				<button id="newscr" class="hdr-btn" title="새 스크램블 생성"><span class="btn-icon">↻</span>새 스크램블</button>
+			</div>
 			<span class="spacer"></span>
-			<span class="hint" id="status"></span>
+			<div class="hdr-group hdr-right">
+				<span class="hint" id="status"></span>
+				<button id="cancel" class="hdr-btn btn-cancel" title="현재 솔브 취소 (Esc)"><span class="btn-icon">✕</span>솔브 취소</button>
+				<button id="sync" class="hdr-btn toggle btn-sync" title="Gist 동기화 설정"><span class="btn-icon">☁</span>동기화</button>
+			</div>
 		</header>
 		<div id="scramble">스크램블 생성 중…</div>
 		<div id="stage"><div id="time" style="--ch: 6">0.000</div></div>
@@ -344,7 +461,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=11"></script>
-<script src="app.js?v=11"></script>
+<script src="stats.js?v=12"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>
