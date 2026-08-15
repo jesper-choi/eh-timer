@@ -150,7 +150,7 @@ function merge(a, b) {
 	const nb = normalize(b);
 	const out = {
 		version: 2,
-		currentEvent: nb.currentEvent || na.currentEvent || '333',
+		currentEvent: na.currentEvent || nb.currentEvent || '333',
 		events: {}
 	};
 	const allEvents = new Set([...Object.keys(na.events), ...Object.keys(nb.events)]);

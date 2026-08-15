@@ -107,11 +107,22 @@ let gist = null;
 try { gist = JSON.parse(localStorage.getItem(GKEY)) || null; } catch (e) { gist = null; }
 
 function ghHeaders() {
-	return { Authorization: 'Bearer ' + gist.token, Accept: 'application/vnd.github+json' };
+	return {
+		Authorization: 'Bearer ' + gist.token,
+		Accept: 'application/vnd.github+json',
+		'Content-Type': 'application/json'
+	};
 }
 async function gistRead() {
 	const r = await fetch(GIST_API + gist.id, { headers: ghHeaders(), signal: AbortSignal.timeout(15000) });
-	if (!r.ok) throw new Error(r.status === 404 ? 'gist를 찾을 수 없음 (ID 확인)' : r.status === 401 ? '토큰이 거부됨' : 'HTTP ' + r.status);
+	if (!r.ok) {
+		let detail = '';
+		try { const err = await r.json(); detail = err.message ? ` (${err.message})` : ''; } catch (e) {}
+		if (r.status === 404) throw new Error('Gist를 찾을 수 없습니다. Gist ID를 확인하세요' + detail);
+		if (r.status === 401) throw new Error('토큰 인증 실패 (토큰 확인)' + detail);
+		if (r.status === 403) throw new Error('읽기 실패 HTTP 403: 토큰 권한 부족 또는 API 요청 한도 초과' + detail);
+		throw new Error('HTTP ' + r.status + detail);
+	}
 	const f = (await r.json()).files['solves.json'];
 	if (!f) return {};
 	const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;   // 1MB 넘으면 잘려서 옴
@@ -122,7 +133,16 @@ async function gistWrite(data) {
 		method: 'PATCH', headers: ghHeaders(), signal: AbortSignal.timeout(15000),
 		body: JSON.stringify({ files: { 'solves.json': { content: JSON.stringify(data) } } })
 	});
-	if (!r.ok) throw new Error('쓰기 실패 HTTP ' + r.status);
+	if (!r.ok) {
+		let detail = '';
+		try { const err = await r.json(); detail = err.message ? ` (${err.message})` : ''; } catch (e) {}
+		if (r.status === 403) {
+			throw new Error(`쓰기 실패 HTTP 403: 토큰에 'gist' 권한이 없거나 Gist 소유자가 아닙니다${detail}`);
+		}
+		if (r.status === 404) throw new Error('Gist를 찾을 수 없습니다. Gist ID를 확인하세요' + detail);
+		if (r.status === 401) throw new Error('토큰이 올바르지 않거나 만료되었습니다' + detail);
+		throw new Error('쓰기 실패 HTTP ' + r.status + detail);
+	}
 }
 // 항상 원격과 합쳐서 올린다. 다른 기기가 먼저 올린 기록을 덮지 않기 위함.
 // 겹쳐 실행되면 읽기/쓰기가 엇갈릴 수 있으므로 한 번에 하나씩 직렬로 돈다.
@@ -132,8 +152,10 @@ function gistSync() {
 	syncing = syncing.catch(() => {}).then(async () => {
 		el.status.textContent = '동기화 중…';
 		try {
+			const keepEvent = ev.id;          // 사용자가 보고 있는 종목을 기억
 			db = merge(db, await gistRead());
-			ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
+			db.currentEvent = keepEvent;       // 동기화가 사용자의 종목 선택을 바꾸지 않게
+			ev = EVENTS.find(e => e.id === keepEvent) || EVENTS[0];
 			localStorage.setItem(KEY, JSON.stringify(db));
 			await gistWrite(db);
 			el.status.textContent = '';
@@ -473,8 +495,10 @@ syncBtn.onclick = () => {
 };
 $('gclose').onclick = () => dlg.close();
 $('gsave').onclick = async () => {
-	const id = $('gid').value.trim(), token = $('gtok').value.trim();
-	if (!id || !token) { msg('gist ID와 토큰을 모두 입력하세요.', 'err'); return; }
+	let rawId = $('gid').value.trim(), token = $('gtok').value.trim();
+	if (!rawId || !token) { msg('gist ID와 토큰을 모두 입력하세요.', 'err'); return; }
+	// URL 전체를 붙여넣었을 경우 순수 Gist ID만 자동 추출 (예: https://gist.github.com/user/123 -> 123)
+	const id = rawId.replace(/^https?:\/\/gist\.github\.com\/([^\/]+\/)?/, '').replace(/[/?#].*$/, '');
 	gist = { id: id, token: token };
 	msg('확인 중…');
 	try {
