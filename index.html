@@ -518,6 +518,9 @@ header .hint {
 	width: 120px;
 	height: 120px;
 	perspective: 550px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .stage-cube-wrap .cube-3d {
 	width: 80px;
@@ -1197,7 +1200,9 @@ body.ready .stage-cube-wrap {
 	letter-spacing: -.02em;
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
-	contain: layout inline-size;
+	text-align: center;
+	display: block;
+	width: 100%;
 	text-rendering: optimizeSpeed;
 	transition: color .08s, text-shadow .08s;
 }
@@ -1446,7 +1451,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=38"></script>
-<script src="app.js?v=38"></script>
+<script src="stats.js?v=39"></script>
+<script src="app.js?v=39"></script>
 </body>
 </html>
