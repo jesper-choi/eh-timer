@@ -423,6 +423,8 @@ function getCubeN(eventId) {
 	return 3;
 }
 
+let currentRenderedN = 0;
+
 function updateStageCube() {
 	const n = getCubeN(ev.id);
 	const wrap = document.querySelector('.stage-cube-wrap');
