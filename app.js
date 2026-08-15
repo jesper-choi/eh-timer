@@ -612,34 +612,41 @@ inspBtn.onclick = () => {
 	cancel();
 };
 
-$('clear').onclick = () => {
-	const curr = currentSession();
-	if (!confirm(`'${curr.name}' 세션의 기록 ${curr.solves.length}개를 모두 지웁니다.`)) return;
-	curr.clearedAt = Date.now();
-	curr.solves = [];
-	curr.updatedAt = Date.now();
-	save(); render();
-};
-$('export').onclick = () => {
-	const a = document.createElement('a');
-	a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], { type: 'application/json' }));
-	a.download = 'eh_timer_' + new Date().toISOString().slice(0, 10) + '.json';
-	a.click();
-	URL.revokeObjectURL(a.href);
-};
-$('import').onclick = () => el.file.click();
-el.file.onchange = async () => {
-	try {
-		db = merge(db, clean(JSON.parse(await el.file.files[0].text())));   // 덮어쓰지 않고 ts 기준 병합
-		ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
-	} catch (e) {
-		el.status.textContent = '가져오기 실패 — JSON 파일이 아닙니다';
+const clrBtn = $('clear');
+if (clrBtn) {
+	clrBtn.onclick = () => {
+		const curr = currentSession();
+		if (!confirm(`'${curr.name}' 세션의 기록 ${curr.solves.length}개를 모두 지웁니다.`)) return;
+		curr.clearedAt = Date.now();
+		curr.solves = [];
+		curr.updatedAt = Date.now();
+		save(); render();
+	};
+}
+if ($('export')) {
+	$('export').onclick = () => {
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], { type: 'application/json' }));
+		a.download = 'eh_timer_' + new Date().toISOString().slice(0, 10) + '.json';
+		a.click();
+		URL.revokeObjectURL(a.href);
+	};
+}
+if ($('import') && el.file) {
+	$('import').onclick = () => el.file.click();
+	el.file.onchange = async () => {
+		try {
+			db = merge(db, clean(JSON.parse(await el.file.files[0].text())));
+			ev = EVENTS.find(e => e.id === db.currentEvent) || EVENTS[0];
+		} catch (e) {
+			el.status.textContent = '가져오기 실패 — JSON 파일이 아닙니다';
+			el.file.value = '';
+			return;
+		}
 		el.file.value = '';
-		return;
-	}
-	el.file.value = '';
-	save(); render(); nextScramble();
-};
+		save(); render(); nextScramble();
+	};
+}
 
 load().then(() => {
 	render();
