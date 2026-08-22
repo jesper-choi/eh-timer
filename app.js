@@ -704,12 +704,13 @@ let bgmSchedulerTimer = 0;
 let nextNoteTime = 0;
 let bgmStep = 0;
 let bgmBar = 0;
+let bgmRunBar = 0;      // 솔빙이 시작된 마디 (드라이브 상승 계산용)
 
 const BAR_SEC = 2.0;                       // 한 마디 = 큐브 4초/6초 회전과 나눠떨어지는 길이
-const STEPS_PER_BAR = 8;                   // 8분음표 8개 (= 120BPM, 하프타임 로파이 느낌)
-const STEP_SEC = BAR_SEC / STEPS_PER_BAR;  // 0.25초
+const STEPS_PER_BAR = 16;                  // 16분음표 격자 (120BPM). 솔빙 중 속도감을 내려면 이 해상도가 필요하다
+const STEP_SEC = BAR_SEC / STEPS_PER_BAR;  // 0.125초
 const LOOKAHEAD_MS = 25;                   // 스케줄러 호출 주기
-const SCHEDULE_AHEAD = 0.25;               // 미리 잡아두는 길이 (렌더와 겹쳐도 밀리지 않게)
+const SCHEDULE_AHEAD = 0.30;               // 미리 잡아두는 길이 (렌더와 겹쳐도 밀리지 않게)
 const RESYNC_SEC = 0.35;                   // 이만큼 밀리면 따라잡지 말고 현재 시각으로 리셋
 
 // 카페 팝 4코드 (Fmaj7 - G7 - Em7 - Am7), 한 마디에 한 코드
@@ -726,8 +727,8 @@ const MOODS = {
 	inspect:   { pad: 0.85, bass: 0.55, chord: 0.45, drums: 0.00, lead: 0.00, cutoff: 900,  master: 0.12, glide: 0.18 },
 	hold:      { pad: 0.60, bass: 0.30, chord: 0.00, drums: 0.00, lead: 0.00, cutoff: 420,  master: 0.08, glide: 0.07 },
 	ready:     { pad: 0.95, bass: 0.65, chord: 0.00, drums: 0.00, lead: 0.00, cutoff: 950,  master: 0.11, glide: 0.05 },
-	// 솔빙 중에는 최소한만 남긴다 — 소리가 큐빙을 방해하면 안 된다
-	running:   { pad: 0.50, bass: 0.00, chord: 0.00, drums: 0.00, lead: 0.00, cutoff: 520,  master: 0.06, glide: 0.10 },
+	// 솔빙 중: 스피드큐빙용 드라이브. 리듬만 몰아치고 화음·멜로디는 빼서 생각을 방해하지 않는다
+	running:   { pad: 0.30, bass: 0.85, chord: 0.00, drums: 0.95, lead: 0.00, cutoff: 4200, master: 0.13, glide: 0.06, drive: true },
 	celebrate: { pad: 0.70, bass: 1.00, chord: 1.00, drums: 1.00, lead: 1.00, cutoff: 5200, master: 0.19, glide: 0.04 }
 };
 let bgmMood = MOODS.idle;
@@ -813,30 +814,51 @@ function playDrum(ctx, dest, kind, time, vel) {
 }
 
 // 한 스텝에 무엇을 울릴지. 레이어 볼륨이 0이면 노드를 아예 만들지 않는다(모바일 CPU 절약).
+// 격자는 16분음표(0.125초). 대기 중에는 짝수 스텝만 써서 느긋한 카페 그루브가 된다.
+const RUN_BASS_STEPS = [0, 3, 6, 8, 11, 14];   // 구르는 16분 베이스
+
 function scheduleStep(ctx, L, step, bar, time) {
 	const ch = PROGRESSION[bar % PROGRESSION.length];
 	const m = bgmMood;
 
+	if (m.drive) {
+		// ⚡ 솔빙 중: 시간이 갈수록 조여지는 드라이브 (6마디=12초에 걸쳐 최고조)
+		const drive = Math.min(1, (bar - bgmRunBar) / 6);
+		if (m.drums > 0.01) {
+			if (step % 4 === 0) playDrum(ctx, L.drums, 'kick', time, 0.40 + 0.10 * drive);   // 정박 킥 = 속도의 뼈대
+			if (step === 4 || step === 12) playDrum(ctx, L.drums, 'snare', time, 0.18 + 0.08 * drive);
+			if (step % 2 === 1) playDrum(ctx, L.drums, 'hat', time, 0.08 + 0.05 * drive);    // 16분 하이햇
+			else if (step % 4 === 2) playDrum(ctx, L.drums, 'hat', time, 0.12 + 0.05 * drive);
+			if (drive > 0.5 && step === 14) playDrum(ctx, L.drums, 'hat', time, 0.20);       // 후반 리프트
+		}
+		if (m.bass > 0.01 && RUN_BASS_STEPS.indexOf(step) !== -1) {
+			const f = (step === 6 || step === 14) ? ch.bass * 1.5 : ch.bass;
+			playBassNote(ctx, L.bass, f, time, 0.16, 0.18 + 0.08 * drive);
+		}
+		return;
+	}
+
+	// ☕ 그 외(대기·인스펙션·완성): 느긋한 카페 팝
 	if (m.bass > 0.01) {
 		if (step === 0) playBassNote(ctx, L.bass, ch.bass, time, 0.75, 0.30);
-		else if (step === 6) playBassNote(ctx, L.bass, ch.bass * 1.5, time, 0.4, 0.18);
+		else if (step === 12) playBassNote(ctx, L.bass, ch.bass * 1.5, time, 0.4, 0.18);
 	}
 	if (m.chord > 0.01) {
-		if (step === 0 || step === 4) {
+		if (step === 0 || step === 8) {
 			const dur = step === 0 ? 1.1 : 0.8;
 			// 살짝 흩뿌려서 사람이 친 것처럼 (12ms 롤)
 			ch.chord.forEach((f, i) => playEPNote(ctx, L.chord, f, time + i * 0.012, dur, 0.13));
-		} else if (step === 3) {
+		} else if (step === 6) {
 			playEPNote(ctx, L.chord, ch.chord[1], time, 0.45, 0.08);
 		}
 	}
 	if (m.drums > 0.01) {
 		if (step === 0) playDrum(ctx, L.drums, 'kick', time, 0.5);
-		else if (step === 4) playDrum(ctx, L.drums, 'snare', time, 0.22);
-		else if (step === 6) playDrum(ctx, L.drums, 'kick', time, 0.32);
-		if (step === 2 || step === 6) playDrum(ctx, L.drums, 'hat', time, 0.16);
+		else if (step === 8) playDrum(ctx, L.drums, 'snare', time, 0.22);
+		else if (step === 12) playDrum(ctx, L.drums, 'kick', time, 0.32);
+		if (step === 4 || step === 12) playDrum(ctx, L.drums, 'hat', time, 0.16);
 	}
-	if (m.lead > 0.01 && bar % 2 === 1 && step === 5) {
+	if (m.lead > 0.01 && bar % 2 === 1 && step === 10) {
 		playEPNote(ctx, L.lead, ch.lead, time, 0.9, 0.10);
 	}
 }
@@ -865,6 +887,7 @@ function setBGMState(newState) {
 	if (!ctx) return;
 	const now = ctx.currentTime;
 	const m = MOODS[newState === 'just-solved' ? 'celebrate' : newState] || MOODS.idle;
+	if (newState === 'running') bgmRunBar = bgmBar;   // 여기서부터 서서히 조여진다
 	bgmMood = m;
 
 	const L = bgmNodes.layers;
