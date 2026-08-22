@@ -17,7 +17,8 @@ const $ = (id) => document.getElementById(id);
 const el = {
 	time: $('time'), scramble: $('scramble'), stats: $('stats'), times: $('times'),
 	count: $('count'), status: $('status'), event: $('event'), session: $('session'), file: $('file'),
-	addSession: $('addSession'), renSession: $('renSession'), delSession: $('delSession')
+	addSession: $('addSession'), renSession: $('renSession'), delSession: $('delSession'),
+	sfx: $('sfx'), bgm: $('bgm')
 };
 
 // ── storage ──────────────────────────────────────────────────────────────────
@@ -513,11 +514,257 @@ el.times.onclick = (e) => {
 	save(); render();
 };
 
+// ── Web Audio Synthesizer (SFX & Ambient Focus BGM) ──────────────────────────
+let audioCtx = null;
+function getAudioCtx() {
+	if (!audioCtx) {
+		const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+		if (AudioContextClass) {
+			audioCtx = new AudioContextClass();
+		}
+	}
+	if (audioCtx && audioCtx.state === 'suspended') {
+		audioCtx.resume();
+	}
+	return audioCtx;
+}
+
+let sfxOn = localStorage.getItem('eh_timer_sfx') !== '0'; // 기본값: 켜짐(1)
+let bgmOn = localStorage.getItem('eh_timer_bgm') === '1'; // 기본값: 꺼짐(0)
+
+function updateAudioUI() {
+	if (el.sfx) {
+		el.sfx.classList.toggle('on', sfxOn);
+		const icon = el.sfx.querySelector('.btn-icon');
+		if (icon) icon.textContent = sfxOn ? '🔊' : '🔈';
+	}
+	if (el.bgm) {
+		el.bgm.classList.toggle('on', bgmOn);
+	}
+}
+
+// 1. Ready Sound: 스택매트 준비 완료 (Green) - 청량하고 정갈한 상승 2화음 핑
+function playReadySound() {
+	if (!sfxOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx) return;
+	const now = ctx.currentTime;
+	
+	const osc = ctx.createOscillator();
+	const gain = ctx.createGain();
+	osc.type = 'sine';
+	osc.frequency.setValueAtTime(587.33, now); // D5
+	osc.frequency.exponentialRampToValueAtTime(880, now + 0.08); // A5
+	
+	gain.gain.setValueAtTime(0, now);
+	gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+	
+	osc.connect(gain);
+	gain.connect(ctx.destination);
+	osc.start(now);
+	osc.stop(now + 0.25);
+}
+
+// 2. Start Sound: 출발음 - 경쾌하고 빠른 미니 릴리즈 클릭
+function playStartSound() {
+	if (!sfxOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx) return;
+	const now = ctx.currentTime;
+	
+	const osc = ctx.createOscillator();
+	const gain = ctx.createGain();
+	osc.type = 'triangle';
+	osc.frequency.setValueAtTime(1046.5, now);
+	osc.frequency.exponentialRampToValueAtTime(523.25, now + 0.04);
+	
+	gain.gain.setValueAtTime(0.12, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+	
+	osc.connect(gain);
+	gain.connect(ctx.destination);
+	osc.start(now);
+	osc.stop(now + 0.06);
+}
+
+// 3. Stop Sound: 솔빙 완료 및 PB(최고기록) 축하 차임
+function playStopSound(isPB) {
+	if (!sfxOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx) return;
+	const now = ctx.currentTime;
+	
+	if (isPB) {
+		// 🌟 신기록(PB) 달성: 찬란하고 화려한 아르페지오 승리 차임 (C5, E5, G5, B5, C6, E6)
+		const notes = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
+		notes.forEach((freq, i) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+			osc.frequency.setValueAtTime(freq, now + i * 0.06);
+			
+			gain.gain.setValueAtTime(0, now + i * 0.06);
+			gain.gain.linearRampToValueAtTime(0.16, now + i * 0.06 + 0.015);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.7);
+			
+			osc.connect(gain);
+			gain.connect(ctx.destination);
+			osc.start(now + i * 0.06);
+			osc.stop(now + i * 0.06 + 0.75);
+		});
+	} else {
+		// 🎯 일반 솔빙 완료: 깔끔하고 안정감 넘치는 메이저 9 화음 차임
+		const chord = [523.25, 659.25, 783.99, 1046.50];
+		chord.forEach((freq, idx) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.setValueAtTime(freq, now + idx * 0.025);
+			
+			gain.gain.setValueAtTime(0, now + idx * 0.025);
+			gain.gain.linearRampToValueAtTime(0.12, now + idx * 0.025 + 0.015);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.025 + 0.65);
+			
+			osc.connect(gain);
+			gain.connect(ctx.destination);
+			osc.start(now + idx * 0.025);
+			osc.stop(now + idx * 0.025 + 0.7);
+		});
+	}
+}
+
+// 4. Inspection 경고음: WCA 규정 8초 / 12초 알림음
+function playInspectWarning(type) {
+	if (!sfxOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx) return;
+	const now = ctx.currentTime;
+	
+	if (type === 8) {
+		// 8초 알림음 (A5 중간 톤 알림)
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sine';
+		osc.frequency.setValueAtTime(880, now);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.15, now + 0.01);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+		osc.connect(gain);
+		gain.connect(ctx.destination);
+		osc.start(now);
+		osc.stop(now + 0.22);
+	} else if (type === 12) {
+		// 12초 알림음 (D6 2연속 빠른 비프)
+		[0, 0.12].forEach((offset) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'triangle';
+			osc.frequency.setValueAtTime(1174.66, now + offset);
+			gain.gain.setValueAtTime(0, now + offset);
+			gain.gain.linearRampToValueAtTime(0.16, now + offset + 0.01);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.1);
+			osc.connect(gain);
+			gain.connect(ctx.destination);
+			osc.start(now + offset);
+			osc.stop(now + offset + 0.12);
+		});
+	}
+}
+
+// 5. Click Sound: 버튼 조작 틱 사운드
+function playClickSound() {
+	if (!sfxOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx) return;
+	const now = ctx.currentTime;
+	const osc = ctx.createOscillator();
+	const gain = ctx.createGain();
+	osc.type = 'sine';
+	osc.frequency.setValueAtTime(700, now);
+	osc.frequency.exponentialRampToValueAtTime(300, now + 0.02);
+	gain.gain.setValueAtTime(0.06, now);
+	gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+	osc.connect(gain);
+	gain.connect(ctx.destination);
+	osc.start(now);
+	osc.stop(now + 0.03);
+}
+
+// ── Focus Ambient Chill BGM Generator ────────────────────────────────────────
+let bgmNodes = null;
+function startBGM() {
+	if (!bgmOn) return;
+	const ctx = getAudioCtx();
+	if (!ctx || bgmNodes) return;
+	
+	try {
+		const masterGain = ctx.createGain();
+		masterGain.gain.setValueAtTime(0, ctx.currentTime);
+		masterGain.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 2.0); // 2초간 부드러운 페이드인
+		
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.setValueAtTime(380, ctx.currentTime);
+		filter.Q.setValueAtTime(1.2, ctx.currentTime);
+		
+		// 0.07Hz LFO로 숨쉬는 듯한 따뜻한 아날로그 패드 필터 스윕
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		lfo.frequency.setValueAtTime(0.07, ctx.currentTime);
+		lfoGain.gain.setValueAtTime(120, ctx.currentTime);
+		lfo.connect(lfoGain);
+		lfoGain.connect(filter.frequency);
+		lfo.start();
+		
+		// 따뜻한 4화음 앰비언트 드론 (C3, G3, D4, E4 - 포커스 몰입용 릴랙스 화음)
+		const freqs = [130.81, 196.00, 293.66, 329.63];
+		const oscs = freqs.map((f, i) => {
+			const o = ctx.createOscillator();
+			o.type = i === 1 ? 'triangle' : 'sine';
+			o.frequency.setValueAtTime(f, ctx.currentTime);
+			o.connect(filter);
+			o.start();
+			return o;
+		});
+		
+		filter.connect(masterGain);
+		masterGain.connect(ctx.destination);
+		
+		bgmNodes = { oscs, lfo, masterGain };
+	} catch (e) {
+		bgmNodes = null;
+	}
+}
+
+function stopBGM() {
+	if (!bgmNodes) return;
+	const ctx = getAudioCtx();
+	if (ctx && bgmNodes.masterGain) {
+		try {
+			bgmNodes.masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+			const oldNodes = bgmNodes;
+			bgmNodes = null;
+			setTimeout(() => {
+				if (oldNodes) {
+					oldNodes.oscs.forEach(o => { try { o.stop(); o.disconnect(); } catch (e) {} });
+					try { oldNodes.lfo.stop(); oldNodes.lfo.disconnect(); } catch (e) {}
+				}
+			}, 1300);
+		} catch (e) {
+			bgmNodes = null;
+		}
+	} else {
+		bgmNodes = null;
+	}
+}
+
 // ── timer ────────────────────────────────────────────────────────────────────
 let state = 'idle';              // idle | inspect | hold | ready | running
 let startAt = 0, holdTimer = 0, raf = 0, holdBack = 'idle';
 let inspAt = 0, penalty = 0;
 let inspOn = localStorage.getItem(KEY + '_insp') === '1';
+let inspWarned8 = false, inspWarned12 = false;
 
 function setState(s) {
 	state = s;
@@ -537,6 +784,17 @@ function setTime(txt) {
 }
 
 function loop() {
+	if (state === 'inspect') {
+		const elapsed = performance.now() - inspAt;
+		if (elapsed >= 8000 && !inspWarned8) {
+			inspWarned8 = true;
+			playInspectWarning(8);
+		}
+		if (elapsed >= 12000 && !inspWarned12) {
+			inspWarned12 = true;
+			playInspectWarning(12);
+		}
+	}
 	setTime(state === 'running' ? fmt(performance.now() - startAt) : inspText(performance.now() - inspAt));
 	raf = requestAnimationFrame(loop);
 }
@@ -545,11 +803,15 @@ let solvedCelebrationTimer = 0;
 
 function down() {
 	if (state !== 'idle' && state !== 'inspect') return;
+	getAudioCtx();
 	document.body.classList.remove('just-solved');
 	clearTimeout(solvedCelebrationTimer);
 	const back = state;
 	setState('hold');
-	holdTimer = setTimeout(() => setState('ready'), HOLD_MS);
+	holdTimer = setTimeout(() => {
+		setState('ready');
+		playReadySound();
+	}, HOLD_MS);
 	holdBack = back;
 }
 function up() {
@@ -557,6 +819,8 @@ function up() {
 	if (state === 'hold') { setState(holdBack); return; }   // 너무 짧게 눌렀음
 	if (state !== 'ready') return;
 	const now = performance.now();
+	inspWarned8 = false;
+	inspWarned12 = false;
 	if (inspOn && !inspAt) {                                // 인스펙션 시작
 		inspAt = now;
 		setState('inspect');
@@ -567,6 +831,7 @@ function up() {
 	inspAt = 0;
 	startAt = now;
 	setState('running');
+	playStartSound();
 	cancelAnimationFrame(raf); loop();
 }
 function stop() {
@@ -575,6 +840,15 @@ function stop() {
 	const now = performance.now();
 	const ms = Math.max(0, now - startAt);
 	setTime(fmt(ms) + (penalty === 2 ? '+' : penalty === -1 ? ' DNF' : ''));
+	
+	// 신기록(PB) 판정 후 사운드 재생
+	const prevSolves = solves();
+	const prevOk = prevSolves.map(final).filter(isFinite);
+	const prevBest = prevOk.length ? prevOk.reduce((m, x) => (x < m ? x : m), Infinity) : Infinity;
+	const currFinal = final({ ms, p: penalty });
+	const isPB = isFinite(currFinal) && currFinal < prevBest && prevOk.length > 0;
+	playStopSound(isPB);
+
 	solves().push({ ms: ms, p: penalty, scr: scramble, ts: Date.now() });
 	penalty = 0;
 	save(); render();
@@ -593,8 +867,11 @@ function cancel() {
 	document.body.classList.remove('just-solved');
 	cancelAnimationFrame(raf);
 	inspAt = 0; penalty = 0;
+	inspWarned8 = false;
+	inspWarned12 = false;
 	setState('idle');
 	setTime(fmt(0));
+	playClickSound();
 }
 
 document.addEventListener('keydown', (e) => {
@@ -835,7 +1112,34 @@ if ($('import') && el.file) {
 	};
 }
 
+if (el.sfx) {
+	el.sfx.onclick = () => {
+		sfxOn = !sfxOn;
+		localStorage.setItem('eh_timer_sfx', sfxOn ? '1' : '0');
+		updateAudioUI();
+		if (sfxOn) playReadySound();
+	};
+}
+
+if (el.bgm) {
+	el.bgm.onclick = () => {
+		bgmOn = !bgmOn;
+		localStorage.setItem('eh_timer_bgm', bgmOn ? '1' : '0');
+		updateAudioUI();
+		if (bgmOn) startBGM(); else stopBGM();
+	};
+}
+
+// 최초 사용자 인터랙션 시 AudioContext 준비 및 BGM 시작
+const triggerInitialAudio = () => {
+	getAudioCtx();
+	if (bgmOn && !bgmNodes) startBGM();
+};
+document.addEventListener('pointerdown', triggerInitialAudio, { once: true });
+document.addEventListener('keydown', triggerInitialAudio, { once: true });
+
 load().then(() => {
+	updateAudioUI();
 	render();
 	nextScramble();
 	showSync();
