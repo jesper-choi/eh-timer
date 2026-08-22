@@ -691,19 +691,25 @@ function playClickSound() {
 	osc.stop(now + 0.03);
 }
 
-// ── Soul Cafe 감성 카페 팝 BGM 합성기 (YouTube yx7QlKMU324 감성 기반) ──────
+// ── Soul Cafe 감성 카페 팝 BGM 엔진 (YouTube yx7QlKMU324 스타일 반응형 신디사이저) ──
 let bgmMode = localStorage.getItem('eh_timer_bgm_mode') || 'synth'; // 'synth' | 'yt'
 let bgmNodes = null;
-let bgmSeqTimer = 0;
+let bgmSchedulerTimer = 0;
+let nextNoteTime = 0;
 let bgmStep = 0;
 let bgmChordIdx = 0;
 
+const LOOKAHEAD_MS = 25;
+const SCHEDULE_AHEAD_SEC = 0.12;
+const BPM = 78;
+const STEP_SEC = (60 / BPM) / 2; // 8분음표 단위 스텝 (~0.3846초)
+
 // 감성 카페 팝 시그니처 4코드 진행 (Fmaj7 - G7 - Em7 - Am7)
 const CAFE_PROGRESSION = [
-	{ bass: 87.31, chord: [174.61, 261.63, 329.63, 440.00] }, // Fmaj7 (F2 bass, F3, C4, E4, A4)
-	{ bass: 98.00, chord: [196.00, 246.94, 293.66, 349.23] }, // G7 (G2 bass, G3, B3, D4, F4)
-	{ bass: 82.41, chord: [164.81, 196.00, 246.94, 293.66] }, // Em7 (E2 bass, E3, G3, B3, D4)
-	{ bass: 110.00, chord: [220.00, 261.63, 329.63, 392.00] } // Am7 (A2 bass, A3, C4, E4, G4)
+	{ bass: 87.31, chord: [174.61, 261.63, 329.63, 440.00] }, // Fmaj7 (F2, F3, C4, E4, A4)
+	{ bass: 98.00, chord: [196.00, 246.94, 293.66, 349.23] }, // G7 (G2, G3, B3, D4, F4)
+	{ bass: 82.41, chord: [164.81, 196.00, 246.94, 293.66] }, // Em7 (E2, E3, G3, B3, D4)
+	{ bass: 110.00, chord: [220.00, 261.63, 329.63, 392.00] } // Am7 (A2, A3, C4, E4, G4)
 ];
 
 // Rhodes Electric Piano 노트 합성
@@ -726,12 +732,12 @@ function playEPNote(ctx, dest, freq, time, duration, velocity = 0.5) {
 
 		const noteGain = ctx.createGain();
 		noteGain.gain.setValueAtTime(0, time);
-		noteGain.gain.linearRampToValueAtTime(velocity * 0.12, time + 0.006);
+		noteGain.gain.linearRampToValueAtTime(velocity * 0.22, time + 0.006);
 		noteGain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
 
-		gain1.gain.setValueAtTime(0.75, time);
-		gain2.gain.setValueAtTime(0.25, time);
-		gain3.gain.setValueAtTime(0.2, time);
+		gain1.gain.setValueAtTime(0.8, time);
+		gain2.gain.setValueAtTime(0.3, time);
+		gain3.gain.setValueAtTime(0.25, time);
 		gain3.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
 
 		osc1.connect(gain1);
@@ -758,7 +764,7 @@ function playBassNote(ctx, dest, freq, time, duration, velocity = 0.6) {
 		osc.frequency.setValueAtTime(freq, time);
 
 		gain.gain.setValueAtTime(0, time);
-		gain.gain.linearRampToValueAtTime(velocity * 0.16, time + 0.015);
+		gain.gain.linearRampToValueAtTime(velocity * 0.28, time + 0.015);
 		gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
 
 		osc.connect(gain);
@@ -768,7 +774,7 @@ function playBassNote(ctx, dest, freq, time, duration, velocity = 0.6) {
 	} catch (e) {}
 }
 
-// 소프트 칠 비트 (Kick / Snare)
+// 소프트 칠 비트 (Kick / Snare / Hat)
 function playChillBeat(ctx, dest, type, time, velocity = 0.3) {
 	try {
 		if (type === 'kick') {
@@ -777,7 +783,7 @@ function playChillBeat(ctx, dest, type, time, velocity = 0.3) {
 			osc.type = 'sine';
 			osc.frequency.setValueAtTime(110, time);
 			osc.frequency.exponentialRampToValueAtTime(45, time + 0.08);
-			gain.gain.setValueAtTime(velocity * 0.14, time);
+			gain.gain.setValueAtTime(velocity * 0.25, time);
 			gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
 			osc.connect(gain);
 			gain.connect(dest);
@@ -788,14 +794,84 @@ function playChillBeat(ctx, dest, type, time, velocity = 0.3) {
 			const gain = ctx.createGain();
 			osc.type = 'triangle';
 			osc.frequency.setValueAtTime(240, time);
-			gain.gain.setValueAtTime(velocity * 0.09, time);
+			gain.gain.setValueAtTime(velocity * 0.18, time);
 			gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
 			osc.connect(gain);
 			gain.connect(dest);
 			osc.start(time);
 			osc.stop(time + 0.14);
+		} else if (type === 'hat') {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'triangle';
+			osc.frequency.setValueAtTime(3600, time);
+			osc.frequency.exponentialRampToValueAtTime(1200, time + 0.03);
+			gain.gain.setValueAtTime(velocity * 0.16, time);
+			gain.gain.exponentialRampToValueAtTime(0.001, time + 0.035);
+			osc.connect(gain);
+			gain.connect(dest);
+			osc.start(time);
+			osc.stop(time + 0.04);
 		}
 	} catch (e) {}
+}
+
+// Web Audio 정밀 룩어헤드 스케줄러 (무지터 음악 시퀀싱)
+function scheduleNextSteps(ctx, filterDest) {
+	while (nextNoteTime < ctx.currentTime + SCHEDULE_AHEAD_SEC) {
+		const step = bgmStep;
+		const chord = CAFE_PROGRESSION[bgmChordIdx];
+		const time = nextNoteTime;
+
+		if (state === 'hold') {
+			// 🌊 스페이스바 누르고 있을 때: 드럼 없이 부드러운 서브 베이스 험만 잔잔히 재생
+			if (step === 0) {
+				playBassNote(ctx, filterDest, chord.bass, time, 1.4, 0.45);
+			}
+		} else if (state === 'ready') {
+			// 🟢 준비 완료(Ready): 집중 텐션 펄스
+			if (step === 0 || step === 4) {
+				playBassNote(ctx, filterDest, chord.bass * 1.5, time, 0.9, 0.55);
+			}
+		} else if (state === 'inspect') {
+			// ⏱️ 인스펙션(Inspect): 15초 리듬 인지 메트로놈 펄스
+			if (step === 0 || step === 4) {
+				playChillBeat(ctx, filterDest, 'snare', time, 0.3);
+				playEPNote(ctx, filterDest, chord.chord[0], time, 0.7, 0.4);
+			}
+		} else {
+			// ☕ 대기(idle) & ⚡ 솔빙(running): 감성 카페 팝 풀 그루브
+			if (step === 0) {
+				playBassNote(ctx, filterDest, chord.bass, time, 0.8, 0.75);
+				chord.chord.forEach((note, idx) => {
+					playEPNote(ctx, filterDest, note, time + idx * 0.012, 1.4, 0.65);
+				});
+				playChillBeat(ctx, filterDest, 'kick', time, 0.45);
+			} else if (step === 2) {
+				playEPNote(ctx, filterDest, chord.chord[1], time, 0.5, 0.5);
+				playEPNote(ctx, filterDest, chord.chord[3], time + 0.015, 0.5, 0.45);
+				playChillBeat(ctx, filterDest, 'hat', time, 0.2);
+			} else if (step === 4) {
+				playBassNote(ctx, filterDest, chord.bass * 1.5, time, 0.6, 0.6);
+				chord.chord.forEach((note, idx) => {
+					playEPNote(ctx, filterDest, note, time + idx * 0.01, 1.1, 0.55);
+				});
+				playChillBeat(ctx, filterDest, 'snare', time, 0.4);
+			} else if (step === 6) {
+				const melodyFreq = chord.chord[2] * 1.5;
+				playEPNote(ctx, filterDest, melodyFreq, time, 0.7, 0.48);
+				playChillBeat(ctx, filterDest, 'hat', time, 0.2);
+			} else {
+				playChillBeat(ctx, filterDest, 'hat', time, 0.14);
+			}
+		}
+
+		bgmStep = (bgmStep + 1) % 8;
+		if (bgmStep === 0) {
+			bgmChordIdx = (bgmChordIdx + 1) % CAFE_PROGRESSION.length;
+		}
+		nextNoteTime += STEP_SEC;
+	}
 }
 
 // 🎼 타이머 각 동작(State)에 맞춰 배경음 주파수/볼륨/무드를 실시간 전환
@@ -805,33 +881,37 @@ function setBGMState(newState) {
 	if (!ctx) return;
 	const now = ctx.currentTime;
 
-	if (newState === 'hold' || newState === 'ready') {
-		// 🌊 집중 다이빙 (Focus Underwater Ducking): 320Hz 로우패스 필터로 닫히며 잡념 소거
-		bgmNodes.masterFilter.frequency.setTargetAtTime(320, now, 0.08);
-		bgmNodes.masterGain.gain.setTargetAtTime(0.035, now, 0.08);
+	if (newState === 'hold') {
+		// 🌊 스페이스바 누름 (Hold): 280Hz 로우패스 집중 다이빙 (Focus Underwater Hush)
+		bgmNodes.masterFilter.frequency.setTargetAtTime(280, now, 0.06);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.08, now, 0.06);
+	} else if (newState === 'ready') {
+		// 🟢 준비 완료 (Ready): 450Hz 준비 텐션 공명
+		bgmNodes.masterFilter.frequency.setTargetAtTime(450, now, 0.06);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.12, now, 0.06);
 	} else if (newState === 'inspect') {
-		// ⏱️ 인스펙션 모드: 15초 관찰 집중
-		bgmNodes.masterFilter.frequency.setTargetAtTime(950, now, 0.15);
-		bgmNodes.masterGain.gain.setTargetAtTime(0.06, now, 0.15);
+		// ⏱️ 인스펙션 모드: 1000Hz 15초 리듬 인지
+		bgmNodes.masterFilter.frequency.setTargetAtTime(1000, now, 0.12);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.16, now, 0.12);
 	} else if (newState === 'running') {
-		// ⚡ 솔빙 몰입 펄스 (Flow-State Groove): 스피드큐빙 템포에 맞춘 리드미컬 필터
-		bgmNodes.masterFilter.frequency.setTargetAtTime(1600, now, 0.2);
-		bgmNodes.masterGain.gain.setTargetAtTime(0.075, now, 0.2);
+		// ⚡ 솔빙 몰입 펄스 (Flow-State Groove): 2200Hz 스피드큐빙 리듬 비트
+		bgmNodes.masterFilter.frequency.setTargetAtTime(2200, now, 0.15);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.20, now, 0.15);
 	} else if (newState === 'just-solved') {
-		// 🌟 완성 축하 블룸 (Bloom): 필터가 3200Hz로 활짝 열리며 화려한 메이저 여운
-		bgmNodes.masterFilter.frequency.setTargetAtTime(3200, now, 0.05);
-		bgmNodes.masterGain.gain.setTargetAtTime(0.09, now, 0.05);
+		// 🌟 완성 축하 블룸 (Bloom): 4000Hz 활짝 열리며 화려한 메이저 여운
+		bgmNodes.masterFilter.frequency.setTargetAtTime(4000, now, 0.04);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.24, now, 0.04);
 		setTimeout(() => {
 			if (state === 'idle' && bgmNodes) {
 				const currNow = ctx.currentTime;
-				bgmNodes.masterFilter.frequency.setTargetAtTime(2200, currNow, 0.8);
-				bgmNodes.masterGain.gain.setTargetAtTime(0.07, currNow, 0.8);
+				bgmNodes.masterFilter.frequency.setTargetAtTime(3000, currNow, 0.8);
+				bgmNodes.masterGain.gain.setTargetAtTime(0.18, currNow, 0.8);
 			}
-		}, 1800);
+		}, 2000);
 	} else {
-		// ☕ 기본 대기(idle): 감성 카페 팝 2200Hz 풀 스펙트럼
-		bgmNodes.masterFilter.frequency.setTargetAtTime(2200, now, 0.4);
-		bgmNodes.masterGain.gain.setTargetAtTime(0.07, now, 0.4);
+		// ☕ 기본 대기(idle): 3000Hz 풀 스펙트럼 감성 카페 팝
+		bgmNodes.masterFilter.frequency.setTargetAtTime(3000, now, 0.3);
+		bgmNodes.masterGain.gain.setTargetAtTime(0.18, now, 0.3);
 	}
 }
 
@@ -846,17 +926,19 @@ function startBGM() {
 	}
 
 	const ctx = getAudioCtx();
-	if (!ctx || bgmNodes) return;
+	if (!ctx) return;
+	if (ctx.state === 'suspended') ctx.resume();
+	if (bgmNodes) return;
 
 	try {
 		const masterGain = ctx.createGain();
 		masterGain.gain.setValueAtTime(0, ctx.currentTime);
-		masterGain.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 1.5);
+		masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 1.0);
 
 		const masterFilter = ctx.createBiquadFilter();
 		masterFilter.type = 'lowpass';
-		masterFilter.frequency.setValueAtTime(2200, ctx.currentTime);
-		masterFilter.Q.setValueAtTime(1.0, ctx.currentTime);
+		masterFilter.frequency.setValueAtTime(3000, ctx.currentTime);
+		masterFilter.Q.setValueAtTime(1.5, ctx.currentTime);
 
 		// 따뜻한 앰비언트 서브 패드 (C3, G3 - 배경을 은은하게 채워주는 베이스 드론)
 		const freqs = [130.81, 196.00];
@@ -865,7 +947,7 @@ function startBGM() {
 			o.type = 'sine';
 			o.frequency.setValueAtTime(f, ctx.currentTime);
 			const g = ctx.createGain();
-			g.gain.setValueAtTime(0.03, ctx.currentTime);
+			g.gain.setValueAtTime(0.06, ctx.currentTime);
 			o.connect(g);
 			g.connect(masterFilter);
 			o.start();
@@ -878,52 +960,15 @@ function startBGM() {
 		bgmNodes = { masterGain, masterFilter, subOscs };
 		bgmStep = 0;
 		bgmChordIdx = 0;
+		nextNoteTime = ctx.currentTime + 0.05;
 
-		// 76 BPM 감성 카페 팝 시퀀서 루프 (1 스텝 = 0.395초)
-		const stepInterval = 395;
-		clearInterval(bgmSeqTimer);
-		bgmSeqTimer = setInterval(() => {
+		clearInterval(bgmSchedulerTimer);
+		bgmSchedulerTimer = setInterval(() => {
 			if (!bgmNodes || !bgmOn) return;
-			const audioNow = ctx.currentTime;
-			const currChord = CAFE_PROGRESSION[bgmChordIdx];
+			scheduleNextSteps(ctx, masterFilter);
+		}, LOOKAHEAD_MS);
 
-			// Step 0: 마디 시작 (Bass + EP Chord + Kick)
-			if (bgmStep === 0) {
-				playBassNote(ctx, masterFilter, currChord.bass, audioNow, 0.7, 0.7);
-				currChord.chord.forEach((note, idx) => {
-					playEPNote(ctx, masterFilter, note, audioNow + idx * 0.015, 1.2, 0.55);
-				});
-				if (state !== 'hold' && state !== 'ready') playChillBeat(ctx, masterFilter, 'kick', audioNow, 0.35);
-			}
-			// Step 2: 엇박 컴핑
-			else if (bgmStep === 2) {
-				if (state === 'idle' || state === 'running') {
-					playEPNote(ctx, masterFilter, currChord.chord[1], audioNow, 0.5, 0.4);
-					playEPNote(ctx, masterFilter, currChord.chord[3], audioNow + 0.02, 0.5, 0.35);
-				}
-			}
-			// Step 4: 3박 (Bass + Snare)
-			else if (bgmStep === 4) {
-				playBassNote(ctx, masterFilter, currChord.bass, audioNow, 0.6, 0.5);
-				currChord.chord.forEach((note, idx) => {
-					playEPNote(ctx, masterFilter, note, audioNow + idx * 0.01, 0.9, 0.45);
-				});
-				if (state !== 'hold' && state !== 'ready') playChillBeat(ctx, masterFilter, 'snare', audioNow, 0.3);
-			}
-			// Step 6: 멜로디 장식음 (Embellishment)
-			else if (bgmStep === 6) {
-				if (state === 'idle' || state === 'running') {
-					const melodyNote = currChord.chord[2] * 1.5;
-					playEPNote(ctx, masterFilter, melodyNote, audioNow, 0.6, 0.3);
-				}
-			}
-
-			bgmStep = (bgmStep + 1) % 8;
-			if (bgmStep === 0) {
-				bgmChordIdx = (bgmChordIdx + 1) % CAFE_PROGRESSION.length;
-			}
-		}, stepInterval);
-
+		setBGMState(state);
 	} catch (e) {
 		bgmNodes = null;
 	}
@@ -932,19 +977,19 @@ function startBGM() {
 function stopBGM() {
 	const yt = $('ytPlayer');
 	if (yt) yt.src = '';
-	clearInterval(bgmSeqTimer);
+	clearInterval(bgmSchedulerTimer);
 	if (!bgmNodes) return;
 	const ctx = getAudioCtx();
 	if (ctx && bgmNodes.masterGain) {
 		try {
-			bgmNodes.masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+			bgmNodes.masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
 			const oldNodes = bgmNodes;
 			bgmNodes = null;
 			setTimeout(() => {
 				if (oldNodes) {
 					oldNodes.subOscs.forEach(o => { try { o.stop(); o.disconnect(); } catch (e) {} });
 				}
-			}, 900);
+			}, 700);
 		} catch (e) {
 			bgmNodes = null;
 		}
@@ -998,7 +1043,9 @@ let solvedCelebrationTimer = 0;
 
 function down() {
 	if (state !== 'idle' && state !== 'inspect') return;
-	getAudioCtx();
+	const ctx = getAudioCtx();
+	if (ctx && ctx.state === 'suspended') ctx.resume();
+	if (bgmOn && !bgmNodes) startBGM();
 	document.body.classList.remove('just-solved');
 	clearTimeout(solvedCelebrationTimer);
 	const back = state;
@@ -1032,6 +1079,7 @@ function up() {
 function stop() {
 	cancelAnimationFrame(raf);
 	setState('idle');
+	setBGMState('just-solved'); // 🌟 완성 축하 화음 블룸 즉시 발동
 	const now = performance.now();
 	const ms = Math.max(0, now - startAt);
 	setTime(fmt(ms) + (penalty === 2 ? '+' : penalty === -1 ? ' DNF' : ''));
