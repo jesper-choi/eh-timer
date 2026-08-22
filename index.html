@@ -1248,6 +1248,46 @@ dialog .row button:first-child:hover {
 #gmsg.err { color: var(--hold); }
 #gmsg.ok { color: var(--ready); }
 
+.bgm-options {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 14px 0 18px;
+}
+.bgm-opt {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 12px 14px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+.bgm-opt:hover {
+	border-color: rgba(56, 189, 248, 0.4);
+	background: #1e293b;
+}
+.bgm-opt input[type="radio"] {
+	width: auto;
+	margin-top: 3px;
+	accent-color: var(--accent);
+	cursor: pointer;
+}
+.bgm-opt-info b {
+	display: block;
+	font-size: 13px;
+	color: var(--text);
+	margin-bottom: 3px;
+}
+.bgm-opt-info span {
+	display: block;
+	font-size: 11px;
+	color: var(--muted);
+	line-height: 1.4;
+}
+
 /* ── 터치 기기(태블릿/폰) 전용 배율. 마우스 쓰는 PC에는 적용되지 않는다 ── */
 @media (pointer: coarse) {
 	/* 태블릿 타이머와 대형 3D 큐브의 조화로운 레이아웃 */
@@ -1431,6 +1471,35 @@ dialog .row button:first-child:hover {
 	</div>
 </dialog>
 
+<dialog id="bgmdlg">
+	<h3>배경음 (BGM) 스타일 설정</h3>
+	<p>원하시는 배경음 재생 방식을 선택하세요.</p>
+	<div class="bgm-options">
+		<label class="bgm-opt">
+			<input type="radio" name="bgmMode" value="synth" checked>
+			<div class="bgm-opt-info">
+				<b>🎹 인터랙티브 감성 카페 팝 (추천 · 100% 오프라인)</b>
+				<span>타이머 조작(준비, 인스펙션, 솔빙, 정지)에 실시간으로 화음과 필터가 반응하는 감성 EP 팝</span>
+			</div>
+		</label>
+		<label class="bgm-opt">
+			<input type="radio" name="bgmMode" value="yt">
+			<div class="bgm-opt-info">
+				<b>☕ YouTube 24h 감성 카페 팝 라이브</b>
+				<span>참고 영상 (Soul Cafe 24시간 실시간 감성팝 플레이리스트 스트림)</span>
+			</div>
+		</label>
+	</div>
+	<div class="row">
+		<button id="bgmSave">선택 완료</button>
+		<button id="bgmClose">닫기</button>
+	</div>
+</dialog>
+
+<div id="ytPlayerWrap" style="display:none;position:absolute;width:1px;height:1px;opacity:0.01;pointer-events:none;">
+	<iframe id="ytPlayer" width="200" height="200" src="" frameborder="0" allow="autoplay"></iframe>
+</div>
+
 <script>
 // 서비스 워커 강제 갱신: index.html은 네트워크 우선이므로 이 인라인 스크립트는 항상 최신이다.
 // 구버전 SW가 구 app.js/stats.js를 캐시하고 있으면 여기서 강제로 갱신한다.
@@ -1453,7 +1522,7 @@ if (navigator.serviceWorker) {
 	});
 }
 </script>
-<script src="stats.js?v=40"></script>
-<script src="app.js?v=40"></script>
+<script src="stats.js?v=41"></script>
+<script src="app.js?v=41"></script>
 </body>
 </html>
